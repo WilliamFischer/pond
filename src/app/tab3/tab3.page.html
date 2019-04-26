@@ -1,9 +1,37 @@
-<ion-header>
+<ion-header *ngIf="!speciesSelected">
   <ion-toolbar>
-    <ion-title>
-      Tab Three
-    </ion-title>
+    <ion-searchbar></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+
+  <div *ngIf="!speciesSelected">
+    <ion-list class="speciesList">
+      <ion-list-header>
+        <ion-label>Core Tank <a class="lilEdit" href="#">edit</a></ion-label>
+      </ion-list-header>
+      <ion-item (click)="selectSpecies('Ghost Knife')">1x &nbsp; <b> Ghost Knife </b> &nbsp; <i>(Apteronotus Albifrons)</i></ion-item>
+      <ion-item (click)="selectSpecies('Butterflyfish')">1x &nbsp; <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
+      <ion-item (click)="selectSpecies('Pinoy Blue Angelfish')">2x &nbsp; <b> Pinoy Blue Angelfish </b> &nbsp; <i>(Pterophyllum)</i></ion-item>
+      <ion-item (click)="selectSpecies('Kuhli Loach')">4x &nbsp; <b> Kuhli Loach </b> &nbsp; <i>(Actinopterygii)</i></ion-item>
+      <ion-item (click)="selectSpecies('Otocinclus')">1x &nbsp; <b> Otocinclus </b> &nbsp; <i>(Hypoptopomatinae)</i></ion-item>
+
+      <br />
+
+      <ion-list-header>
+        <ion-label>Shrimp Ecosystem <a class="lilEdit" href="#">edit</a></ion-label>
+      </ion-list-header>
+      <ion-item (click)="selectSpecies('Orange Rili Shrimp')">32x &nbsp; <b> Orange Rili Shrimp </b> &nbsp; <i>(Neocaridina)</i></ion-item>
+    </ion-list>
+  </div>
+
+  <div *ngIf="speciesSelected" class="speciesSelectedMode">
+
+     <ion-icon name="arrow-back" (click)="unSelectSpecies()" class="backArrow"></ion-icon>
+
+    <h1>The {{species.name}}</h1>
+
+  </div>
+
+</ion-content>

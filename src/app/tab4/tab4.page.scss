@@ -1,0 +1,199 @@
+div{
+  transition: all 0.5s ease;
+}
+
+h1{
+  font-weight: 400;
+  font-size: 34px !important;
+  padding-bottom: 10%;
+  text-align: center;
+  font-family: 'Crimson Text', serif !important;
+  color: #84817a;
+}
+
+h2{
+  font-weight: 600;
+  font-size: 18px !important;
+  color: #d1ccc0;
+
+  margin-top: 15%;
+  padding-bottom: 0%;
+
+  text-align: left;
+  font-family: 'Crimson Text', serif !important;
+}
+
+p{
+  text-align: center;
+}
+
+.paddingSpace{
+    padding: 10% !important;
+    background: #FEFFFF;
+    font-family: 'Crimson Text', serif !important;
+}
+
+.rules{
+  width: 100%;
+  height: 50px;
+  color: #fff;
+  font-size: 16px;
+  padding-top: 3%;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: linear-gradient(#78CBE5, #ABDEE0);
+}
+
+.auctionCard{
+  width: 100%;
+  height: 250px;
+  background: #fff;
+  box-shadow: 0px 0px 10px #e8e8e8;
+  margin-top: 10%;
+  border-radius: 5px;
+
+
+  .backImg{
+    background: #f7f1e3;
+    width: 100%;
+    height: 100%;
+    display: block;
+
+    object-fit: contain;
+  }
+
+  .whiteTriangle{
+    // background: #fff;
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 100px 300px;
+    border-color: transparent transparent #fff transparent;
+
+    margin-top: 40%;
+
+    z-index: 9000;
+    position: absolute;
+
+    transition: all 2s ease;
+
+
+  }
+
+
+  .arrowContainer{
+    display: block;
+    width: 80%;
+    padding: 5%;
+
+    position: absolute;
+
+    .arrow{
+      float: left;
+      font-size: 21px;
+      color: #fff;
+      text-shadow: 1px 1px black !important;
+    }
+
+    .rightArrow{
+      float: right;
+      font-size: 21px;
+    }
+  }
+
+  .littleInfo{
+    margin-top: 45%;
+    margin-left: 41%;
+    width: 190px;
+
+    position: absolute;
+    display: block;
+    z-index: 90000;
+
+    text-align: right;
+
+
+    h1{
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      display: block;
+      margin-left: -15%;
+      width: 90%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: -5%;
+      color: #84817a;
+    }
+
+
+    h2{
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      text-align: right !important;
+      display: block;
+      margin-left: -30%;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: -3%;
+    }
+
+
+    h3{
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      display: block;
+      margin-left: -30%;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      color: #aaa69d;
+    }
+
+  }
+
+
+  .infoSect{
+    text-align: left;
+    padding: 5%;
+
+
+    h1{
+      font-size: 21px !important;
+    }
+
+    h2{
+      font-size: 16px !important;
+      text-align: center;
+      margin-top: -10%;
+    }
+
+    .infoBack{
+      float: right;
+      font-size: 21px;
+
+      color: #aaa69d;
+    }
+  }
+}
+
+.ruleMode{
+
+  h1{
+    text-align: center;
+    margin-top: 5%;
+    color: #7dbbe2;
+  }
+
+  .backArrow{
+    margin-left: 7%;
+    font-size: 26px;
+    margin-top: 5%;
+    color: #D1E7F5;
+  }
+}

@@ -1,9 +1,94 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>
-      Tab Two
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
 
-<ion-content></ion-content>
+  <div class="paddingSpace" *ngIf="!addTankMode">
+    <h1>Your Tanks</h1>
+
+    <div class="tankSpace" (click)="addTank()">
+      <h3>+ <br /><br /> Start your first tank !</h3>
+    </div>
+
+    <div *ngIf="tanks">
+      <div class="tankSpace" *ngFor="let tank of tanks">
+        <h3>{{tank.name}}</h3>
+        <h4><i>{{tank.ph}}deg &bull; PH{{tank.ph}} &bull; {{tank.size}}L</i></h4>
+        <h5>With a {{tank.substrate}} substrate</h5>
+      </div>
+    </div>
+
+    <ion-spinner name="bubbles" color="primary" class="mySpinner" *ngIf="!tanks"></ion-spinner>
+
+
+  </div>
+
+  <div class="addTank" *ngIf="addTankMode">
+
+    <h1>Add a Tank</h1>
+
+    <form (ngSubmit)="confirmForm()">
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">Tank Name</ion-label>
+          <ion-input type="text" [(ngModel)]="tank.name" name="name" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">PH (approx)</ion-label>
+          <ion-input type="number" [(ngModel)]="tank.ph" name="ph" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Temperature (DEG)</ion-label>
+
+          <ion-range min="15" max="35" step="1" snaps="true" ticks="true" pin="true" [(ngModel)]="tank.temp" name="temp" required>
+            <ion-icon size="small" slot="start" name="snow"></ion-icon>
+            <ion-icon slot="end" name="flame"></ion-icon>
+          </ion-range>
+
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Size (Liters)</ion-label>
+          <ion-input type="number" [(ngModel)]="tank.size" name="size" required></ion-input>
+        </ion-item>
+
+        <ion-radio-group [(ngModel)]="tank.substrate" name="substrate" required>
+          <ion-list-header>
+            <ion-label>Substrate</ion-label>
+          </ion-list-header>
+
+          <ion-item>
+            <ion-label>Coral Sand</ion-label>
+            <ion-radio slot="start" value="coral_sand"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>River Sand</ion-label>
+            <ion-radio slot="start" value="river_sand"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Quartz</ion-label>
+            <ion-radio slot="start" value="quartz"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Laterite</ion-label>
+            <ion-radio slot="start" value="laterite"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Stones</ion-label>
+            <ion-radio slot="start" value="stones"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Mirco-Stones</ion-label>
+            <ion-radio slot="start" value="mirco_stones"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Other</ion-label>
+            <ion-radio slot="start" value="other"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+
+        <button class="confirmBtn" type="submit">Confirm</button>
+      </ion-list>
+
+    </form>
+  </div>
+</ion-content>

@@ -1,0 +1,195 @@
+h1{
+  font-weight: 800;
+  font-size: 34px !important;
+}
+
+h2{
+  font-weight: 400;
+  font-size: 24px !important;
+  white-space: nowrap;
+}
+
+h3{
+  font-weight: 200;
+  font-size: 18px !important;
+  margin-top: -20%;
+  color: #8e8e8e;
+}
+
+
+.paddingSpace{
+    padding: 10% !important;
+    background: #FEFFFF;
+    font-family: 'Crimson Text', serif !important;
+}
+
+.profileImg{
+  width: 40%;
+  height: 150px;
+  box-shadow: 0px 10px 10px #e8e8e8;
+  border-radius: 10px;
+  margin-top: 10%;
+  object-fit: cover;
+}
+
+.infoSection{
+  width: 100%;
+  height: 200px;
+  display: inline-flex;
+}
+
+.rightStuff{
+  padding: 10%;
+}
+
+.splittingLine{
+  width: 100vw;
+  margin-top: 10%;
+  height: 1px;
+  background: #e8e8e8;
+}
+
+.fadedBack{
+  background: url(https://scontent.fakl2-1.fna.fbcdn.net/v/t1.0-9/13882185_1354509061245524_9026815624279005373_n.jpg?_nc_cat=107&_nc_ht=scontent.fakl2-1.fna&oh=473e087018200dd55f4433bd9da7d568&oe=5D37C6FE);
+  width: 100%;
+  height: 392px;
+  margin-top: -15%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: absolute;
+  z-index: 0;
+  display: block;
+  opacity: 0.1;
+  box-shadow: inset 5px 5px 15px 30px #fff;
+  pointer-events: none;
+}
+
+.heartBox{
+  width: 55px;
+  height: 75px;
+  background: #FF4B97;
+  box-shadow: 0px 3px 5px 0.1px #FF4B97;
+  border-radius: 10px;
+  margin-top: -8%;
+  display: block;
+  position: absolute;
+}
+
+.plusBox{
+  width: 55px;
+  height: 75px;
+  background: #fff;
+  box-shadow: 0px 3px 5px 0.1px #cae0ff;
+  border-radius: 10px;
+  margin-top: 18%;
+  display: block;
+  position: absolute;
+}
+
+.heartIco{
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  padding-top: 30%;
+  font-size: 24px;
+}
+
+.heartCount{
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  display: block;
+  font-weight: 800;
+
+}
+
+.tagIco{
+  text-align: center;
+  color: #7eb3ff;
+  width: 100%;
+  padding-top: 30%;
+  font-size: 24px;
+}
+
+.plusCount{
+  text-align: center;
+  color: #7eb3ff;
+  width: 100%;
+  display: block;
+  font-weight: 800;
+
+}
+
+.viewProfBtn{
+  background: #7eb3ff;
+  border: none;
+  padding: 5%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 6%;
+  margin-top: 7%;
+  border-radius: 50px;
+  font-size: 12px;
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+  z-index: 9000;
+}
+
+.nextSection{
+  width: 100%;
+  height: 200px;
+  padding-top: 15%;
+}
+
+.mySalesCore{
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(6, calc(50% - 40px));
+  grid-template-rows: minmax(150px, 1fr);
+  padding: 10px 10px;
+  overflow-x: scroll;
+  margin-left: 20%;
+  margin-top: -10%;
+
+}
+
+.itemSaleBox{
+
+  width: 100px;
+  margin-right: 10%;
+  grid-area: span 1 / span 1;
+  box-shadow: 0px 3px 5px 0.1px #cae0ff;
+
+  padding: 5%;
+
+  img{
+    height: 60px;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  h1{
+    font-size: 14px !important;
+    text-align: center;
+  }
+
+  h2{
+    font-size: 12px !important;
+    margin-right: 5%;
+    margin-left: 5%;
+  }
+
+}
+
+.emptyItemSaleBox{
+  width: 80px;
+  margin-right: 10%;
+  grid-area: span 1 / span 1;
+
+}
+
+.lilSelfBlock{
+  display: inline-flex;
+  margin-top: -10%;
+}

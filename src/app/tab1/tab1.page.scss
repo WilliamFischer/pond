@@ -1,4 +1,58 @@
-.welcome-card ion-img {
-  max-height: 35vh;
-  overflow: hidden;
+
+h1{
+  font-weight: 800;
+  font-size: 34px !important;
+}
+
+h2{
+  color: #8e8e8e;
+  font-size: 16px;
+  margin-top: -1%;
+
+  font-weight: 600;
+}
+
+
+
+.paddingSpace{
+    padding: 10% !important;
+    background: #FEFFFF;
+    font-family: 'Crimson Text', serif !important;
+}
+
+.newsBox{
+  width: 100%;
+  height: 150px;
+  background: #fff;
+  box-shadow: 0px 0px 10px #8e8e8e;
+  border-radius: 3px;
+  display: inline-flex;
+
+  margin-top: 10%;
+}
+
+.newsImg{
+  width: 50%;
+  height: 100%;
+  object-fit: contain;
+  margin-left: 5%;
+}
+
+
+.rightSide{
+  width: 50%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+h3{
+  margin-top: 10%;
+  font-size: 12px;
+  text-align: left;
+}
+
+p{
+  font-size: 10px;
+  max-height: 85px;
+  overflow: scroll;
 }
