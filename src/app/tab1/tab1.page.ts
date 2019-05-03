@@ -8,4 +8,5 @@ import { Component } from '@angular/core';
 export class Tab1Page {
   // Establish the Date
   today = Date.now();
+  
 }

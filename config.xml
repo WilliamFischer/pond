@@ -86,4 +86,5 @@
         <variable name="APP_ID" value="2618907464789346" />
         <variable name="APP_NAME" value="POND" />
     </plugin>
+    <engine name="ios" spec="4.5.5" />
 </widget>

@@ -24,3 +24,25 @@
     color: #D1E7F5;
   }
 }
+
+.koiLogo{
+  width: 60%;
+
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  display: block;
+  margin-top: 50%;
+}
+
+.header-ios ion-toolbar:last-child {
+    --border-width: 0 0 0px !important;
+}
+
+
+h3{
+  text-align: center;
+  font-size: 12px;
+  color: #e8e8e8;
+}

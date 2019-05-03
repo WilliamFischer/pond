@@ -11,8 +11,6 @@ export class Tab4Page {
   infoMode:boolean = false;
   rules: boolean;
 
-  constructor(){}
-
   // Image slider simple master switch
   triggrImgSlider(){
     if(this.imgMode){
@@ -40,5 +38,9 @@ export class Tab4Page {
     this.infoMode = false;
     this.imgMode = false;
   }
-  
+
+  doSearch(){
+
+  }
+
 }

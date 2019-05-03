@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import {HttpClientModule} from '@angular/common/http';
 
 // Ionic Native
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
@@ -41,7 +42,8 @@ import { AuthProvider } from './providers/auth/auth';
       messagingSenderId: "761650598572"
     }),
     AngularFirestoreModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    HttpClientModule
   ],
   providers: [
     StatusBar,

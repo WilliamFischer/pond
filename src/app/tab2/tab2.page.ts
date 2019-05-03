@@ -27,10 +27,11 @@ export class Tab2Page {
     public modalCtrl : ModalController,
     public fireStore: AngularFirestore,
     public afAuth: AngularFireAuth
-  ) {
+  ) {}
 
+  ngOnInit(){
     // Pull Tanks from Database
-    this.fireStore.collection('tanks').valueChanges().subscribe(
+    this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
     values =>{
       this.tanks = values;
     });
@@ -41,12 +42,11 @@ export class Tab2Page {
   }
 
   // Submit tank to database
-
   confirmForm(){
     this.addTankMode = false;
     console.log(this.tank);
 
-    let tankAddress = this.fireStore.doc<any>(this.afAuth.auth.currentUser.uid + 'tanks/' + this.tank.name);
+    let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name);
 
     tankAddress.set({
       name: this.tank.name,

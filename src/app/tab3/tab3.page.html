@@ -1,13 +1,17 @@
 <ion-header *ngIf="!speciesSelected">
   <ion-toolbar>
-    <ion-searchbar></ion-searchbar>
+    <ion-searchbar placeholder="Search Common or Scientific Name..." (change)="checkAPI($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
   <div *ngIf="!speciesSelected">
-    <ion-list class="speciesList">
+
+    <img src="../assets/whiteKoiClear.png" class="koiLogo"/>
+    <h3>Search Above</h3>
+
+    <!-- <ion-list class="speciesList">
       <ion-list-header>
         <ion-label>Core Tank <a class="lilEdit" href="#">edit</a></ion-label>
       </ion-list-header>
@@ -23,7 +27,7 @@
         <ion-label>Shrimp Ecosystem <a class="lilEdit" href="#">edit</a></ion-label>
       </ion-list-header>
       <ion-item (click)="selectSpecies('Orange Rili Shrimp')">32x &nbsp; <b> Orange Rili Shrimp </b> &nbsp; <i>(Neocaridina)</i></ion-item>
-    </ion-list>
+    </ion-list> -->
   </div>
 
   <div *ngIf="speciesSelected" class="speciesSelectedMode">
