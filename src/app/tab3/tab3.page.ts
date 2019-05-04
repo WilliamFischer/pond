@@ -22,6 +22,7 @@ export class Tab3Page {
     desc: '',
     imgurl: ''
   };
+  resultsArrays: any;
 
   constructor(
     private http:HttpClient,
@@ -66,7 +67,16 @@ export class Tab3Page {
         if(values != null){
           if(values['species'] != null) {
             console.log('EXISTS IN DATABASE');
-            console.log(result);
+
+            var loopValue = result['data']
+            var finalResults = [];
+
+            loopValue.forEach(eachObj => {
+              console.log(eachObj)
+              finalResults.push(eachObj);
+            });
+
+            this.resultsArrays = finalResults;
 
             if(values['species'] == lowerQuery || values['name'] == lowerQuery || values['genus'] == lowerQuery){
               console.log('Species not found')
@@ -122,19 +132,19 @@ export class Tab3Page {
 
 
   runFishbaseChecker(searchQuery){
-    this.http.get('https://fishbase.ropensci.org/species?FBname=' + searchQuery).subscribe(
+    this.http.get('https://fishbase.ropensci.org/species?FBname=' + searchQuery + '&limit=500').subscribe(
       result => {
         // Handle result
         this.checkSpeciesDatabase(result, searchQuery);
       },
       error => {
-        this.http.get('https://fishbase.ropensci.org/species?Genus=' + searchQuery).subscribe(
+        this.http.get('https://fishbase.ropensci.org/species?Genus=' + searchQuery + '&limit=500').subscribe(
           result => {
             // Handle result
             this.checkSpeciesDatabase(result, searchQuery);
           },
           error => {
-            this.http.get('https://fishbase.ropensci.org/species?Species=' + searchQuery).subscribe(
+            this.http.get('https://fishbase.ropensci.org/species?Species=' + searchQuery + '&limit=500').subscribe(
               result => {
                 // Handle result
                 this.checkSpeciesDatabase(result, searchQuery);

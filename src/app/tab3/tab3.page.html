@@ -8,8 +8,20 @@
 
   <div *ngIf="!speciesSelected">
 
-    <img src="../assets/whiteKoiClear.png" class="koiLogo"/>
-    <h3>Search Above</h3>
+    <div *ngIf="!resultsArrays">
+      <img src="../assets/whiteKoiClear.png" class="koiLogo"/>
+      <h3>Search Above</h3>
+    </div>
+
+    <div *ngIf="resultsArrays" class="theResults">
+      <div class="speciesBrick" *ngFor="let fish of resultsArrays">
+        <img *ngIf="fish.PicPreferredName" src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
+        <img *ngIf="!fish.PicPreferredName" src="../assets/noImg.png" />
+        <h2>{{fish.FBname}}</h2>
+        <h3>{{fish.Genus}} &bull; <i>{{fish.Species}}</i></h3>
+        <h3>Length - {{fish.CommonLength}} &bull; Max Length - {{fish.Length}} </h3>
+      </div>
+    </div>
 
     <!-- <ion-list class="speciesList">
       <ion-list-header>
