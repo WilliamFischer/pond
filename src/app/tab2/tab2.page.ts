@@ -31,10 +31,10 @@ export class Tab2Page {
 
   ngOnInit(){
     // Pull Tanks from Database
-    this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
-    values =>{
-      this.tanks = values;
-    });
+    // this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
+    // values =>{
+    //   this.tanks = values;
+    // });
   }
 
   addTank(){
@@ -42,21 +42,21 @@ export class Tab2Page {
   }
 
   // Submit tank to database
-  confirmForm(){
-    this.addTankMode = false;
-    console.log(this.tank);
-
-    let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name);
-
-    tankAddress.set({
-      name: this.tank.name,
-      ph: this.tank.ph,
-      temp: this.tank.temp,
-      size: this.tank.size,
-      substrate: this.tank.substrate
-    })
-
-    alert('Tank added')
-  }
+  // confirmForm(){
+  //   this.addTankMode = false;
+  //   console.log(this.tank);
+  //
+  //   let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name);
+  //
+  //   tankAddress.set({
+  //     name: this.tank.name,
+  //     ph: this.tank.ph,
+  //     temp: this.tank.temp,
+  //     size: this.tank.size,
+  //     substrate: this.tank.substrate
+  //   })
+  //
+  //   alert('Tank added')
+  // }
 
 }

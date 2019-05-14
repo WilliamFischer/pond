@@ -1,199 +1,383 @@
-div{
-  transition: all 0.5s ease;
+
+.lilEdit{
+  font-size: 8px;
+  text-decoration: none;
 }
 
-h1{
-  font-weight: 400;
-  font-size: 34px !important;
-  padding-bottom: 10%;
-  text-align: center;
-  font-family: 'Crimson Text', serif !important;
-  color: #84817a;
+.speciesList{
+  white-space: nowrap;
 }
 
-h2{
-  font-weight: 600;
-  font-size: 18px !important;
-  color: #d1ccc0;
 
-  margin-top: 15%;
-  padding-bottom: 0%;
+.blueBack{
+  --background: #E1EEF7 !important;
+}
 
+.nothingFoundTxt{
+    text-align: center;
+    width: 70%;
+    margin-top: 50%;
+    color: #8e8e8e;
+
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    font-weight: bold;
+    font-weight: 200;
+
+    b{
+      color: #3875F1;
+      font-weight: 400;
+    }
+}
+
+.highlightGreen{
+    color: #BBD0FA;
+}
+
+.topTitle{
+  display: block;
+  width: 100%;
+  height: 20px;
   text-align: left;
-  font-family: 'Crimson Text', serif !important;
+  color: #F0F5FB;
+  padding-top: 15%;
+  font-weight: 800;
+  font-size: 14px;
+  text-shadow: 1px 1px 1px #8e8e8e;
 }
 
-p{
-  text-align: center;
-}
-
-.paddingSpace{
-    padding: 10% !important;
-    background: #FEFFFF;
-    font-family: 'Crimson Text', serif !important;
-}
-
-.rules{
-  width: 100%;
-  height: 50px;
-  color: #fff;
-  font-size: 16px;
-  padding-top: 3%;
-  font-weight: 900;
-  text-transform: uppercase;
-  background: linear-gradient(#78CBE5, #ABDEE0);
-}
-
-.auctionCard{
-  width: 100%;
-  height: 250px;
-  background: #fff;
-  box-shadow: 0px 0px 10px #e8e8e8;
-  margin-top: 10%;
-  border-radius: 5px;
-
-
-  .backImg{
-    background: #f7f1e3;
-    width: 100%;
-    height: 100%;
-    display: block;
-
-    object-fit: contain;
-  }
-
-  .whiteTriangle{
-    // background: #fff;
-    display: block;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 0 100px 300px;
-    border-color: transparent transparent #fff transparent;
-
-    margin-top: 40%;
-
-    z-index: 9000;
-    position: absolute;
-
-    transition: all 2s ease;
-
-
-  }
-
-
-  .arrowContainer{
-    display: block;
-    width: 80%;
-    padding: 5%;
-
-    position: absolute;
-
-    .arrow{
-      float: left;
-      font-size: 21px;
-      color: #fff;
-      text-shadow: 1px 1px black !important;
-    }
-
-    .rightArrow{
-      float: right;
-      font-size: 21px;
-    }
-  }
-
-  .littleInfo{
-    margin-top: 45%;
-    margin-left: 41%;
-    width: 190px;
-
-    position: absolute;
-    display: block;
-    z-index: 90000;
-
-    text-align: right;
-
-
-    h1{
-      font-size: 18px !important;
-      font-weight: 600 !important;
-      display: block;
-      margin-left: -15%;
-      width: 90%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: -5%;
-      color: #84817a;
-    }
-
-
-    h2{
-      font-size: 12px !important;
-      font-weight: 600 !important;
-      text-align: right !important;
-      display: block;
-      margin-left: -30%;
-      width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: -3%;
-    }
-
-
-    h3{
-      font-size: 12px !important;
-      font-weight: 600 !important;
-      display: block;
-      margin-left: -30%;
-      width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-
-      color: #aaa69d;
-    }
-
-  }
-
-
-  .infoSect{
-    text-align: left;
-    padding: 5%;
-
-
-    h1{
-      font-size: 21px !important;
-    }
-
-    h2{
-      font-size: 16px !important;
-      text-align: center;
-      margin-top: -10%;
-    }
-
-    .infoBack{
-      float: right;
-      font-size: 21px;
-
-      color: #aaa69d;
-    }
-  }
-}
-
-.ruleMode{
+.speciesSelectedMode{
 
   h1{
     text-align: center;
-    margin-top: 5%;
+    margin-top: 10%;
     color: #7dbbe2;
   }
 
   .backArrow{
     margin-left: 7%;
     font-size: 26px;
-    margin-top: 5%;
+    margin-top: 10%;
     color: #D1E7F5;
   }
 }
+
+.koiLogo{
+  width: 60%;
+
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  display: block;
+  margin-top: 50%;
+}
+
+.header-ios ion-toolbar:last-child {
+    --border-width: 0 0 0px !important;
+}
+
+.theResults{
+  padding: 10%;
+  padding-top: 0%;
+  padding-bottom: 0%;
+}
+
+.theResults:last-child{
+  padding-bottom: 10%;
+}
+
+.speciesBrick{
+  width: 100%;
+  height: 320px;
+  background: #F0F5FB;
+  padding: 5%;
+  margin-top: 10%;
+  text-align: left;
+  color: black;
+  border-radius: 3px;
+
+  img{
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background: #fff;
+    box-shadow: 0 0 10px #d3d3d3;
+    padding: 5%;
+    border-radius: 10px;
+  }
+
+  h2{
+    white-space: nowrap;
+    font-size: 18px;
+    font-weight: 900;
+    color: #57637C;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    font-family: 'Crimson Text', serif !important;
+    text-transform: capitalize;
+  }
+
+  h3{
+    text-align: center;
+    margin-top: -1%;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 95%;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    padding-left: 5%;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    color: #ACAFBA;
+    text-transform: capitalize;
+  }
+
+  h3 b{
+    text-decoration: underline;
+    color: #3875F1;
+  }
+}
+
+.loadingSpinner{
+  text-align: center;
+  width: 100%;
+  font-size: 21px;
+  margin-top: 50%;
+
+  *{
+    stroke: #F2E9E4 !important;
+    fill: #C9ADA7 !important;
+  }
+
+
+}
+
+.ourBox{
+  //background: linear-gradient(-10deg, #1dd1a1, #10ac84) !important;
+}
+
+
+
+
+// AUCTION SHIT
+//
+//
+//  div{
+//   transition: all 0.5s ease;
+// }
+//
+// h1{
+//   font-weight: 400;
+//   font-size: 34px !important;
+//   padding-bottom: 10%;
+//   text-align: center;
+//   font-family: 'Crimson Text', serif !important;
+//   color: #84817a;
+// }
+//
+// h2{
+//   font-weight: 600;
+//   font-size: 18px !important;
+//   color: #d1ccc0;
+//
+//   margin-top: 15%;
+//   padding-bottom: 0%;
+//
+//   text-align: left;
+//   font-family: 'Crimson Text', serif !important;
+// }
+//
+// p{
+//   text-align: center;
+// }
+//
+// .paddingSpace{
+//     padding: 10% !important;
+//     background: #FEFFFF;
+//     font-family: 'Crimson Text', serif !important;
+// }
+//
+// .rules{
+//   width: 100%;
+//   height: 50px;
+//   color: #fff;
+//   font-size: 16px;
+//   padding-top: 3%;
+//   font-weight: 900;
+//   text-transform: uppercase;
+//   background: linear-gradient(#78CBE5, #ABDEE0);
+// }
+//
+// .auctionCard{
+//   width: 100%;
+//   height: 250px;
+//   background: #fff;
+//   box-shadow: 0px 0px 10px #e8e8e8;
+//   margin-top: 10%;
+//   border-radius: 5px;
+//
+//
+//   .backImg{
+//     background: #f7f1e3;
+//     width: 100%;
+//     height: 100%;
+//     display: block;
+//
+//     object-fit: contain;
+//   }
+//
+//   .whiteTriangle{
+//     // background: #fff;
+//     display: block;
+//     width: 0;
+//     height: 0;
+//     border-style: solid;
+//     border-width: 0 0 100px 300px;
+//     border-color: transparent transparent #fff transparent;
+//
+//     margin-top: 40%;
+//
+//     z-index: 9000;
+//     position: absolute;
+//
+//     transition: all 2s ease;
+//
+//
+//   }
+//
+//
+//   .arrowContainer{
+//     display: block;
+//     width: 80%;
+//     padding: 5%;
+//
+//     position: absolute;
+//
+//     .arrow{
+//       float: left;
+//       font-size: 21px;
+//       color: #fff;
+//       text-shadow: 1px 1px black !important;
+//     }
+//
+//     .rightArrow{
+//       float: right;
+//       font-size: 21px;
+//     }
+//   }
+//
+//   .littleInfo{
+//     margin-top: 45%;
+//     margin-left: 41%;
+//     width: 190px;
+//
+//     position: absolute;
+//     display: block;
+//     z-index: 90000;
+//
+//     text-align: right;
+//
+//
+//     h1{
+//       font-size: 18px !important;
+//       font-weight: 600 !important;
+//       display: block;
+//       margin-left: -15%;
+//       width: 90%;
+//       white-space: nowrap;
+//       overflow: hidden;
+//       text-overflow: ellipsis;
+//       margin-top: -5%;
+//       color: #84817a;
+//     }
+//
+//
+//     h2{
+//       font-size: 12px !important;
+//       font-weight: 600 !important;
+//       text-align: right !important;
+//       display: block;
+//       margin-left: -30%;
+//       width: 100%;
+//       white-space: nowrap;
+//       overflow: hidden;
+//       text-overflow: ellipsis;
+//       margin-top: -3%;
+//     }
+//
+//
+//     h3{
+//       font-size: 12px !important;
+//       font-weight: 600 !important;
+//       display: block;
+//       margin-left: -30%;
+//       width: 100%;
+//       white-space: nowrap;
+//       overflow: hidden;
+//       text-overflow: ellipsis;
+//
+//       color: #aaa69d;
+//     }
+//
+//   }
+//
+//
+//   .infoSect{
+//     text-align: left;
+//     padding: 5%;
+//
+//
+//     h1{
+//       font-size: 21px !important;
+//     }
+//
+//     h2{
+//       font-size: 16px !important;
+//       text-align: center;
+//       margin-top: -10%;
+//     }
+//
+//     .infoBack{
+//       float: right;
+//       font-size: 21px;
+//
+//       color: #aaa69d;
+//     }
+//   }
+// }
+//
+// .ruleMode{
+//
+//   h1{
+//     text-align: center;
+//     margin-top: 5%;
+//     color: #7dbbe2;
+//   }
+//
+//   .backArrow{
+//     margin-left: 7%;
+//     font-size: 26px;
+//     margin-top: 5%;
+//     color: #D1E7F5;
+//   }
+// }
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//

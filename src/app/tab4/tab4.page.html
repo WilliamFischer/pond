@@ -1,4 +1,53 @@
 
+<ion-header>
+  <ion-toolbar>
+    <ion-searchbar placeholder="Search Common or Scientific Name..." value="{{searchQuery}}" (change)="checkAPI($event, false)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="blueBack">
+
+  <div *ngIf="!speciesSelected">
+
+    <div *ngIf="searchQuery.length <= 2">
+      <img src="../assets/plant.png" class="koiLogo animated pulse infinite"/>
+    </div>
+
+    <div  class="loadingSpinner" *ngIf="!doneLoading && searchQuery.length >= 2 && plantSpecies.length == 0">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <label class="nothingFoundTxt" *ngIf="doneLoading && searchQuery.length > 2 && plantSpecies.length < 1"><b>No results returned.</b> <br  /><br /> Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.</label>
+
+    <div *ngIf="plantSpecies.length >= 1" class="theResults">
+      <div class="topTitle">USDA Database</div>
+      <div class="speciesBrick ourBox animated bounceInLeft" *ngFor="let plant of plantSpecies">
+        <img (click)="selectSpecies(plant, '')" *ngIf="plant.img" src="https://plants.sc.egov.usda.gov/gallery/standard/{{plant.img}}" />
+        <img (click)="selectSpecies(plant, '')" *ngIf="!plant.img" src="../assets/noImg.png" />
+        <h2 *ngIf="plant.Common_Name">{{plant.Common_Name}}</h2>
+        <h2 *ngIf="!plant.Common_Name">The {{plant.Species}}</h2>
+        <h3><b (click)="showGenus(plant.Genus)"> {{plant.Genus}}</b><i> {{plant.Species}}</i></h3>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div *ngIf="speciesSelected" class="speciesSelectedMode">
+
+     <ion-icon name="arrow-back" (click)="unSelectSpecies()" class="backArrow"></ion-icon>
+
+    <h1>{{species.name}}</h1>
+
+  </div>
+
+</ion-content>
+
+
+
+<!--
+THE AUCTION
+
 
 <ion-content>
 
@@ -124,4 +173,4 @@
   </div>
 
 
-</ion-content>
+</ion-content> -->

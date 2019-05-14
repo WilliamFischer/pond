@@ -35,7 +35,7 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'market',
+        path: 'plants',
         children: [
           {
             path: '',
@@ -58,11 +58,6 @@ const routes: Routes = [
         pathMatch: 'full'
       }
     ]
-  },
-  {
-    path: '',
-    redirectTo: '/tabs/tanks',
-    pathMatch: 'full'
   }
 ];
 

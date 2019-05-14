@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 
+import { AngularFirestore } from 'angularfire2/firestore';
+
+import {HttpClient} from "@angular/common/http";
+import { map } from 'rxjs/operators';
+
 @Component({
   selector: 'app-tab4',
   templateUrl: 'tab4.page.html',
@@ -7,40 +12,100 @@ import { Component } from '@angular/core';
 })
 export class Tab4Page {
 
-  imgMode:boolean = false;
-  infoMode:boolean = false;
-  rules: boolean;
+  speciesSelected: boolean;
+  doneLoading: boolean;
+  searchQuery: string = '';
+  plantSpecies: any = [];
 
-  // Image slider simple master switch
-  triggrImgSlider(){
-    if(this.imgMode){
-      this.imgMode = false;
+  constructor(
+    private http:HttpClient,
+    public fireStore: AngularFirestore){
+
+  }
+
+  ngOnInit() {}
+
+  checkAPI($event, autoQuery){
+    if(autoQuery.length >= 1){
+      var searchQuery = autoQuery;
     }else{
-      this.imgMode = true;
+      var searchQuery = $event.srcElement.value;
     }
-  }
 
-  // Rule mode simple master switch
-  ruleMode(){
-    if(this.rules){
-      this.rules = false;
+    this.searchQuery = searchQuery;
+    this.speciesSelected = false;
+    this.plantSpecies = [];
+
+    if(searchQuery.length > 2){
+      console.log('Running API for ' + searchQuery + '...');
+
+      this.plantSearch(searchQuery);
+
     }else{
-      this.rules = true;
+      console.log('Query length is too short.')
+      this.doneLoading = true;
     }
 
-  }
-
-  triggrInfoMode(){
-    this.infoMode = true;
-  }
-
-  untriggrInfoMode(){
-    this.infoMode = false;
-    this.imgMode = false;
-  }
-
-  doSearch(){
 
   }
 
+  displayPlantBase(result, searchQuery){
+    var loopValue = result['data']
+
+    console.log(loopValue.length + ' PLANT SPECIES DETECTED ');
+    console.log(loopValue)
+
+    loopValue.forEach(eachObj => {
+
+      console.log(eachObj)
+
+      if(eachObj['Symbol']){
+        var imgAddress = eachObj['Symbol'] + '_001_shp.jpg'
+        this.plantSpecies.push(eachObj);
+      }
+
+
+    });
+
+  }
+
+
+  plantSearch(searchQuery){
+
+    // TREFLE APP
+    //
+    // this.http.get('http://trefle.io/api/plants?q=' + searchquery).subscribe(
+    // result => {
+    //   console.log(result)
+    // });
+    //
+
+    this.http.get('https://plantsdb.xyz/search?Common_Name=' + searchQuery + '&limit=100').subscribe(
+    result => {
+      this.displayPlantBase(result, searchQuery)
+    },
+    error => {
+      this.http.get('https://plantsdb.xyz/search?Genus=' + searchQuery + '&limit=100').subscribe(
+      result => {
+        this.displayPlantBase(result, searchQuery)
+      },
+      error => {
+        this.http.get('https://plantsdb.xyz/search?Species=' + searchQuery + '&limit=100').subscribe(
+        result => {
+          this.displayPlantBase(result, searchQuery)
+        },
+        error => {
+          this.http.get('https://plantsdb.xyz/search?Family=' + searchQuery + '&limit=100').subscribe(
+          result => {
+            this.displayPlantBase(result, searchQuery)
+          },
+          error => {
+            console.log("ALL MATCHES FAILED ON NAME, SPECIES, GENUS & FAMILY");
+            this.plantSpecies = [];
+            this.doneLoading = true;
+          });
+        });
+      });
+    });
+  }
 }
