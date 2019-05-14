@@ -55,8 +55,8 @@
           </h3>
         </div>
       </div>
-      <label class="nextPageTxt" (click)="nextPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label>
       <label class="nextPageTxt" (click)="nextPage()" *ngIf="fbSpecies.length >= 10"> -- NEXT PAGE --</label>
+      <label class="nextPageTxt prev" (click)="nextPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label>
     </div>
 
     <div *ngIf="ourFish.length >= 1" class="theResults">

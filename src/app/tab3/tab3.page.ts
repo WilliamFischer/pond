@@ -34,6 +34,8 @@ export class Tab3Page {
   }
 
   ngOnInit() {
+    console.clear();
+    
     var slides = document.querySelector('ion-slides');
 
     if(slides){
@@ -148,7 +150,10 @@ export class Tab3Page {
 
     loopValue.forEach(eachObj => {
 
+
       if(this.fbSpecies.length <= 10){
+        this.getGoogleImages(eachObj);
+      }else if(this.fbSpecies.length <= 10){
         this.getGoogleImages(eachObj);
       }else{
         console.log("TOO MANY SPECIES TO RUN GOOGLE IMAGES")
