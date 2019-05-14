@@ -35,6 +35,11 @@ export class AppComponent {
         if(!auth){
           this.router.navigateByUrl('/login');
         }else{
+          var currentUser = localStorage.getItem('auth');
+          if(!currentUser){
+            console.log('setting to localStorage')
+            localStorage.setItem('auth', this.afAuth.auth.currentUser.uid);
+          }
           this.router.navigateByUrl('/tabs');
         }
       });
