@@ -18,6 +18,7 @@ export class Tab2Page {
   defaultMode: boolean = true;
   addTankMode: boolean = false;
   tankDetailMode: boolean = false;
+  addChemistryMode: boolean = false;
 
   tank = {
     name: '',
@@ -27,10 +28,20 @@ export class Tab2Page {
     substrate: ''
   };
 
+  chemistry = {
+    ph: 0.0,
+    ammonia: 0.0,
+    nitrite: 0.0,
+    nitrate: 0.0
+  }
+
   tanks: any;
   doneLoadingTanks = false;
 
   activeTankData: object = null;
+
+  lastChemistrySessionDate: Date = null;
+  lastChemistrySession: object = null;
 
   constructor(
     public modalCtrl : ModalController,
@@ -59,6 +70,55 @@ export class Tab2Page {
     }
   }
 
+  openNewChemistrySession() {
+    this.tankDetailMode = false;
+    this.defaultMode = false;
+    this.addTankMode = false;
+    this.addChemistryMode = true;
+  }
+
+  // Submit tank to database
+  confirmChemistryForm(){
+    this.addChemistryMode = false;
+    this.tankDetailMode = true;
+
+    console.log("success");
+
+    let id = this.fireStore.createId();
+
+    let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/chemistry/' + id);
+
+    tankAddress.set({
+      date: new Date(),
+      ph: this.chemistry.ph,
+      ammonia: this.chemistry.ammonia,
+      nitrite: this.chemistry.nitrite,
+      nitrate: this.chemistry.nitrate
+    });
+
+    alert('New Chemistry Session Added')
+  }
+
+  initChemistry() {
+    if(this.activeTankData) {
+      this.fireStore.collection('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'] + '/chemistry')
+      .ref.orderBy("date", "desc").limit(1)
+      .get().then(data => {
+        if(data.docs.length > 0){
+          this.lastChemistrySession = data.docs[0].data();
+          let secs = +this.lastChemistrySession["date"]["seconds"];
+          console.log(secs);
+          this.lastChemistrySessionDate = new Date(secs * 1000);
+          console.log(this.lastChemistrySessionDate);
+        } else {
+          this.lastChemistrySession = null;
+          console.log("No chemistry sessions located");
+          return;
+        }
+      })
+    }
+  }
+
   initTankDetail(tankname){
     this.tankDetailMode = true;
     this.fireStore.doc('Users/' + this.currentUser + '/tanks/' + tankname)
@@ -72,6 +132,9 @@ export class Tab2Page {
         this.tankDetailMode = true;
         this.defaultMode = false;
         this.addTankMode = false;
+        this.addChemistryMode = false;
+
+        this.initChemistry();
 
       } else {
         console.log("Cannot find tank data");
@@ -83,11 +146,13 @@ export class Tab2Page {
     this.addTankMode = true;
     this.defaultMode = false;
     this.tankDetailMode = false;
+    this.addChemistryMode = false;
   }
 
   // Submit tank to database
   confirmForm(){
     this.addTankMode = false;
+    this.defaultMode = true;
     console.log(this.tank);
 
     let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name);
