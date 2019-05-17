@@ -1,7 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonContent } from '@ionic/angular';
+import { IonContent, AlertController } from '@ionic/angular';
 
 import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 import {HttpClient} from "@angular/common/http";
 import { map } from 'rxjs/operators';
@@ -18,18 +19,22 @@ export class Tab3Page {
 
   speciesSelected: boolean;
   doneLoading: boolean;
+  showSelectTank: boolean;
   searchQuery: string = '';
   species : any;
   fbSpecies: any = [];
   ourFish: any = [];
   relatedSpecies: any = [];
+  tanks: any = [];
+  toAddToTankSpecies: any;
   counter: number = 0;
   minSpeciesReturn = 0;
   maxSpeciesReturn = 10;
 
   constructor(
     private http:HttpClient,
-    public fireStore: AngularFirestore){
+    public fireStore: AngularFirestore,
+    public afAuth: AngularFireAuth){
 
   }
 
@@ -165,12 +170,11 @@ export class Tab3Page {
 
     var lowerQuery = searchQuery.toLowerCase();
     if(lowerQuery){
-      this.fireStore.collection('Species').snapshotChanges().subscribe(
+      this.fireStore.collection('Species').valueChanges().subscribe(
       values => {
-
         values.forEach(eachObj => {
-          if(lowerQuery == eachObj['species'] || lowerQuery ==  eachObj['genus'] || lowerQuery ==  eachObj['name']){
-            console.log(eachObj['name'] + " EXITS IN THE DB!! ")
+          if(lowerQuery ==  eachObj['name']){
+            console.log(eachObj['name'] + " EXISTS IN THE DB!! ")
             this.ourFish.push(eachObj);
           }
         });
@@ -309,6 +313,29 @@ export class Tab3Page {
     console.log("SPECIES ADDED TO SYSTEM")
     this.speciesSelected = true;
 
+
+
+    // SAVE PHOTOS TO DATABSE
+    var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/0");
+    speciesPicArray.set({
+      url: fish.Pic[0]
+    })
+
+    var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/1");
+    speciesPicArray.set({
+      url: fish.Pic[1]
+    })
+
+    var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/2");
+    speciesPicArray.set({
+      url: fish.Pic[2]
+    })
+
+    var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/3");
+    speciesPicArray.set({
+      url: fish.Pic[3]
+    })
+
   }
 
   plantSearch(searchquery){
@@ -349,7 +376,29 @@ export class Tab3Page {
       });
     }
 
-    addTankTrigger(){
-      
+    addTankTrigger(fish){
+      this.showSelectTank = true;
+      console.log('Showing tank select...')
+      this.toAddToTankSpecies = fish;
+
+      this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
+      values =>{
+        this.tanks = values;
+      });
+
+    }
+
+    addFishToTank(tank){
+
+      let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['name'] + '/species/' + this.toAddToTankSpecies['SpecCode']);
+
+      tankAddress.set({
+        dateSet: new Date(),
+        name: this.toAddToTankSpecies['FBname'],
+        specCode: this.toAddToTankSpecies['SpecCode']
+      });
+
+      alert("Species added to tank!")
+      this.showSelectTank = false;
     }
 }

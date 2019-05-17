@@ -23,6 +23,7 @@
   <div style="padding-top: 3em" *ngIf="tankDetailMode && activeTankData">
     <h1 style="padding-bottom: 0;">{{activeTankData.name}}</h1>
     <p (click)="deleteTank()" style="width: 100%; margin: 0 auto; text-align: center; padding-bottom: 2.5em">- Delete Tank -</p>
+    <p (click)="tankUpload()" style="width: 100%; margin: 0 auto; text-align: center; padding-bottom: 2.5em">- Upload Tank Image -</p>
 
     <ion-list *ngIf="lastChemistrySessionDate" class="speciesList">
       <ion-list-header>

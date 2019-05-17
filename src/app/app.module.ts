@@ -9,6 +9,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
+import { Camera } from '@ionic-native/camera/ngx';
 
 import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
 import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
@@ -66,6 +67,7 @@ import { AuthProvider } from './providers/auth/auth';
     AuthProvider,
     Geolocation,
     Facebook,
+    Camera,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

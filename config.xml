@@ -96,4 +96,5 @@
         <variable name="APP_NAME" value="POND" />
     </plugin>
     <engine name="ios" spec="4.5.5" />
+    <plugin name="cordova-plugin-camera" spec="4.0.3" />
 </widget>

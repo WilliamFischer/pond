@@ -6,6 +6,18 @@
   </ion-toolbar>
 </ion-header>
 
+<div class="selectTankPopup" *ngIf="showSelectTank">
+  <h1>Add {{toAddToTankSpecies.FBname}} to Tank?</h1>
+
+  <ion-list>
+    <ion-item *ngFor="let tank of tanks">
+      <ion-label (click)="addFishToTank(tank)">{{tank.name}}</ion-label>
+    </ion-item>
+  </ion-list>
+</div>
+
+<div class="backgroundDimmer" *ngIf="showSelectTank"></div>
+
 <ion-content class="blueBack" id="coreScroll">
 
   <div *ngIf="!speciesSelected">
@@ -20,9 +32,28 @@
 
     <label class="nothingFoundTxt" *ngIf="doneLoading && searchQuery.length > 2 && fbSpecies.length < 1 && ourFish.length < 1 && relatedSpecies.length < 1"><b>No results returned.</b> <br  /><br /> Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.</label>
 
+    <div *ngIf="ourFish.length >= 1" class="theResults">
+      <div class="topTitle">Our Database</div>
 
+      <div class="speciesBrick ourBox animated bounceInLeft" *ngFor="let fish of ourFish">
+
+        <!-- <ion-slides pager="false" *ngIf="fish.Pic[0].url" (click)="selectSpecies(fish, '')">
+          <ion-slide class="imageBox" *ngFor="let pic of fish.Pic">
+            <img src="{{pic.url}}" />
+          </ion-slide>
+        </ion-slides> -->
+
+        <img (click)="selectSpecies(fish, '')" *ngIf="fish.fishBaseImg" src="https://www.fishbase.de/images/species/{{fish.fishBaseImg}}" />
+        <img (click)="selectSpecies(fish, '')" *ngIf="!fish.fishBaseImg" src="../assets/noImg.png" />
+        <h2 >{{fish.name}}</h2>
+        <h3><b (click)="showGenus(fish.genus)"> {{fish.genus}}</b><i> {{fish.species}}</i></h3>
+
+        <ion-icon class="addtoTankIcon" (click)="addTankTrigger(fish)" name="add"></ion-icon>
+      </div>
+    </div>
 
     <div *ngIf="fbSpecies.length >= 1" class="theResults">
+
       <div class="topTitle"><label *ngIf="fbSpecies.length >= 10">{{maxSpeciesReturn}}/</label>{{fbSpecies.length}} Species Found from Fishbase</div>
 
       <div *ngFor="let fish of fbSpecies">
@@ -54,22 +85,10 @@
             Max Length - {{fish.Length}}cm
           </h3>
 
-          <ion-icon class="addtoTankIcon" (click)="addTankTrigger()" name="add"></ion-icon>
-
         </div>
       </div>
       <label class="nextPageTxt" (click)="nextPage()" *ngIf="fbSpecies.length >= 10"> -- NEXT PAGE --</label>
       <label class="nextPageTxt prev" (click)="previousPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label>
-    </div>
-
-    <div *ngIf="ourFish.length >= 1" class="theResults">
-      <div class="topTitle">Our Database</div>
-      <div class="speciesBrick ourBox animated bounceInLeft" *ngFor="let fish of ourFish">
-        <img (click)="selectSpecies(fish, '')" *ngIf="fish.fishBaseImg" src="https://www.fishbase.de/images/species/{{fish.fishBaseImg}}" />
-        <img (click)="selectSpecies(fish, '')" *ngIf="!fish.fishBaseImg" src="../assets/noImg.png" />
-        <h2 >{{fish.name}}</h2>
-        <h3><b (click)="showGenus(fish.genus)"> {{fish.genus}}</b><i> {{fish.species}}</i></h3>
-      </div>
     </div>
 
     <div *ngIf="relatedSpecies.length >= 1" class="theResults">

@@ -5,6 +5,11 @@ import { Router } from '@angular/router';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 
+// Native
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+
+import * as firebase from 'firebase/app';
+
 import { SelectTankSubstratePage } from '../modal/select-tank-substrate/select-tank-substrate.page';
 
 @Component({
@@ -49,7 +54,8 @@ export class Tab2Page {
     public modalCtrl : ModalController,
     public fireStore: AngularFirestore,
     public afAuth: AngularFireAuth,
-    private router: Router
+    private router: Router,
+    private camera: Camera
   ) {}
 
   ngOnInit() {
@@ -268,6 +274,59 @@ export class Tab2Page {
     this.afAuth.auth.signOut().then(() => {
        this.router.navigateByUrl('/login');
     });
+  }
+
+  tankUpload(){
+    const options: CameraOptions = {
+       quality: 30,
+       destinationType: this.camera.DestinationType.DATA_URL,
+       encodingType: this.camera.EncodingType.JPEG,
+       mediaType: this.camera.MediaType.PICTURE,
+       sourceType:this.camera.PictureSourceType.PHOTOLIBRARY,
+       targetWidth:1080,
+       targetHeight:1080,
+       allowEdit:true
+    }
+
+
+   this.camera.getPicture(options).then((imageData) => {
+    // imageData is a base64 encoded string
+    let base64Image = 'data:image/jpeg;base64,' + imageData;
+    console.log('base64Image')
+    this.addPicture(base64Image)
+   }, (err) => {
+    // Handle error
+    console.log(err)
+   });
+  }
+
+  addPicture(base64Image:string){
+    var filePath = "";
+    if(base64Image){
+
+      console.log("Uploading image " + " to " + filePath + "...")
+      var storageRef = firebase.storage().ref();
+      var ref = storageRef.child(filePath)
+      console.log('made it here')
+      try{
+         ref.putString(base64Image, firebase.storage.StringFormat.DATA_URL).then(res1=>{
+            console.log("Uploaded")
+            console.log(res1);
+            res1.ref.getDownloadURL().then(url=>{
+               if(url){
+                  console.log('Got url')
+                 console.log(url)
+               }
+              console.log('image done @ ' + url);
+            })
+         });
+      }catch(e){
+         console.log(e)
+      }
+
+    }else{
+      console.log("NO FILE UPLOADED")
+    }
   }
 
 }
