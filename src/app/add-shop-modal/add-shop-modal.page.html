@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Add a Store</ion-title>
+
+    <ion-buttons slot="end" class="thickMenuBtns" (click)="cancel()">
+      CANCEL
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <form class="formPadding" (ngSubmit)="saveShop()">
+    <ion-list>
+
+      <ion-item>
+        <ion-label position="floating">Store Name</ion-label>
+        <ion-input type="text" [(ngModel)]="shop.name" name="name" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Store Image URL</ion-label>
+        <ion-input type="url" [(ngModel)]="shop.image" name="image" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Store Address</ion-label>
+        <ion-input type="text" [(ngModel)]="shop.address" name="address" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Store Latitude</ion-label>
+        <ion-input type="text" [(ngModel)]="shop.latitude" name="latitude" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Store Longitude</ion-label>
+        <ion-input type="text" [(ngModel)]="shop.longitude" name="longitude" required></ion-input>
+      </ion-item>
+
+
+      <button class="confirmBtn" type="submit">Confirm</button>
+
+    </ion-list>
+  </form>
+
+</ion-content>

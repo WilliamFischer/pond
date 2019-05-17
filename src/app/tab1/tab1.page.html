@@ -1,5 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start" class="thickMenuBtnsLeft" (click)="addStore()" *ngIf="!newsMode">
+      NEW SHOP
+    </ion-buttons>
+
+    <ion-title class="pondLogoHome">POND</ion-title>
+
+    <ion-buttons slot="end" class="thickMenuBtns" (click)="activateNewsMode()"   *ngIf="!newsMode">
+      RECENT NEWS
+    </ion-buttons>
+
+    <ion-buttons slot="end" class="thickMenuBtns" (click)="deactivateNewsMode()"   *ngIf="newsMode">
+      SHOPS NEAR YOU
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
 <ion-content>
-  <div class="paddingSpace">
+
+  <div class="paddingSpace" *ngIf="newsMode">
     <h1>Our Latest News</h1>
     <h2>{{today | date:'medium'}}</h2>
 
@@ -21,4 +42,11 @@
 
   </div>
 
+  <div *ngIf="!newsMode">
+
+    <h2 class="errorMapTxt" *ngIf="mapFail">There is an issue in getting your location...</h2>
+
+    <div #Map class="map"></div>
+
+  </div>
 </ion-content>

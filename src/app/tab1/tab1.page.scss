@@ -56,3 +56,42 @@ p{
   max-height: 85px;
   overflow: scroll;
 }
+
+.errorMapTxt{
+  text-align: center;
+  margin-top: 60%;
+}
+
+.thickMenuBtns{
+  font-size: 12px;
+  font-family: 'Crimson Text', serif !important;
+  padding-right: 5%;
+  color: #D1E7F5;
+  font-weight: 800;
+}
+
+.thickMenuBtnsLeft{
+  font-size: 12px;
+  font-family: 'Crimson Text', serif !important;
+  padding-left: 5%;
+  color: #D1E7F5;
+  font-weight: 800;
+}
+
+.pondLogoHome{
+  font-size: 21px;
+  font-family: 'Crimson Text', serif !important;
+  color: #7dbbe2;
+  letter-spacing: 2px;
+  margin-top: -1%;
+}
+
+ion-toolbar{
+  border: none !important;
+}
+
+.map{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}

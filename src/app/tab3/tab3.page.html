@@ -26,7 +26,7 @@
       <div class="topTitle"><label *ngIf="fbSpecies.length >= 10">{{maxSpeciesReturn}}/</label>{{fbSpecies.length}} Species Found from Fishbase</div>
 
       <div *ngFor="let fish of fbSpecies">
-        <div class="speciesBrick animated bounceInLeft"  *ngIf="fish.id > minSpeciesReturn && fish.id < maxSpeciesReturn">
+        <div class="speciesBrick animated bounceInLeft"  *ngIf="fish.id >= minSpeciesReturn && fish.id <= maxSpeciesReturn">
          <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, '')">
            <ion-slide class="imageBox">
              <img *ngIf="fish.Pic[0]" src="{{fish.Pic[0]}}" />
@@ -53,10 +53,13 @@
             <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}} &bull;</label>
             Max Length - {{fish.Length}}cm
           </h3>
+
+          <ion-icon class="addtoTankIcon" (click)="addTankTrigger()" name="add"></ion-icon>
+
         </div>
       </div>
       <label class="nextPageTxt" (click)="nextPage()" *ngIf="fbSpecies.length >= 10"> -- NEXT PAGE --</label>
-      <label class="nextPageTxt prev" (click)="nextPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label>
+      <label class="nextPageTxt prev" (click)="previousPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label>
     </div>
 
     <div *ngIf="ourFish.length >= 1" class="theResults">
@@ -81,33 +84,20 @@
       </div>
     </div>
 
-
-
-    <!-- <ion-list class="speciesList">
-      <ion-list-header>
-        <ion-label>Core Tank <a class="lilEdit" href="#">edit</a></ion-label>
-      </ion-list-header>
-      <ion-item (click)="selectSpecies('Ghost Knife')">1x &nbsp; <b> Ghost Knife </b> &nbsp; <i>(Apteronotus Albifrons)</i></ion-item>
-      <ion-item (click)="selectSpecies('Butterflyfish')">1x &nbsp; <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
-      <ion-item (click)="selectSpecies('Pinoy Blue Angelfish')">2x &nbsp; <b> Pinoy Blue Angelfish </b> &nbsp; <i>(Pterophyllum)</i></ion-item>
-      <ion-item (click)="selectSpecies('Kuhli Loach')">4x &nbsp; <b> Kuhli Loach </b> &nbsp; <i>(Actinopterygii)</i></ion-item>
-      <ion-item (click)="selectSpecies('Otocinclus')">1x &nbsp; <b> Otocinclus </b> &nbsp; <i>(Hypoptopomatinae)</i></ion-item>
-
-      <br />
-
-      <ion-list-header>
-        <ion-label>Shrimp Ecosystem <a class="lilEdit" href="#">edit</a></ion-label>
-      </ion-list-header>
-      <ion-item (click)="selectSpecies('Orange Rili Shrimp')">32x &nbsp; <b> Orange Rili Shrimp </b> &nbsp; <i>(Neocaridina)</i></ion-item>
-    </ion-list> -->
   </div>
 
   <div *ngIf="speciesSelected" class="speciesSelectedMode">
 
      <ion-icon name="arrow-back" (click)="unSelectSpecies()" class="backArrow"></ion-icon>
 
-    <h1>{{species.name}}</h1>
 
+    <div class="imagesBrick">
+
+    </div>
+
+    <div class="informationBrick">
+      <h1>{{species.name}}</h1>
+    </div>
   </div>
 
 </ion-content>

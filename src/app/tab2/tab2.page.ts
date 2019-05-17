@@ -3,7 +3,6 @@ import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 import { AngularFirestore } from 'angularfire2/firestore';
-
 import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
@@ -51,6 +50,7 @@ export class Tab2Page {
   ) {}
 
   ngOnInit() {
+
     console.log("Loading Tanks ...");
 
     // Pull Tanks from Database

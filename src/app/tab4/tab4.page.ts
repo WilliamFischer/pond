@@ -74,38 +74,50 @@ export class Tab4Page {
 
     // TREFLE APP
     //
-    // this.http.get('http://trefle.io/api/plants?q=' + searchquery).subscribe(
+    //
+
+    // let headers = new ();
+    // headers.append('Content-Type', 'application/json');
+    // headers.append('authentication', 'QWZRSUQ0a0pHRDJ5djE1Q0crSFpEUT09');
+    //
+    // let options = new RequestOptions({ headers: headers });
+    //
+    // this.http.get('http://trefle.io/api/plants?q=' + searchQuery, {
+    // headers: new Headers({
+    //   'Authorization': 'my-auth-token',
+    //   'x-header': 'x-value'
+    // }).subscribe(
     // result => {
     //   console.log(result)
     // });
-    //
 
-    this.http.get('https://plantsdb.xyz/search?Common_Name=' + searchQuery + '&limit=100').subscribe(
-    result => {
-      this.displayPlantBase(result, searchQuery)
-    },
-    error => {
-      this.http.get('https://plantsdb.xyz/search?Genus=' + searchQuery + '&limit=100').subscribe(
-      result => {
-        this.displayPlantBase(result, searchQuery)
-      },
-      error => {
-        this.http.get('https://plantsdb.xyz/search?Species=' + searchQuery + '&limit=100').subscribe(
-        result => {
-          this.displayPlantBase(result, searchQuery)
-        },
-        error => {
-          this.http.get('https://plantsdb.xyz/search?Family=' + searchQuery + '&limit=100').subscribe(
-          result => {
-            this.displayPlantBase(result, searchQuery)
-          },
-          error => {
-            console.log("ALL MATCHES FAILED ON NAME, SPECIES, GENUS & FAMILY");
-            this.plantSpecies = [];
-            this.doneLoading = true;
-          });
-        });
-      });
-    });
+
+    // this.http.get('https://plantsdb.xyz/search?Common_Name=' + searchQuery + '&limit=100').subscribe(
+    // result => {
+    //   this.displayPlantBase(result, searchQuery)
+    // },
+    // error => {
+    //   this.http.get('https://plantsdb.xyz/search?Genus=' + searchQuery + '&limit=100').subscribe(
+    //   result => {
+    //     this.displayPlantBase(result, searchQuery)
+    //   },
+    //   error => {
+    //     this.http.get('https://plantsdb.xyz/search?Species=' + searchQuery + '&limit=100').subscribe(
+    //     result => {
+    //       this.displayPlantBase(result, searchQuery)
+    //     },
+    //     error => {
+    //       this.http.get('https://plantsdb.xyz/search?Family=' + searchQuery + '&limit=100').subscribe(
+    //       result => {
+    //         this.displayPlantBase(result, searchQuery)
+    //       },
+    //       error => {
+    //         console.log("ALL MATCHES FAILED ON NAME, SPECIES, GENUS & FAMILY");
+    //         this.plantSpecies = [];
+    //         this.doneLoading = true;
+    //       });
+    //     });
+    //   });
+    // });
   }
 }

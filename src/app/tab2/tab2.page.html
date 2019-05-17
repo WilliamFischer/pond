@@ -25,7 +25,12 @@
     <ion-list *ngIf="lastChemistrySessionDate" class="speciesList">
       <ion-list-header>
 
-        <ion-label><ion-icon name="flask" slot="start"></ion-icon>Water Chemistry <br /> As of ~ {{ lastChemistrySessionDate | date:'fullDate' }} &nbsp; <a (click)="openNewChemistrySession()" class="newsession">+ new</a></ion-label>
+        <ion-label>
+          <ion-icon name="flask" slot="start"></ion-icon>
+          Water Chemistry <br /> As of ~ {{ lastChemistrySessionDate | date:'fullDate' }} &nbsp;
+          <label (click)="openNewChemistrySession()" class="newsession">+ new</label>
+        </ion-label>
+
         <!-- <ion-label>Tank Chemistry as of - {{  }} <a class="newsession" href="#">+ new</a></ion-label> -->
       </ion-list-header>
 
@@ -61,7 +66,7 @@
     <ion-list *ngIf="!lastChemistrySessionDate" class="speciesList">
       <ion-list-header>
         <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
-        <ion-label>Start measuring water chemistry <a class="newsession" href="#">+ new</a></ion-label>
+        <ion-label>Start measuring water chemistry <label (click)="openNewChemistrySession()" class="newsession">+ new</label></ion-label>
         <!-- <ion-label>Tank Chemistry as of - {{  }} <a class="newsession" href="#">+ new</a></ion-label> -->
       </ion-list-header>
 

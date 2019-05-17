@@ -35,7 +35,7 @@ export class Tab3Page {
 
   ngOnInit() {
     console.clear();
-    
+
     var slides = document.querySelector('ion-slides');
 
     if(slides){
@@ -48,28 +48,37 @@ export class Tab3Page {
   }
 
   checkAPI($event, autoQuery){
-    if(autoQuery.length >= 1){
-      var searchQuery = autoQuery;
+
+    if(!this.speciesSelected){
+      console.log('Running code... not in select species mode.');
+
+      if(autoQuery.length >= 1){
+        var searchQuery = autoQuery;
+      }else{
+        var searchQuery = $event.srcElement.value;
+      }
+
+      this.searchQuery = searchQuery;
+
+
+      this.speciesSelected = false;
+
+      this.fbSpecies = [];
+      this.ourFish = [];
+      this.relatedSpecies = [];
+
+      if(searchQuery.length > 2){
+        console.log('Running API for ' + searchQuery + '...');
+
+        this.displayFirebase(searchQuery);
+
+        // this.checkFirebase(searchQuery);
+
+      }else{
+        console.log('Query length is too short.')
+      }
     }else{
-      var searchQuery = $event.srcElement.value;
-    }
-
-    this.searchQuery = searchQuery;
-    this.speciesSelected = false;
-
-    this.fbSpecies = [];
-    this.ourFish = [];
-    this.relatedSpecies = [];
-
-    if(searchQuery.length > 2){
-      console.log('Running API for ' + searchQuery + '...');
-
-      this.displayFirebase(searchQuery);
-
-      // this.checkFirebase(searchQuery);
-
-    }else{
-      console.log('Query length is too short.')
+      console.log('Not running code... in select species mode.');
     }
 
 
@@ -84,26 +93,38 @@ export class Tab3Page {
 
   // Access detail page and save selected species
   selectSpecies(fish, inDB){
+    console.clear();
 
     this.speciesSelected = true;
-
-    if(inDB){
-      console.log('Fish Exists');
-    }else{
-      console.log("NEW TO SYSTEM... ADDING")
-
-      this.addToDatabase(fish)
-    }
+    this.species = fish;
 
     this.fireStore.doc('Species/' + fish.SpecCode).valueChanges().subscribe(
     values => {
       if(values){
+        console.log('Fish Exists');
         console.log(values)
         this.species = values
+      }else{
+        console.log("NEW TO SYSTEM... ADDING")
+
+        this.addToDatabase(fish)
       }
     });
 
   }
+
+  // presentAlert() {
+  //   const alertController = document.querySelector('ion-alert-controller');
+  //   alertController.componentOnReady();
+  //
+  //   const alert = alertController.create({
+  //     header: 'Alert',
+  //     subHeader: 'Subtitle',
+  //     message: 'This is an alert message.',
+  //     buttons: ['OK']
+  //   });
+  //   return alert.present();
+  // }
 
   // Leave detail page and clear selected species
   unSelectSpecies(){
@@ -115,15 +136,36 @@ export class Tab3Page {
     this.maxSpeciesReturn = this.maxSpeciesReturn + 10;
     console.log("SHOWING RESULTS " + this.minSpeciesReturn + " TO " + this.maxSpeciesReturn);
 
+    var slicedSpecies = this.fbSpecies.slice(this.minSpeciesReturn, this.maxSpeciesReturn);
+
+    slicedSpecies.forEach(eachObj => {
+      this.getGoogleImages(eachObj);
+    });
+
     this.content.scrollToTop(400);
   }
+
+  previousPage(){
+    this.minSpeciesReturn = this.minSpeciesReturn - 10;
+    this.maxSpeciesReturn = this.maxSpeciesReturn - 10;
+    console.log("SHOWING RESULTS " + this.minSpeciesReturn + " TO " + this.maxSpeciesReturn);
+
+    var slicedSpecies = this.fbSpecies.slice(this.minSpeciesReturn, this.maxSpeciesReturn);
+
+    slicedSpecies.forEach(eachObj => {
+      this.getGoogleImages(eachObj);
+    });
+
+    this.content.scrollToTop(400);
+  }
+
 
   displayFirebase(searchQuery){
     console.log("### CHECKING OUR FIREBASE ###")
 
     var lowerQuery = searchQuery.toLowerCase();
     if(lowerQuery){
-      this.fireStore.collection('Species').valueChanges().subscribe(
+      this.fireStore.collection('Species').snapshotChanges().subscribe(
       values => {
 
         values.forEach(eachObj => {
@@ -149,7 +191,6 @@ export class Tab3Page {
     var arrayLength = 0;
 
     loopValue.forEach(eachObj => {
-
 
       if(this.fbSpecies.length <= 10){
         this.getGoogleImages(eachObj);
@@ -266,7 +307,7 @@ export class Tab3Page {
     })
 
     console.log("SPECIES ADDED TO SYSTEM")
-
+    this.speciesSelected = true;
 
   }
 

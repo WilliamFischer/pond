@@ -6,9 +6,11 @@ import {HttpClientModule} from '@angular/common/http';
 // Ionic Native
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
 
+import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
 
 import { LoadingController } from '@ionic/angular';
 
@@ -20,14 +22,18 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 
+import { FormsModule } from '@angular/forms';
+
 // Providers
 import { AuthProvider } from './providers/auth/auth';
 
 @NgModule({
   declarations: [
     AppComponent,
+    AddShopModalPage
   ],
   entryComponents: [
+    AddShopModalPage
   ],
   imports: [
     BrowserModule,
@@ -43,13 +49,15 @@ import { AuthProvider } from './providers/auth/auth';
     }),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [
     StatusBar,
     SplashScreen,
     LoadingController,
     AuthProvider,
+    Geolocation,
     Facebook,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
