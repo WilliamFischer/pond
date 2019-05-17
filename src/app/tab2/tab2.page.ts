@@ -24,7 +24,8 @@ export class Tab2Page {
     ph: 0,
     temp: 0,
     size: 0,
-    substrate: ''
+    substrate: '',
+    average_ph: 0
   };
 
   chemistry = {
@@ -99,6 +100,23 @@ export class Tab2Page {
     alert('New Chemistry Session Added')
   }
 
+  calculateAveragePH() {
+    var scope = this;
+    this.fireStore.collection('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'] + '/chemistry')
+    .valueChanges().forEach(data => {
+      let _total = 0;
+
+      for(var i = 0; i < data.length; i++){
+        let ph = data[i]["ph"];
+        _total += +ph;
+      }
+
+      let avg_ph = _total / data.length;
+      scope.activeTankData["average_ph"] = avg_ph;
+      console.log(scope.activeTankData);
+    });
+  }
+
   initChemistry() {
     if(this.activeTankData) {
       this.fireStore.collection('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'] + '/chemistry')
@@ -135,6 +153,7 @@ export class Tab2Page {
         this.addChemistryMode = false;
 
         this.initChemistry();
+        this.calculateAveragePH();
 
       } else {
         console.log("Cannot find tank data");
