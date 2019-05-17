@@ -11,6 +11,7 @@
     <div *ngIf="tanks">
       <div class="tankSpace" *ngFor="let tank of tanks" (click)="initTankDetail(tank.name)">
         <h3>{{tank.name}}</h3>
+
         <h4><i>{{tank.ph}}deg &bull; PH{{tank.ph}} &bull; {{tank.size}}L</i></h4>
         <h5>With a {{tank.substrate}} substrate</h5>
       </div>
@@ -20,7 +21,8 @@
   </div>
 
   <div style="padding-top: 3em" *ngIf="tankDetailMode && activeTankData">
-    <h1>{{activeTankData.name}}</h1>
+    <h1 style="padding-bottom: 0;">{{activeTankData.name}}</h1>
+    <p (click)="deleteTank()" style="width: 100%; margin: 0 auto; text-align: center; padding-bottom: 2.5em">- Delete Tank -</p>
 
     <ion-list *ngIf="lastChemistrySessionDate" class="speciesList">
       <ion-list-header>
@@ -108,27 +110,32 @@
       <ion-item>
         <ion-icon name="flask" slot="start"></ion-icon>
         <ion-label>
-          <b> average pH </b> &nbsp; <i>{{activeTankData.average_ph.toFixed(1)}}</i>
+          <b> average pH </b> &nbsp;
+          <i *ngIf="activeTankData.average_ph">{{activeTankData.average_ph.toFixed(1)}}</i>
+          <i *ngIf="!activeTankData.average_ph">-</i>
         </ion-label>
       </ion-item>
 
       <ion-item>
         <ion-icon name="flame" slot="start"></ion-icon>
         <ion-label>
-          <b> Temperature </b> &nbsp; <i>{{activeTankData.temp}} &deg;</i>
+          <b> Temp (Celcius &deg;) </b> &nbsp;
         </ion-label>
+        <ion-input (change)="updateTankTemp($event.target.value)" inputmode="numeric" type="number" [value]="activeTankData.temp"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-icon name="cube" slot="start"></ion-icon>
         <ion-label>
-          <b> Size </b> &nbsp; <i>{{activeTankData.size}} Litres</i>
+          <!-- <b> Size (Litres) </b> &nbsp; <i>{{activeTankData.size}} Litres</i> -->
+          <b> Size (Litres) </b> &nbsp;
         </ion-label>
+        <ion-input (change)="updateTankSize($event.target.value)" inputmode="numeric" type="number" [value]="activeTankData.size"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-icon name="funnel" slot="start"></ion-icon>
-        <ion-label>
+        <ion-label (click)="presentSubstrateEditModal()">
           <b> Substrate </b> &nbsp; <i>{{activeTankData.substrate}}</i>
         </ion-label>
       </ion-item>
@@ -256,12 +263,16 @@
             <ion-radio slot="start" value="laterite"></ion-radio>
           </ion-item>
           <ion-item>
-            <ion-label>Stones</ion-label>
-            <ion-radio slot="start" value="stones"></ion-radio>
+            <ion-label>Large Stones</ion-label>
+            <ion-radio slot="start" value="large_stones"></ion-radio>
           </ion-item>
           <ion-item>
-            <ion-label>Mirco-Stones</ion-label>
-            <ion-radio slot="start" value="mirco_stones"></ion-radio>
+            <ion-label>Medium Stones</ion-label>
+            <ion-radio slot="start" value="medium_stones"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Micro-Stones</ion-label>
+            <ion-radio slot="start" value="micro_stones"></ion-radio>
           </ion-item>
           <ion-item>
             <ion-label>Other</ion-label>

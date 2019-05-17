@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 
+import { SelectTankSubstratePage } from '../modal/select-tank-substrate/select-tank-substrate.page';
+
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
@@ -113,7 +115,7 @@ export class Tab2Page {
 
       let avg_ph = _total / data.length;
       scope.activeTankData["average_ph"] = avg_ph;
-      console.log(scope.activeTankData);
+      console.log("ASYNC: Average tank pH update");
     });
   }
 
@@ -140,11 +142,11 @@ export class Tab2Page {
   initTankDetail(tankname){
     this.tankDetailMode = true;
     this.fireStore.doc('Users/' + this.currentUser + '/tanks/' + tankname)
-    .get().toPromise()
-    .then(data => {
-      if(data.exists){
+    .valueChanges().subscribe(data => {
+      if(data){
         // console.log(data);
-        this.activeTankData = data.data();
+        this.activeTankData = data;
+        console.log("ASYNC: Refreshing active tank object");
         console.log(this.activeTankData);
 
         this.tankDetailMode = true;
@@ -158,7 +160,10 @@ export class Tab2Page {
       } else {
         console.log("Cannot find tank data");
       }
-    })
+    });
+    // .then(data => {
+    //
+    // })
   }
 
   addTank(){
@@ -167,6 +172,76 @@ export class Tab2Page {
     this.tankDetailMode = false;
     this.addChemistryMode = false;
   }
+
+  updateTankTemp(value) {
+    if(value > 0) {
+      this.fireStore.doc('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'])
+      .set({
+        temp: value
+      },{
+        merge: true
+      });
+    } else {
+      console.log("tank temp cannot be 0 or null ! Try again dweeb :)");
+    }
+  }
+
+  updateTankSize(value) {
+    if(value > 0) {
+      this.fireStore.doc('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'])
+      .set({
+        size: value
+      },{
+        merge: true
+      });
+    } else {
+      console.log("tank size cannot be 0 or null ! Try again dweeb :)");
+    }
+  }
+
+  updateTankSubstrate(value) {
+    if(value) {
+      this.fireStore.doc('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'])
+      .set({
+        substrate: value
+      },{
+        merge: true
+      });
+    } else {
+      console.log("tank substrate cannot be 0 or null ! Try again dweeb :)");
+    }
+  }
+
+  async presentSubstrateEditModal() {
+   console.log("creating call type selector");
+   const modal = await this.modalCtrl.create({
+     component: SelectTankSubstratePage
+     // componentProps: { default: user }
+   });
+
+   modal.onDidDismiss().then(modalData => {
+     // this.updateCallType(modalData.data);
+     console.log("Substrate edit finished");
+     console.log(modalData.data);
+     // Make sure you pass the value object
+     this.updateTankSubstrate(modalData.data["value"]);
+   })
+
+   return await modal.present();
+ }
+
+   deleteTank() {
+     let scope = this;
+     let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"]);
+     tankAddress.delete()
+     .then(function() {
+       scope.defaultMode = true;
+       scope.addTankMode = false;
+       scope.tankDetailMode = false;
+       scope.addChemistryMode = false;
+       scope.activeTankData = null;
+     });
+   }
 
   // Submit tank to database
   confirmForm(){

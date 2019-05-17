@@ -1,0 +1,14 @@
+<ion-content>
+  <ion-list>
+    <ion-radio-group>
+      <ion-list-header>
+        Select Tank Substrate
+      </ion-list-header>
+
+      <ion-item *ngFor="let substrate of substrates; let idx = index" (click)="selectSubstrate(idx)">
+        <ion-label>{{substrates[idx]["name"]}}</ion-label>
+        <ion-radio></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+</ion-content>

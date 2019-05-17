@@ -13,6 +13,8 @@ import { Facebook } from '@ionic-native/facebook/ngx';
 import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
 import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
 
+import { SelectTankSubstratePage } from './modal/select-tank-substrate/select-tank-substrate.page'
+
 import { LoadingController } from '@ionic/angular';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -32,11 +34,13 @@ import { AuthProvider } from './providers/auth/auth';
   declarations: [
     AppComponent,
     AddShopModalPage,
-    ShopDetailModelPage
+    ShopDetailModelPage,
+    SelectTankSubstratePage
   ],
   entryComponents: [
     AddShopModalPage,
-    ShopDetailModelPage
+    ShopDetailModelPage,
+    SelectTankSubstratePage
   ],
   imports: [
     BrowserModule,
