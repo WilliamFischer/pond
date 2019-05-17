@@ -349,4 +349,7 @@ export class Tab3Page {
       });
     }
 
+    addTankTrigger(){
+      
+    }
 }

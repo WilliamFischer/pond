@@ -11,6 +11,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
 
 import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
+import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
 
 import { LoadingController } from '@ionic/angular';
 
@@ -30,10 +31,12 @@ import { AuthProvider } from './providers/auth/auth';
 @NgModule({
   declarations: [
     AppComponent,
-    AddShopModalPage
+    AddShopModalPage,
+    ShopDetailModelPage
   ],
   entryComponents: [
-    AddShopModalPage
+    AddShopModalPage,
+    ShopDetailModelPage
   ],
   imports: [
     BrowserModule,

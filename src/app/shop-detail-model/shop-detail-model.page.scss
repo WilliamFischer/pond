@@ -1,0 +1,36 @@
+.backgroundImage{
+  width: 100%;
+  height: 60%;
+  display: block;
+}
+
+ion-content{
+  margin-top: 40% !important;
+}
+
+.detailSpace{
+  padding: 8% !important;
+  text-align: center;
+
+  font-family: 'Crimson Text', serif !important;
+  color: #7dbbe2;
+}
+
+.fullImg{
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  background: black;
+}
+
+.downArrow{
+  margin: 5%;
+  position: absolute;
+  color: #fff;
+  text-shadow: 1px 1px black;
+  font-size: 32px !important;
+}
+
+h4{
+  font-size: 12px;
+}

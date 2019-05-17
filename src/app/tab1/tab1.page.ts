@@ -7,6 +7,8 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 
 import { AddShopModalPage } from '../add-shop-modal/add-shop-modal.page'
+import { ShopDetailModelPage } from '../shop-detail-model/shop-detail-model.page'
+
 declare var google: any;
 
 @Component({
@@ -130,8 +132,7 @@ export class Tab1Page {
         });
 
         google.maps.event.addListener(marker, 'click', () => {
-          console.log(eachObj);
-          this.presentAlert(eachObj);
+          this.showDetail(eachObj);
         });
 
         latLng = {lat: 0, lng: 0};
@@ -161,11 +162,20 @@ export class Tab1Page {
     this.getUserPosition();
   }
 
+  async showDetail(eachObj){
+    const showDetailModal = await this.modalCtrl.create({
+     component: ShopDetailModelPage,
+     componentProps: { shop: eachObj }
+   });
+
+   return await showDetailModal.present();
+  }
+
   async addStore(){
-    const modal = await this.modalCtrl.create({
+    const addStorModal = await this.modalCtrl.create({
      component: AddShopModalPage
    });
 
-   return await modal.present();
+   return await addStorModal.present();
   }
 }

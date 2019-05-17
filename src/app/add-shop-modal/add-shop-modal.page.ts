@@ -34,8 +34,8 @@ export class AddShopModalPage implements OnInit {
       name: this.shop.name,
       img: this.shop.image,
       address: this.shop.address,
-      lat: Number(this.shop.longitude),
-      lng: Number(this.shop.latitude)
+      lat: Number(this.shop.latitude),
+      lng: Number(this.shop.longitude)
     });
 
     alert("Shop Added Succesfully!")
