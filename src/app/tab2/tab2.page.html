@@ -36,28 +36,28 @@
 
       <ion-item>
         <ion-label>
-          <b> pH </b> &nbsp; <i>{{chemistry.ph.toFixed(1)}}</i>
+          <b> pH </b> &nbsp; <i>{{lastChemistrySession.ph.toFixed(1)}}</i>
         </ion-label>
       </ion-item>
 
       <ion-item>
         <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
         <ion-label>
-          <b> Ammonia (NH<sub>3</sub>) </b> &nbsp; <i>{{chemistry.ammonia.toFixed(1)}} ppm</i>
+          <b> Ammonia (NH<sub>3</sub>) </b> &nbsp; <i>{{lastChemistrySession.ammonia.toFixed(1)}} ppm</i>
         </ion-label>
       </ion-item>
 
       <ion-item>
         <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
         <ion-label>
-          <b> Nitrite (NO<sup>-</sup><sub>2</sub>) </b> &nbsp; <i>{{chemistry.nitrite.toFixed(1)}} ppm</i>
+          <b> Nitrite (NO<sup>-</sup><sub>2</sub>) </b> &nbsp; <i>{{lastChemistrySession.nitrite.toFixed(1)}} ppm</i>
         </ion-label>
       </ion-item>
 
       <ion-item>
         <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
         <ion-label>
-          <b> Nitrate (NO<sup>-</sup><sub>3</sub>) </b> &nbsp; <i>{{chemistry.nitrate.toFixed(1)}} ppm</i>
+          <b> Nitrate (NO<sup>-</sup><sub>3</sub>) </b> &nbsp; <i>{{lastChemistrySession.nitrate.toFixed(1)}} ppm</i>
         </ion-label>
       </ion-item>
 
@@ -108,7 +108,7 @@
       <ion-item>
         <ion-icon name="flask" slot="start"></ion-icon>
         <ion-label>
-          <b> average pH </b> &nbsp; <i>{{activeTankData.ph}}</i>
+          <b> average pH </b> &nbsp; <i>{{activeTankData.average_ph.toFixed(1)}}</i>
         </ion-label>
       </ion-item>
 
