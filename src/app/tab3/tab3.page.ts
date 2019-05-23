@@ -225,24 +225,43 @@ export class Tab3Page {
           // Handle result
           var loopableResults = result['data'];
 
-          console.log(loopableResults.length + ' RELATED SPECIES DETECTED ');
           // console.log(loopableResults)
 
           loopableResults.forEach(eachObj => {
-            var theSpecCode = eachObj['SpecCode']
-            this.http.get('https://fishbase.ropensci.org/species?SpecCode=' + theSpecCode + '&limit=500').subscribe(
-              result => {
-                var pushResults = result['data'][0];
+            this.fbSpecies.forEach(speciesObj => {
 
-                if(pushResults['Fresh'] == -1 && pushResults['Saltwater'] == 0){
-                  // console.log(pushResults)
-                  this.relatedSpecies.push(pushResults);
-                }
+              if(speciesObj['SpecCode'] != eachObj['SpecCode']){
+                // console.log('SPECIES ALLOWED')
+                // console.log(eachObj)
 
-                this.doneLoading = true;
-              });
+                var theSpecCode = eachObj['SpecCode']
+                this.http.get('https://fishbase.ropensci.org/species?SpecCode=' + theSpecCode + '&limit=500').subscribe(
+                  result => {
+                    var pushResults = result['data'][0];
+
+                    // CHECK THAT SPECIES ISNT ALREADY LISTED
+                    this.relatedSpecies.forEach(speciesObj => {
+
+                      if(speciesObj['SpecCode'] != pushResults['SpecCode']){
+                        if(pushResults['Fresh'] == -1 && pushResults['Saltwater'] == 0){
+                          // console.log(pushResults)
+                          this.relatedSpecies.push(pushResults);
+                        }
+                      }
+
+                    });
+                    this.doneLoading = true;
+                });
+
+              }else{
+                // console.log('SPECIES DENIED')
+                // console.log(eachObj)
+              }
+            });
           });
 
+          console.log(this.relatedSpecies.length + ' NEW RELATED SPECIES DETECTED ');
+          console.log(this.relatedSpecies);
         }, error => {
           console.log("ALL MATCHES FAILED ON COMMON NAMES");
           this.relatedSpecies = [];
