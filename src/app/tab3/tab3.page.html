@@ -45,14 +45,24 @@
 
       <div class="speciesBrick ourBox animated bounceInLeft" *ngFor="let fish of ourFish">
 
-        <!-- <ion-slides pager="false" *ngIf="fish.Pic[0].url" (click)="selectSpecies(fish, '')">
-          <ion-slide class="imageBox" *ngFor="let pic of fish.Pic">
-            <img src="{{pic.url}}" />
-          </ion-slide>
+        <!-- <ion-slides pager="false" *ngIf="fish.Pic[0].url" (click)="selectSpecies(fish, false)">
+         <ion-slide class="imageBox">
+           <img *ngIf="fish.Pic[0].url" src="{{fish.Pic[0].url}}" />
+         </ion-slide>
+         <ion-slide class="imageBox">
+           <img *ngIf="fish.Pic[1].url" src="{{fish.Pic[1].url}}" />
+         </ion-slide>
+         <ion-slide class="imageBox">
+         <img *ngIf="fish.Pic[2].url" src="{{fish.Pic[2].url}}" />
+         </ion-slide>
+         <ion-slide class="imageBox">
+         <img *ngIf="fish.Pic[3].url" src="{{fish.Pic[3].url}}" />
+         </ion-slide>
         </ion-slides> -->
 
         <img (click)="selectSpecies(fish, true)" *ngIf="fish.fishBaseImg" src="https://www.fishbase.de/images/species/{{fish.fishBaseImg}}" />
         <img (click)="selectSpecies(fish, true)" *ngIf="!fish.fishBaseImg" src="../assets/noImg.png" />
+
         <h2 >{{fish.name}}</h2>
         <h3>
           <b (click)="showGenus(fish.genus)"> {{fish.genus}}</b><i> {{fish.species}}</i> <br  /><br />

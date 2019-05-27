@@ -182,7 +182,7 @@ export class Tab3Page {
         console.log("RETURNING SPECIES RESULT");
 
         values.forEach(eachObj => {
-          if(lowerQuery ==  eachObj['name']){
+          if(lowerQuery ==  eachObj['name'] || lowerQuery ==  eachObj['genus']  || lowerQuery ==  eachObj['species'] ){
             this.ourFish.push(eachObj);
           }
         });
