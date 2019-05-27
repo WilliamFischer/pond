@@ -65,6 +65,7 @@ export class Tab2Page {
     // Pull Tanks from Database
     this.currentUser = localStorage.getItem('auth');
 
+    // Check if user exists
     if(this.currentUser){
       this.fireStore.collection('Users/' + this.currentUser + '/tanks').valueChanges().subscribe(
       values =>{
@@ -172,6 +173,7 @@ export class Tab2Page {
     // })
   }
 
+  // Switch to newTank mode
   addTank(){
     this.addTankMode = true;
     this.defaultMode = false;
@@ -179,6 +181,7 @@ export class Tab2Page {
     this.addChemistryMode = false;
   }
 
+  // Update tank temperature
   updateTankTemp(value) {
     if(value > 0) {
       this.fireStore.doc('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'])
@@ -192,6 +195,7 @@ export class Tab2Page {
     }
   }
 
+  // Update tank size
   updateTankSize(value) {
     if(value > 0) {
       this.fireStore.doc('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'])
@@ -205,6 +209,7 @@ export class Tab2Page {
     }
   }
 
+  // Save substrate data
   updateTankSubstrate(value) {
     if(value) {
       this.fireStore.doc('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'])
@@ -218,24 +223,26 @@ export class Tab2Page {
     }
   }
 
-  async presentSubstrateEditModal() {
-   console.log("creating call type selector");
-   const modal = await this.modalCtrl.create({
-     component: SelectTankSubstratePage
-     // componentProps: { default: user }
-   });
+    // Show susbstrate edit modal
+    async presentSubstrateEditModal() {
+     console.log("creating call type selector");
+     const modal = await this.modalCtrl.create({
+       component: SelectTankSubstratePage
+       // componentProps: { default: user }
+     });
 
-   modal.onDidDismiss().then(modalData => {
-     // this.updateCallType(modalData.data);
-     console.log("Substrate edit finished");
-     console.log(modalData.data);
-     // Make sure you pass the value object
-     this.updateTankSubstrate(modalData.data["value"]);
-   })
+     modal.onDidDismiss().then(modalData => {
+       // this.updateCallType(modalData.data);
+       console.log("Substrate edit finished");
+       console.log(modalData.data);
+       // Make sure you pass the value object
+       this.updateTankSubstrate(modalData.data["value"]);
+     })
 
-   return await modal.present();
- }
+     return await modal.present();
+   }
 
+   // Remove tank from database
    deleteTank() {
      let scope = this;
      let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"]);
@@ -268,6 +275,7 @@ export class Tab2Page {
     alert('Tank added')
   }
 
+  // Unauth user
   logout(){
     console.log('Logging out...')
 
@@ -276,6 +284,7 @@ export class Tab2Page {
     });
   }
 
+  // Add a tank image to the database
   tankUpload(){
     const options: CameraOptions = {
        quality: 30,

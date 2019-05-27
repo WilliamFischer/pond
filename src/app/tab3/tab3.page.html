@@ -7,16 +7,24 @@
 </ion-header>
 
 <div class="selectTankPopup" *ngIf="showSelectTank">
-  <h1>Add {{toAddToTankSpecies.FBname}} to Tank?</h1>
+  <div class="loadingSpinner lessTopSpinner" *ngIf="showTankListLoader">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
 
-  <ion-list>
-    <ion-item *ngFor="let tank of tanks">
-      <ion-label (click)="addFishToTank(tank)">{{tank.name}}</ion-label>
-    </ion-item>
-  </ion-list>
+  <ion-icon class="checkIcon" name="checkmark" *ngIf="showTankListTick"></ion-icon>
+
+  <div *ngIf="!showTankListLoader && !showTankListTick">
+    <h1>Add {{toAddToTankSpecies.name}} to Tank?</h1>
+
+    <ion-list>
+      <ion-item *ngFor="let tank of tanks">
+        <ion-label (click)="addFishToTank(tank)">{{tank.name}}</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
 </div>
 
-<div class="backgroundDimmer" *ngIf="showSelectTank"></div>
+<div class="backgroundDimmer" (click)="hideTankMenu()" *ngIf="showSelectTank"></div>
 
 <ion-content class="blueBack" id="coreScroll">
 
@@ -43,12 +51,16 @@
           </ion-slide>
         </ion-slides> -->
 
-        <img (click)="selectSpecies(fish, '')" *ngIf="fish.fishBaseImg" src="https://www.fishbase.de/images/species/{{fish.fishBaseImg}}" />
-        <img (click)="selectSpecies(fish, '')" *ngIf="!fish.fishBaseImg" src="../assets/noImg.png" />
+        <img (click)="selectSpecies(fish, true)" *ngIf="fish.fishBaseImg" src="https://www.fishbase.de/images/species/{{fish.fishBaseImg}}" />
+        <img (click)="selectSpecies(fish, true)" *ngIf="!fish.fishBaseImg" src="../assets/noImg.png" />
         <h2 >{{fish.name}}</h2>
-        <h3><b (click)="showGenus(fish.genus)"> {{fish.genus}}</b><i> {{fish.species}}</i></h3>
+        <h3>
+          <b (click)="showGenus(fish.genus)"> {{fish.genus}}</b><i> {{fish.species}}</i> <br  /><br />
+          <label *ngIf="fish.length">Species Length: {{fish.length}}cm</label>
+        </h3>
 
         <ion-icon class="addtoTankIcon" (click)="addTankTrigger(fish)" name="add"></ion-icon>
+
       </div>
     </div>
 
@@ -58,7 +70,8 @@
 
       <div *ngFor="let fish of fbSpecies">
         <div class="speciesBrick animated bounceInLeft"  *ngIf="fish.id >= minSpeciesReturn && fish.id <= maxSpeciesReturn">
-         <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, '')">
+
+          <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
            <ion-slide class="imageBox">
              <img *ngIf="fish.Pic[0]" src="{{fish.Pic[0]}}" />
            </ion-slide>
@@ -73,15 +86,15 @@
            </ion-slide>
           </ion-slides>
 
-          <img (click)="selectSpecies(fish, '')" *ngIf="!fish.PicPreferredName && !fish.Pic" src="../assets/noImg.png" />
-          <img (click)="selectSpecies(fish, '')" *ngIf="fish.PicPreferredName && !fish.Pic" src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
+          <img (click)="selectSpecies(fish, false)" *ngIf="!fish.PicPreferredName && !fish.Pic" src="../assets/noImg.png" />
+          <img (click)="selectSpecies(fish, false)" *ngIf="fish.PicPreferredName && !fish.Pic" src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
 
           <h2 *ngIf="fish.FBname">{{fish.FBname}}</h2>
           <h2 *ngIf="!fish.FBname">The {{fish.Species}}</h2>
           <h3>
             <b (click)="showGenus(fish.Genus)"> {{fish.Genus}}</b>
             <i> {{fish.Species}}</i> <br />
-            <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}} &bull;</label>
+            <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label>
             Max Length - {{fish.Length}}cm
           </h3>
 
@@ -99,7 +112,7 @@
         <h2 *ngIf="fish.FBname">{{fish.FBname}}</h2>
         <h2 *ngIf="!fish.FBname">The {{fish.Species}}</h2>
         <h3><b (click)="showGenus(fish.Genus)"> {{fish.Genus}}</b><i> {{fish.Species}}</i><br />
-            <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}} &bull;</label> Max Length - {{fish.Length}} </h3>
+            <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label> Max Length - {{fish.Length}}cm </h3>
       </div>
     </div>
 

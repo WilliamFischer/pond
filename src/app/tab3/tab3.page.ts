@@ -20,6 +20,8 @@ export class Tab3Page {
   speciesSelected: boolean;
   doneLoading: boolean;
   showSelectTank: boolean;
+  showTankListLoader: boolean;
+  showTankListTick: boolean;
   searchQuery: string = '';
   species : any;
   fbSpecies: any = [];
@@ -27,6 +29,7 @@ export class Tab3Page {
   relatedSpecies: any = [];
   tanks: any = [];
   toAddToTankSpecies: any;
+  googleImageArray: any = [];
   counter: number = 0;
   minSpeciesReturn = 0;
   maxSpeciesReturn = 10;
@@ -52,10 +55,11 @@ export class Tab3Page {
 
   }
 
+
+  // COMMANDER
   checkAPI($event, autoQuery){
 
     if(!this.speciesSelected){
-      console.log('Running code... not in select species mode.');
 
       if(autoQuery.length >= 1){
         var searchQuery = autoQuery;
@@ -73,7 +77,7 @@ export class Tab3Page {
       this.relatedSpecies = [];
 
       if(searchQuery.length > 2){
-        console.log('Running API for ' + searchQuery + '...');
+        // console.log('Running API for ' + searchQuery + '...');
 
         this.displayFirebase(searchQuery);
 
@@ -82,8 +86,6 @@ export class Tab3Page {
       }else{
         console.log('Query length is too short.')
       }
-    }else{
-      console.log('Not running code... in select species mode.');
     }
 
 
@@ -100,21 +102,26 @@ export class Tab3Page {
   selectSpecies(fish, inDB){
     console.clear();
 
-    this.speciesSelected = true;
     this.species = fish;
+    console.log(fish)
 
-    this.fireStore.doc('Species/' + fish.SpecCode).valueChanges().subscribe(
-    values => {
-      if(values){
-        console.log('Fish Exists');
-        console.log(values)
-        this.species = values
-      }else{
-        console.log("NEW TO SYSTEM... ADDING")
 
-        this.addToDatabase(fish)
-      }
-    });
+    if(!inDB){
+      this.fireStore.doc('Species/' + fish['SpecCode']).snapshotChanges().subscribe(
+      values => {
+        if(values.payload.exists){
+          console.log('Fish Exists in DB');
+          this.species = values
+        }else{
+          console.log("NEW TO SYSTEM... ADDING")
+
+          this.getMoreGoogleImages(fish);
+        }
+      });
+
+    }
+
+    this.speciesSelected = true;
 
   }
 
@@ -172,9 +179,10 @@ export class Tab3Page {
     if(lowerQuery){
       this.fireStore.collection('Species').valueChanges().subscribe(
       values => {
+        console.log("RETURNING SPECIES RESULT");
+
         values.forEach(eachObj => {
           if(lowerQuery ==  eachObj['name']){
-            console.log(eachObj['name'] + " EXISTS IN THE DB!! ")
             this.ourFish.push(eachObj);
           }
         });
@@ -217,6 +225,7 @@ export class Tab3Page {
   }
 
 
+  // CHECK API AGAINST THE COMMON FISHBASE DATABASE
   checkCommNames(searchQuery){
     console.log("### CHECKING FISHBASE/COMMON NAMES ###")
 
@@ -261,7 +270,12 @@ export class Tab3Page {
           });
 
           console.log(this.relatedSpecies.length + ' NEW RELATED SPECIES DETECTED ');
-          console.log(this.relatedSpecies);
+
+          if(this.relatedSpecies.length > 1){
+            console.log(this.relatedSpecies);
+          }
+
+
         }, error => {
           console.log("ALL MATCHES FAILED ON COMMON NAMES");
           this.relatedSpecies = [];
@@ -269,6 +283,7 @@ export class Tab3Page {
     });
   }
 
+  // CHECK API AGAINST FISHBASE
   runFishbaseChecker(searchQuery){
     console.log("### CHECKING GENERAL FISHBASE ###")
     this.http.get('https://fishbase.ropensci.org/species?FBname=' + searchQuery + '&limit=500').subscribe(
@@ -302,6 +317,8 @@ export class Tab3Page {
   }
 
 
+
+  // ADD SPECIES TO FIREBASE DATABASE FOR LATER
   addToDatabase(fish){
     console.log("### ADDING SPECIES TO DATABASE ###")
 
@@ -330,30 +347,20 @@ export class Tab3Page {
     })
 
     console.log("SPECIES ADDED TO SYSTEM")
-    this.speciesSelected = true;
+
+    // SAVE PHOTOS TO DATABASE
+    var counter = 0;
+
+    this.googleImageArray.forEach(eachObj => {
+      var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/" + counter);
+      speciesPicArray.set({
+        url: eachObj
+      })
+
+      counter++
+    });
 
 
-
-    // SAVE PHOTOS TO DATABSE
-    var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/0");
-    speciesPicArray.set({
-      url: fish.Pic[0]
-    })
-
-    var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/1");
-    speciesPicArray.set({
-      url: fish.Pic[1]
-    })
-
-    var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/2");
-    speciesPicArray.set({
-      url: fish.Pic[2]
-    })
-
-    var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/3");
-    speciesPicArray.set({
-      url: fish.Pic[3]
-    })
 
   }
 
@@ -361,12 +368,38 @@ export class Tab3Page {
 
   }
 
+  // GENERATE IMAGES FROM GOOGLE FOR INDIVIDUAL SPECIES
+  getMoreGoogleImages(fish){
+    console.log('### GENERATING 10 GOOGLE IMAGES ###');
 
-    getGoogleImages(eachObj){
+    if(fish['genus']){
+      var searchName = fish['genus'] + " " + fish['species'];
+    }else{
+      var searchName = fish['Genus'] + " " + fish['Species'];
+    }
+
+
+    this.http.get('https://www.googleapis.com/customsearch/v1?q='+ searchName +'&searchType=image&num=10&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
+      result => {
+        var loopValue = result['items'];
+
+        loopValue.forEach(eachObj => {
+          this.googleImageArray.push(eachObj['link']);
+        });
+
+        this.addToDatabase(fish);
+
+      }, error => {
+        console.log(error)
+    });
+  }
+
+  // GENERATE IMAGES FROM GOOGLE FOR CARDS
+  getGoogleImages(eachObj){
       var searchName;
 
       // GOOGLE IMAGES SEARCH
-      console.log('RUNNING GOOGLE IMAGE SEARCH')
+      console.log('### RUNNING GOOGLE IMAGE SEARCH ###')
 
       searchName = eachObj['Genus'] + " " + eachObj['Species'];
 
@@ -408,16 +441,31 @@ export class Tab3Page {
     }
 
     addFishToTank(tank){
+      this.showTankListLoader = true;
+      this.showTankListTick = false;
 
-      let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['name'] + '/species/' + this.toAddToTankSpecies['SpecCode']);
+      let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['name'] + '/species/' + this.toAddToTankSpecies['specCode']);
 
       tankAddress.set({
         dateSet: new Date(),
-        name: this.toAddToTankSpecies['FBname'],
-        specCode: this.toAddToTankSpecies['SpecCode']
+        name: this.toAddToTankSpecies['name'],
+        specCode: this.toAddToTankSpecies['specCode']
       });
 
-      alert("Species added to tank!")
+      console.log("Species added to tank!")
+
+      setTimeout(()=>{
+        this.showTankListLoader = false;
+        this.showTankListTick = true;
+
+        setTimeout(()=>{
+          this.showSelectTank = false;
+        }, 1000);
+      }, 1000);
+
+    }
+
+    hideTankMenu(){
       this.showSelectTank = false;
     }
 }
