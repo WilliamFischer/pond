@@ -20,7 +20,8 @@
     <ion-spinner name="bubbles" color="primary" class="mySpinner" *ngIf="!doneLoadingTanks"></ion-spinner>
   </div>
 
-  <div style="padding-top: 3em" *ngIf="tankDetailMode && activeTankData">
+  <div *ngIf="tankDetailMode && activeTankData">
+    <ion-icon style="padding: 1em 0 0 1em" name="arrow-back" (click)="closeTank()" class="backArrow"></ion-icon>
     <h1 style="padding-bottom: 0;">{{activeTankData.name}}</h1>
     <p (click)="deleteTank()" style="width: 100%; margin: 0 auto; text-align: center; padding-bottom: 2.5em">- Delete Tank -</p>
     <p (click)="tankUpload()" style="width: 100%; margin: 0 auto; text-align: center; padding-bottom: 2.5em">- Upload Tank Image -</p>
@@ -146,11 +147,16 @@
       </ion-item> -->
     </ion-list>
 
-    <ion-list *ngIf="fish_in_tank != null" class="speciesList">
-      <ion-list-header>
+    <ion-list class="speciesList">
+      <ion-list-header *ngIf="fish_in_tank != null">
         <ion-label>Contains {{ fish_in_tank.length }} fish<a (click)="openSpeciesSearch()" class="lilEdit">add</a></ion-label>
       </ion-list-header>
+      <ion-list-header *ngIf="fish_in_tank == null">
+        <ion-label>No Fish Yet<a (click)="openSpeciesSearch()" class="lilEdit">+ add your first fish</a></ion-label>
+      </ion-list-header>
+      <div *ngIf="fish_in_tank != null">
       <ion-item *ngFor="let fish of fish_in_tank">{{fish['quantity']}} &nbsp; <b> {{fish.comm_name | titlecase}} </b> &nbsp; <span class="fish-sci-name"><i>({{fish.sci_name | titlecase}})</i></span></ion-item>
+      </div>
       <!-- <ion-item (click)="selectSpecies('Butterflyfish')">1x &nbsp; <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
       <ion-item (click)="selectSpecies('Pinoy Blue Angelfish')">2x &nbsp; <b> Pinoy Blue Angelfish </b> &nbsp; <i>(Pterophyllum)</i></ion-item>
       <ion-item (click)="selectSpecies('Kuhli Loach')">4x &nbsp; <b> Kuhli Loach </b> &nbsp; <i>(Actinopterygii)</i></ion-item>
@@ -161,6 +167,7 @@
   <!-- Section 2: ADD CHEMISTRY SESSION -->
   <div class="addChemistry" *ngIf="addChemistryMode">
 
+    <ion-icon style="padding: 0 0 0 0.8em" name="arrow-back" (click)="closeChemistrySession()" class="backArrow"></ion-icon>
     <h1>Add a Tank</h1>
 
     <form (ngSubmit)="confirmChemistryForm()">
@@ -213,6 +220,7 @@
   <!-- Section 2: ADD TANK -->
   <div class="addTank" *ngIf="addTankMode">
 
+    <ion-icon style="padding: 1em 0 0 1em" name="arrow-back" (click)="closeTank()" class="backArrow"></ion-icon>
     <h1>Add a Tank</h1>
 
     <form (ngSubmit)="confirmForm()">

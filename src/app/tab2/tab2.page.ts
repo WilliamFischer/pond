@@ -207,6 +207,7 @@ export class Tab2Page {
         this.defaultMode = false;
         this.addTankMode = false;
         this.addChemistryMode = false;
+        this.fish_in_tank = null;
 
         this.initChemistry();
         this.calculateAveragePH();
@@ -302,6 +303,28 @@ export class Tab2Page {
        scope.addChemistryMode = false;
        scope.activeTankData = null;
      });
+   }
+
+   closeTank() {
+     this.defaultMode = true;
+     this.addTankMode = false;
+     this.tankDetailMode = false;
+     this.addChemistryMode = false;
+     this.activeTankData = null;
+   }
+
+   closeChemistrySession() {
+     this.defaultMode = false;
+     this.addTankMode = false;
+     this.tankDetailMode = true;
+     this.addChemistryMode = false;
+   }
+
+   closeAddTank() {
+     this.defaultMode = true;
+     this.addTankMode = false;
+     this.tankDetailMode = true;
+     this.addChemistryMode = false;
    }
 
   // Submit tank to database
