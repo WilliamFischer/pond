@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonContent, AlertController } from '@ionic/angular';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -49,7 +50,8 @@ export class Tab3Page {
   constructor(
     private http:HttpClient,
     public fireStore: AngularFirestore,
-    public afAuth: AngularFireAuth){
+    public afAuth: AngularFireAuth,
+    private keyboard: Keyboard){
 
   }
 
@@ -70,6 +72,7 @@ export class Tab3Page {
 
   // COMMANDER
   checkAPI($event, autoQuery){
+      this.keyboard.hide(); 
       this.speciesSelected = false;
 
       if(autoQuery.length >= 1){
