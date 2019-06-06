@@ -22,15 +22,27 @@ export class Tab3Page {
   showSelectTank: boolean;
   showTankListLoader: boolean;
   showTankListTick: boolean;
+  saltwater: boolean;
   searchQuery: string = '';
-  species : any;
+  selectedLetter: string = ''
+  selectedSpecCode: string = '';
+  species : any = [{
+    name : '',
+    species : '',
+    genus : '',
+  }];
+  speciesVunFloored;
+  speciesImgArray: any = [];
+  letterCounter: any = [];
   fbSpecies: any = [];
   ourFish: any = [];
   relatedSpecies: any = [];
   tanks: any = [];
   toAddToTankSpecies: any;
+  coreCollection: any;
   googleImageArray: any = [];
   counter: number = 0;
+  rcounter: number = 0;
   minSpeciesReturn = 0;
   maxSpeciesReturn = 10;
 
@@ -58,8 +70,7 @@ export class Tab3Page {
 
   // COMMANDER
   checkAPI($event, autoQuery){
-
-    if(!this.speciesSelected){
+      this.speciesSelected = false;
 
       if(autoQuery.length >= 1){
         var searchQuery = autoQuery;
@@ -69,12 +80,16 @@ export class Tab3Page {
 
       this.searchQuery = searchQuery;
 
-
-      this.speciesSelected = false;
-
       this.fbSpecies = [];
       this.ourFish = [];
       this.relatedSpecies = [];
+      this.counter = 0;
+      this.rcounter = 0;
+      this.speciesImgArray = [];
+      this.googleImageArray = [];
+      this.species = [];
+      this.letterCounter = [];
+      this.selectedLetter = '';
 
       if(searchQuery.length > 2){
         // console.log('Running API for ' + searchQuery + '...');
@@ -86,9 +101,20 @@ export class Tab3Page {
       }else{
         console.log('Query length is too short.')
       }
-    }
+  }
 
-
+  clearSearch(){
+    this.searchQuery = '';
+    this.fbSpecies = [];
+    this.ourFish = [];
+    this.relatedSpecies = [];
+    this.counter = 0;
+    this.rcounter = 0;
+    this.speciesImgArray = [];
+    this.googleImageArray = [];
+    this.species = [];
+    this.letterCounter = [];
+    this.selectedLetter = '';
   }
 
 
@@ -102,27 +128,44 @@ export class Tab3Page {
   selectSpecies(fish, inDB){
     console.clear();
 
-    this.species = fish;
-    console.log(fish)
-
-
-    if(!inDB){
-      this.fireStore.doc('Species/' + fish['SpecCode']).snapshotChanges().subscribe(
-      values => {
-        if(values.payload.exists){
-          console.log('Fish Exists in DB');
-          this.species = values
-        }else{
-          console.log("NEW TO SYSTEM... ADDING")
-
-          this.getMoreGoogleImages(fish);
-        }
-      });
-
-    }
-
+    this.speciesImgArray = [];
+    this.species = [];
     this.speciesSelected = true;
 
+    if(!inDB){
+      console.log("NEW TO SYSTEM... ADDING")
+      this.coreCollection.unsubscribe();
+
+      this.getMoreGoogleImages(fish);
+      this.selectedSpecCode = fish['SpecCode']
+      this.populateSpecies();
+    }else{
+      console.log('Showing existing fish...');
+      this.coreCollection.unsubscribe();
+
+      this.selectedSpecCode = fish['specCode']
+      this.populateSpecies();
+    }
+
+  }
+
+  populateSpecies(){
+    this.fireStore.doc('Species/' + this.selectedSpecCode).valueChanges().subscribe(values => {
+      this.species = values;
+      console.log(this.species);
+
+      this.fireStore.collection('Species/' + this.selectedSpecCode + '/Pic').valueChanges().subscribe(values => {
+        values.forEach(eachImg => {
+          this.speciesImgArray.push(eachImg['url'])
+        });
+
+        console.log(this.speciesImgArray);
+      });
+
+
+      if(values['vulnerability']){this.speciesVunFloored = Math.floor(values['vulnerability']);}
+
+    });
   }
 
   // presentAlert() {
@@ -141,6 +184,9 @@ export class Tab3Page {
   // Leave detail page and clear selected species
   unSelectSpecies(){
     this.speciesSelected = false;
+    this.selectedSpecCode = ''
+    this.speciesImgArray = [];
+    this.species = [];
   }
 
   nextPage(){
@@ -151,7 +197,7 @@ export class Tab3Page {
     var slicedSpecies = this.fbSpecies.slice(this.minSpeciesReturn, this.maxSpeciesReturn);
 
     slicedSpecies.forEach(eachObj => {
-      this.getGoogleImages(eachObj);
+      this.getGoogleImages(eachObj, false);
     });
 
     this.content.scrollToTop(400);
@@ -165,7 +211,7 @@ export class Tab3Page {
     var slicedSpecies = this.fbSpecies.slice(this.minSpeciesReturn, this.maxSpeciesReturn);
 
     slicedSpecies.forEach(eachObj => {
-      this.getGoogleImages(eachObj);
+      this.getGoogleImages(eachObj, false);
     });
 
     this.content.scrollToTop(400);
@@ -177,15 +223,29 @@ export class Tab3Page {
 
     var lowerQuery = searchQuery.toLowerCase();
     if(lowerQuery){
-      this.fireStore.collection('Species').valueChanges().subscribe(
+      this.coreCollection = this.fireStore.collection('Species').valueChanges().subscribe(
       values => {
-        console.log("RETURNING SPECIES RESULT");
 
         values.forEach(eachObj => {
           if(lowerQuery ==  eachObj['name'] || lowerQuery ==  eachObj['genus']  || lowerQuery ==  eachObj['species'] ){
-            this.ourFish.push(eachObj);
+            if(!this.saltwater){
+              if(eachObj['fresh'] == -1){
+                this.ourFish.push(eachObj);
+              }
+            }else{
+              if(eachObj['fresh'] != -1){
+                this.ourFish.push(eachObj);
+              }
+            }
+
           }
         });
+
+        if(this.ourFish.length){
+          console.log(this.ourFish);
+        }else{
+          console.log('no local species')
+        }
 
         this.runFishbaseChecker(searchQuery);
 
@@ -196,31 +256,51 @@ export class Tab3Page {
 
   displayFishbase(result, searchQuery){
     var loopValue = result['data']
-    this.counter = 0;
-
-    console.log(loopValue.length + ' SPECIES DETECTED ');
-    console.log(loopValue);
     var arrayLength = 0;
+    var speciesArray = [];
 
     loopValue.forEach(eachObj => {
 
-      if(this.fbSpecies.length <= 10){
-        this.getGoogleImages(eachObj);
-      }else if(this.fbSpecies.length <= 10){
-        this.getGoogleImages(eachObj);
+      if(this.ourFish.length == 0){
+        if(!this.saltwater){
+          if(eachObj['Fresh'] == -1){
+            speciesArray.push(eachObj);
+            speciesArray[arrayLength]['id'] = '';
+          }
+        }else{
+          if(eachObj['Fresh'] != -1){
+            speciesArray.push(eachObj);
+            speciesArray[arrayLength]['id'] = '';
+          }
+        }
       }else{
-        console.log("TOO MANY SPECIES TO RUN GOOGLE IMAGES")
-      }
-
-      if(eachObj['Fresh'] == -1 && eachObj['Saltwater'] == 0){
-        this.fbSpecies.push(eachObj);
-        this.fbSpecies[arrayLength]['id'] = arrayLength;
-
-        arrayLength = arrayLength+1;
+        // CHECK THAT SPECIES ISNT ALREADY LISTED
+        this.ourFish.forEach(ourFish => {
+          if(ourFish['specCode'] == eachObj['SpecCode']){}else{
+            speciesArray.push(eachObj);
+            speciesArray[arrayLength]['id'] = '';
+          }
+        });
       }
 
     });
 
+    var clearOfDups = this.removeDuplicatesBy(x => x.SpecCode, speciesArray);
+    this.fbSpecies = clearOfDups;
+
+    this.fbSpecies.forEach(relatedFish => {
+
+      this.fbSpecies[arrayLength]['id'] = arrayLength;
+      arrayLength++;
+
+      if(this.fbSpecies.length <= 10){
+        this.getGoogleImages(relatedFish, false);
+      }else{
+        console.log("TOO MANY SPECIES TO RUN GOOGLE IMAGES")
+      }
+    });
+
+    console.log(this.fbSpecies)
     this.checkCommNames(searchQuery);
   }
 
@@ -234,47 +314,54 @@ export class Tab3Page {
           // Handle result
           var loopableResults = result['data'];
 
-          // console.log(loopableResults)
+          var clearOfDups = this.removeDuplicatesBy(x => x.SpecCode, loopableResults);
+          console.log(clearOfDups);
 
-          loopableResults.forEach(eachObj => {
-            this.fbSpecies.forEach(speciesObj => {
 
-              if(speciesObj['SpecCode'] != eachObj['SpecCode']){
-                // console.log('SPECIES ALLOWED')
-                // console.log(eachObj)
+          // CHECK IF SPECIES IS IN OUR DB OR THE MAIN FISHBASE DB
+          // this.fbSpecies.forEach(speciesObj => {
+          //   this.relatedSpeciesDisplay(speciesObj, eachObj);
+          // });
 
-                var theSpecCode = eachObj['SpecCode']
-                this.http.get('https://fishbase.ropensci.org/species?SpecCode=' + theSpecCode + '&limit=500').subscribe(
-                  result => {
-                    var pushResults = result['data'][0];
+          clearOfDups.forEach(subSpecies => {
+              if(this.fbSpecies.length >= 1){
+                this.fbSpecies.forEach(mainSpecies => {
 
-                    // CHECK THAT SPECIES ISNT ALREADY LISTED
-                    this.relatedSpecies.forEach(speciesObj => {
-
-                      if(speciesObj['SpecCode'] != pushResults['SpecCode']){
-                        if(pushResults['Fresh'] == -1 && pushResults['Saltwater'] == 0){
-                          // console.log(pushResults)
-                          this.relatedSpecies.push(pushResults);
+                  // CHECK THAT SPECIES ISNT ALREADY LISTED IN MAIN DB
+                  if(subSpecies['SpecCode'] != mainSpecies['SpecCode']){
+                    if(this.ourFish.length >= 1){
+                      // CHECK THAT SPECIES ISNT ALREADY LISTED IN OUR DB
+                      this.ourFish.forEach(ourFish => {
+                        //console.log(ourFish['specCode'] + " VS " + subSpecies['SpecCode'])
+                        if(ourFish['specCode'] == subSpecies['SpecCode']){}else{
+                          this.getFullFishResult(subSpecies);
                         }
-                      }
+                      });
+                    }else{
+                      this.getFullFishResult(subSpecies);
+                    }
 
-                    });
-                    this.doneLoading = true;
+                  }else{}
+
                 });
-
               }else{
-                // console.log('SPECIES DENIED')
-                // console.log(eachObj)
+                //console.log("No main species to check related species against.")
+
+                if(this.ourFish.length >= 1){
+                  // CHECK THAT SPECIES ISNT ALREADY LISTED IN OUR DB
+                  this.ourFish.forEach(ourFish => {
+                    if(ourFish['specCode'] == subSpecies['SpecCode']){}else{
+                      this.getFullFishResult(subSpecies);
+                    }
+                  });
+                }else{
+                  console.log("No local species to check related species against.")
+
+                  this.getFullFishResult(subSpecies);
+                }
               }
+
             });
-          });
-
-          console.log(this.relatedSpecies.length + ' NEW RELATED SPECIES DETECTED ');
-
-          if(this.relatedSpecies.length > 1){
-            console.log(this.relatedSpecies);
-          }
-
 
         }, error => {
           console.log("ALL MATCHES FAILED ON COMMON NAMES");
@@ -282,6 +369,102 @@ export class Tab3Page {
           this.doneLoading = true;
     });
   }
+
+  removeDuplicatesBy(keyFn, arr){
+    var mySet = new Set();
+    return arr.filter(function(x) {
+      var key = keyFn(x), isNew = !mySet.has(key);
+      if (isNew) mySet.add(key);
+      return isNew;
+    });
+  }
+
+  getFullFishResult(species){
+    var theSpecCode = species['SpecCode']
+
+    this.http.get('https://fishbase.ropensci.org/species?SpecCode=' + theSpecCode + '&limit=1').subscribe(
+      result => {
+        var pushResults = result['data'][0];
+
+        //console.log("Getting full result for " + pushResults['Species'])
+
+        if(!this.saltwater){
+          if(pushResults['Fresh'] == -1){
+            this.relatedSpecies.push(pushResults);
+
+            if(this.relatedSpecies.length <= 10){
+              //console.log(pushResults);
+              this.getGoogleImages(pushResults, true);
+            }else{
+              console.log("TOO MANY SPECIES TO RUN GOOGLE IMAGES")
+            }
+          }
+        }else{
+          if(pushResults['Fresh'] != -1){
+            this.relatedSpecies.push(pushResults);
+
+            if(this.relatedSpecies.length <= 10){
+              //console.log(pushResults);
+              this.getGoogleImages(pushResults, true);
+            }else{
+              console.log("TOO MANY SPECIES TO RUN GOOGLE IMAGES")
+            }
+          }
+        }
+
+
+
+
+
+      });
+  }
+
+  // COMPARE AND DISPLAY RELATED SPECIES
+  // relatedSpeciesDisplay(speciesObj, eachObj){
+  //   var speciesObject;
+  //
+  //   if(speciesObj == 'noaccess'){
+  //     speciesObject = '12345'
+  //   }else{
+  //     speciesObject = speciesObj['SpecCode']
+  //   }
+  //
+  //   if(speciesObject != eachObj['SpecCode']){
+  //
+  //     var theSpecCode = eachObj['SpecCode']
+  //     this.http.get('https://fishbase.ropensci.org/species?SpecCode=' + theSpecCode + '&limit=1').subscribe(
+  //       result => {
+  //         var pushResults = result['data'][0];
+  //         var speciesArray = [];
+  //
+  //         if(this.ourFish.length == 0){
+  //           if(pushResults['Fresh'] == -1 && pushResults['Saltwater'] == 0){
+  //             speciesArray.push(pushResults);
+  //           }
+  //         }else{
+  //           // CHECK THAT SPECIES ISNT ALREADY LISTED IN OUR DB
+  //           this.ourFish.forEach(ourFish => {
+  //             console.log(ourFish['specCode'] + " VS " + eachObj['SpecCode'])
+  //
+  //             if(ourFish['specCode'] == eachObj['SpecCode']){}else{
+  //               if(pushResults['Fresh'] == -1 && pushResults['Saltwater'] == 0){
+  //                 speciesArray.push(pushResults);
+  //               }
+  //             }
+  //           });
+  //         }
+  //
+  //         this.doneLoading = true;
+  //
+  //         var clearOfDupsCore = this.removeDuplicatesBy(x => x.SpecCode, speciesArray);
+  //         console.log(clearOfDupsCore);
+  //
+  //     });
+  //
+  //   }else{}
+  //
+  // }
+
 
   // CHECK API AGAINST FISHBASE
   runFishbaseChecker(searchQuery){
@@ -343,7 +526,8 @@ export class Tab3Page {
       genCode: fish.GenCode,
       specCode: fish.SpecCode,
       SpeciesRefNo: fish.SpeciesRefNo,
-      vulnerability: fish.Vulnerability
+      vulnerability: fish.Vulnerability,
+      fresh: fish.Fresh
     })
 
     console.log("SPECIES ADDED TO SYSTEM")
@@ -359,9 +543,6 @@ export class Tab3Page {
 
       counter++
     });
-
-
-
   }
 
   plantSearch(searchquery){
@@ -371,60 +552,90 @@ export class Tab3Page {
   // GENERATE IMAGES FROM GOOGLE FOR INDIVIDUAL SPECIES
   getMoreGoogleImages(fish){
     console.log('### GENERATING 10 GOOGLE IMAGES ###');
+    //console.log(this.googleImageArray);
 
-    if(fish['genus']){
-      var searchName = fish['genus'] + " " + fish['species'];
-    }else{
-      var searchName = fish['Genus'] + " " + fish['Species'];
-    }
+    // if(fish['genus']){
+    //   var searchName = fish['genus'] + " " + fish['species'];
+    // }else{
+    //var searchName = fish['Genus'] + " " + fish['Species'];
+    // }
 
+    var loopValue = [];
 
-    this.http.get('https://www.googleapis.com/customsearch/v1?q='+ searchName +'&searchType=image&num=10&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
+    this.http.get('https://www.googleapis.com/customsearch/v1?q='+ fish['Genus'] + " " + fish['Species'] + '&searchType=image&num=10&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
       result => {
-        var loopValue = result['items'];
-
-        loopValue.forEach(eachObj => {
-          this.googleImageArray.push(eachObj['link']);
-        });
-
-        this.addToDatabase(fish);
-
+        loopValue.push(result['items']);
       }, error => {
         console.log(error)
+    }, () => {
+
+      loopValue.forEach(eachObj => {
+        this.googleImageArray.push(eachObj['link']);
+      });
+
+      console.log(this.googleImageArray);
+      this.addToDatabase(fish);
     });
+
+
   }
 
   // GENERATE IMAGES FROM GOOGLE FOR CARDS
-  getGoogleImages(eachObj){
-      var searchName;
+  getGoogleImages(eachObj, related){
+      //var searchName = '';
+
+      //console.log(eachObj)
+
+      // if(eachObj['FBname']){
+      //   searchName = eachObj['FBname'];
+      // }else{
+
+      // }
+
 
       // GOOGLE IMAGES SEARCH
-      console.log('### RUNNING GOOGLE IMAGE SEARCH ###')
+      //console.log('### RUNNING GOOGLE IMAGE SEARCH FOR '+searchName+' ###')
 
-      searchName = eachObj['Genus'] + " " + eachObj['Species'];
+      // console.log('retreiving images for...')
+      // console.log(eachObj);
 
-      this.http.get('https://www.googleapis.com/customsearch/v1?q='+ searchName +'&searchType=image&num=4&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
+      this.http.get('https://www.googleapis.com/customsearch/v1?q='+ eachObj['Genus'] + " " + eachObj['Species'] +'&searchType=image&num=4&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
         result => {
 
           var images = [];
           var loopValue = result['items'];
 
           loopValue.forEach(eachObj => {
-            images.push(eachObj['link']);
+            //console.log(eachObj)
+            if(eachObj['link'] && eachObj['displayLink'] != 'en.wikipedia.org' && eachObj['displayLink'] != 'www.shutterstock.com' && eachObj['displayLink'] != 'www.fishbase.us'){
+              images.push(eachObj['link']);
+            }
           });
 
-          if(this.fbSpecies.length == 1){
-            this.fbSpecies[0]['Pic'] = images;
-          }else{
-            if(this.fbSpecies[this.counter]){
-              this.fbSpecies[this.counter]['Pic'] = images;
+          if(related){
+            if(this.relatedSpecies.length == 1){
+              this.relatedSpecies[0]['Pic'] = images;
+            }else{
+              if(this.relatedSpecies[this.rcounter]){
+                this.relatedSpecies[this.rcounter]['Pic'] = images;
+              }
             }
+
+            this.rcounter = this.rcounter+1;
+          }else{
+            if(this.fbSpecies.length == 1){
+              this.fbSpecies[0]['Pic'] = images;
+            }else{
+              if(this.fbSpecies[this.counter]){
+                this.fbSpecies[this.counter]['Pic'] = images;
+              }
+            }
+            this.counter = this.counter+1;
           }
 
-          this.counter = this.counter+1;
 
         }, error => {
-          console.log(error)
+          console.warn(error)
       });
     }
 
@@ -467,5 +678,59 @@ export class Tab3Page {
 
     hideTankMenu(){
       this.showSelectTank = false;
+    }
+
+    selectLetter(letter){
+      this.letterCounter = [];
+      this.selectedLetter = letter;
+      console.log('Searching For all ' + letter + '\'s in ' + this.searchQuery + '')
+
+      if(this.fbSpecies.length >= 1){
+        this.fbSpecies.forEach(species => {
+          var speciesLetter = species['Species'].charAt(0).toUpperCase();
+          var genusLetter = species['Genus'].charAt(0).toUpperCase();
+          var nameLetter;
+
+          if(species['FBname']){
+            nameLetter = species['FBname'].charAt(0).toUpperCase();
+          }else{
+            nameLetter = '';
+          }
+
+          var selectedLetter = letter.toUpperCase();
+
+          if(speciesLetter == selectedLetter || genusLetter == selectedLetter || nameLetter == selectedLetter){
+            this.letterCounter.push(species)
+          }
+        });
+      }
+
+      if (this.relatedSpecies.length >= 1){
+        this.relatedSpecies.forEach(species => {
+          var speciesLetter = species['Species'].charAt(0).toUpperCase();
+          var genusLetter = species['Genus'].charAt(0).toUpperCase();
+          var nameLetter;
+
+          if(species['FBname']){
+            nameLetter = species['FBname'].charAt(0).toUpperCase();
+          }else{
+            nameLetter = '';
+          }
+
+          var selectedLetter = letter.toUpperCase();
+
+          if(speciesLetter == selectedLetter || genusLetter == selectedLetter || nameLetter == selectedLetter){
+            this.letterCounter.push(species)
+          }
+        });
+      }
+
+      console.log(this.letterCounter);
+
+    }
+
+    clearLetter(){
+      this.letterCounter = [];
+      this.selectedLetter = '';
     }
 }

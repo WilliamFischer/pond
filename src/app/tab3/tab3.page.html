@@ -1,9 +1,50 @@
 <ion-header>
   <ion-toolbar>
     <form>
-      <ion-searchbar placeholder="Search Common or Scientific Name..." value="{{searchQuery}}" (change)="checkAPI($event, false)"></ion-searchbar>
+      <ion-searchbar placeholder="Search Common or Scientific Name..." value="{{searchQuery}}" (change)="checkAPI($event, false)" type="search" (ionClear)="clearSearch()" showSearchButton animated></ion-searchbar>
     </form>
   </ion-toolbar>
+
+  <ion-toolbar class="saltSwitch" *ngIf="!speciesSelected && !searchQuery">
+    <ion-item>
+      <ion-label>Saltwater Mode</ion-label>
+      <ion-toggle [(ngModel)]="saltwater"></ion-toggle>
+    </ion-item>
+  </ion-toolbar>
+
+  <ion-toolbar class="alphabetHeader" *ngIf="!speciesSelected && searchQuery">
+    <ion-item>
+      <ul class="alphabet">
+        <li class="letter" (click)="selectLetter('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
+        <li class="letter" (click)="selectLetter('b')" [ngClass]="{'litLetter' : selectedLetter == 'b'}">b</li>
+        <li class="letter" (click)="selectLetter('c')" [ngClass]="{'litLetter' : selectedLetter == 'c'}">c</li>
+        <li class="letter" (click)="selectLetter('d')" [ngClass]="{'litLetter' : selectedLetter == 'd'}">d</li>
+        <li class="letter" (click)="selectLetter('e')" [ngClass]="{'litLetter' : selectedLetter == 'e'}">e</li>
+        <li class="letter" (click)="selectLetter('f')" [ngClass]="{'litLetter' : selectedLetter == 'f'}">f</li>
+        <li class="letter" (click)="selectLetter('g')" [ngClass]="{'litLetter' : selectedLetter == 'g'}">g</li>
+        <li class="letter" (click)="selectLetter('h')" [ngClass]="{'litLetter' : selectedLetter == 'h'}">h</li>
+        <li class="letter" (click)="selectLetter('i')" [ngClass]="{'litLetter' : selectedLetter == 'i'}">i</li>
+        <li class="letter" (click)="selectLetter('j')" [ngClass]="{'litLetter' : selectedLetter == 'j'}">j</li>
+        <li class="letter" (click)="selectLetter('k')" [ngClass]="{'litLetter' : selectedLetter == 'k'}">k</li>
+        <li class="letter" (click)="selectLetter('l')" [ngClass]="{'litLetter' : selectedLetter == 'l'}">l</li>
+        <li class="letter" (click)="selectLetter('m')" [ngClass]="{'litLetter' : selectedLetter == 'm'}">m</li>
+        <li class="letter" (click)="selectLetter('n')" [ngClass]="{'litLetter' : selectedLetter == 'n'}">n</li>
+        <li class="letter" (click)="selectLetter('o')" [ngClass]="{'litLetter' : selectedLetter == 'o'}">o</li>
+        <li class="letter" (click)="selectLetter('p')" [ngClass]="{'litLetter' : selectedLetter == 'p'}">p</li>
+        <li class="letter" (click)="selectLetter('q')" [ngClass]="{'litLetter' : selectedLetter == 'q'}">q</li>
+        <li class="letter" (click)="selectLetter('r')" [ngClass]="{'litLetter' : selectedLetter == 'r'}">r</li>
+        <li class="letter" (click)="selectLetter('s')" [ngClass]="{'litLetter' : selectedLetter == 's'}">s</li>
+        <li class="letter" (click)="selectLetter('t')" [ngClass]="{'litLetter' : selectedLetter == 't'}">t</li>
+        <li class="letter" (click)="selectLetter('u')" [ngClass]="{'litLetter' : selectedLetter == 'u'}">u</li>
+        <li class="letter" (click)="selectLetter('v')" [ngClass]="{'litLetter' : selectedLetter == 'v'}">v</li>
+        <li class="letter" (click)="selectLetter('w')" [ngClass]="{'litLetter' : selectedLetter == 'w'}">w</li>
+        <li class="letter" (click)="selectLetter('x')" [ngClass]="{'litLetter' : selectedLetter == 'x'}">x</li>
+        <li class="letter" (click)="selectLetter('y')" [ngClass]="{'litLetter' : selectedLetter == 'y'}">y</li>
+        <li class="letter" (click)="selectLetter('z')" [ngClass]="{'litLetter' : selectedLetter == 'z'}">z</li>
+      </ul>
+    </ion-item>
+  </ion-toolbar>
+
 </ion-header>
 
 <div class="selectTankPopup" *ngIf="showSelectTank">
@@ -28,10 +69,53 @@
 
 <ion-content class="blueBack" id="coreScroll">
 
-  <div *ngIf="!speciesSelected">
+  <div *ngIf="!speciesSelected && selectedLetter">
+    <div class="topTitle centerTit">Searching For all {{selectedLetter}} in {{searchQuery}} <a (click)="clearLetter()">clear</a></div>
+
+    <div *ngIf="letterCounter.length >= 1" class="theResults">
+      <div *ngFor="let fish of letterCounter">
+        <div class="speciesBrick animated bounceInLeft">
+
+          <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
+           <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
+             <img [src]="fish.Pic[0]" />
+           </ion-slide>
+           <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
+             <img [src]="fish.Pic[1]" />
+           </ion-slide>
+           <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
+           <img [src]="fish.Pic[2]" />
+           </ion-slide>
+           <ion-slide class="imageBox" *ngIf="fish.Pic[3]">
+           <img [src]="fish.Pic[3]" />
+           </ion-slide>
+          </ion-slides>
+
+          <img (click)="selectSpecies(fish, false)" *ngIf="!fish.PicPreferredName && !fish.Pic" src="../assets/noImg.png" />
+          <img (click)="selectSpecies(fish, false)" *ngIf="fish.PicPreferredName && !fish.Pic" src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
+
+          <h2 *ngIf="fish.FBname">{{fish.FBname}}</h2>
+          <h2 *ngIf="!fish.FBname">The {{fish.Species}}</h2>
+          <h3>
+            <b (click)="showGenus(fish.Genus)"> {{fish.Genus}}</b>
+            <i> {{fish.Species}}</i> <br />
+            <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label>
+            Max Length - {{fish.Length}}cm
+          </h3>
+
+        </div>
+      </div>
+    </div>
+
+    <label class="nothingFoundTxt" *ngIf="letterCounter.length < 1"><b>No results returned :(</b></label>
+
+  </div>
+
+  <div *ngIf="!speciesSelected && !selectedLetter">
 
     <div *ngIf="searchQuery.length <= 2">
-      <img src="../assets/whiteKoiClear.png" class="koiLogo animated pulse infinite"/>
+      <img *ngIf="!saltwater" src="../assets/whiteKoiClear.png" class="koiLogo animated pulse infinite"/>
+      <img *ngIf="saltwater" src="../assets/turtleClear.png" class="koiLogo tunaLogo animated pulse infinite"/>
     </div>
 
     <div  class="loadingSpinner" *ngIf="!doneLoading && searchQuery.length >= 2 && fbSpecies.length == 0 && ourFish.length == 0 && relatedSpecies.length == 0">
@@ -82,17 +166,17 @@
         <div class="speciesBrick animated bounceInLeft"  *ngIf="fish.id >= minSpeciesReturn && fish.id <= maxSpeciesReturn">
 
           <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
-           <ion-slide class="imageBox">
-             <img *ngIf="fish.Pic[0]" src="{{fish.Pic[0]}}" />
+           <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
+             <img [src]="fish.Pic[0]" />
            </ion-slide>
-           <ion-slide class="imageBox">
-             <img *ngIf="fish.Pic[1]" src="{{fish.Pic[1]}}" />
+           <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
+             <img [src]="fish.Pic[1]" />
            </ion-slide>
-           <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[2]" src="{{fish.Pic[2]}}" />
+           <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
+           <img [src]="fish.Pic[2]" />
            </ion-slide>
-           <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[3]" src="{{fish.Pic[3]}}" />
+           <ion-slide class="imageBox" *ngIf="fish.Pic[3]">
+           <img [src]="fish.Pic[3]" />
            </ion-slide>
           </ion-slides>
 
@@ -117,15 +201,39 @@
     <div *ngIf="relatedSpecies.length >= 1" class="theResults">
       <div class="topTitle">{{relatedSpecies.length}} Species Related</div>
       <div class="speciesBrick animated bounceInLeft" *ngFor="let fish of relatedSpecies">
-        <img (click)="selectSpecies(fish, false)" *ngIf="fish.PicPreferredName" src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
-        <img (click)="selectSpecies(fish, false)" *ngIf="!fish.PicPreferredName" src="../assets/noImg.png" />
+
+        <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
+         <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
+           <img [src]="fish.Pic[0]" />
+         </ion-slide>
+         <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
+           <img [src]="fish.Pic[1]" />
+         </ion-slide>
+         <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
+         <img [src]="fish.Pic[2]" />
+         </ion-slide>
+         <ion-slide class="imageBox" *ngIf="fish.Pic[3]">
+         <img [src]="fish.Pic[3]" />
+         </ion-slide>
+        </ion-slides>
+
+        <img (click)="selectSpecies(fish, false)" *ngIf="!fish.PicPreferredName && !fish.Pic" src="../assets/noImg.png" />
+        <img (click)="selectSpecies(fish, false)" *ngIf="fish.PicPreferredName && !fish.Pic" src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
+
         <h2 *ngIf="fish.FBname">{{fish.FBname}}</h2>
         <h2 *ngIf="!fish.FBname">The {{fish.Species}}</h2>
-        <h3><b (click)="showGenus(fish.Genus)"> {{fish.Genus}}</b><i> {{fish.Species}}</i><br />
-            <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label> Max Length - {{fish.Length}}cm </h3>
+        <h3>
+          <b (click)="showGenus(fish.Genus)"> {{fish.Genus}}</b>
+          <i> {{fish.Species}}</i> <br />
+          <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label>
+          Max Length - {{fish.Length}}cm
+        </h3>
+
       </div>
     </div>
 
+    <!-- <label class="nextPageTxt" (click)="nextPage()" *ngIf="relatedSpecies.length >= 10"> -- NEXT PAGE --</label>
+    <label class="nextPageTxt prev" (click)="previousPage()" *ngIf="minSpeciesReturn >= "> -- PREVIOUS PAGE --</label> -->
   </div>
 
   <div *ngIf="speciesSelected" class="speciesSelectedMode">
@@ -134,11 +242,25 @@
 
 
     <div class="imagesBrick">
-
+      <ion-slides pager="false">
+       <ion-slide class="imageBox" *ngFor="let img of speciesImgArray; let i = index">
+         <img *ngIf="img" [src]="img" />
+        </ion-slide>
+      </ion-slides>
     </div>
 
-    <div class="informationBrick">
-      <h1>{{species.name}}</h1>
+    <div class="informationBrick" *ngIf="species">
+      <h1>{{species.species}}</h1>
+      <h2 *ngIf="species.name">"{{species.name}}"</h2>
+      <h3>{{species.genus}}</h3>
+      <ul>
+        <li>Average species length : {{species.length}}cm</li>
+        <li>Vunerability Status : {{speciesVunFloored}}/100</li>
+        <li>Danger to human status : {{species.dangerous}}</li>
+      </ul>
+      <p>{{species.comments}}</p>
+
+      <button class="addToTankButton">Add species to Tank</button>
     </div>
   </div>
 

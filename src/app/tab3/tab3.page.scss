@@ -46,7 +46,20 @@
   padding-top: 15%;
   font-weight: 800;
   font-size: 14px;
+  text-transform: capitalize;
   text-shadow: 1px 1px 1px #8e8e8e;
+}
+
+.centerTit{
+  font-size: 16px;
+  margin-left: 5%;
+
+  a{
+    text-shadow: none !important;
+    margin-left: 5%;
+    text-transform: lowercase;
+    font-size: 10px;
+  }
 }
 
 .speciesSelectedMode{
@@ -73,8 +86,12 @@
   left: 0;
   right: 0;
   display: block;
-  margin-top: 50%;
+  margin-top: 35%;
 }
+.tunaLogo{
+  opacity: 0.8;
+}
+
 
 .header-ios ion-toolbar:last-child {
     --border-width: 0 0 0px !important;
@@ -89,6 +106,8 @@
 .theResults:last-child{
   padding-bottom: 10%;
 }
+
+
 
 .speciesBrick{
   width: 100%;
@@ -203,6 +222,24 @@
   background: #fff;
 
   margin-top: 10%;
+  padding: 5%;
+
+  .imageBox{
+    width: 100% !important;
+    height: 150px !important;
+    background: #fff;
+
+    img{
+      display: inline-flex;
+      width: 100%;
+      object-fit: contain;
+      padding: 3%;
+      margin-top: 5%;
+      background: #fff;
+      border-radius: 3px
+    }
+
+  }
 }
 
 .informationBrick{
@@ -221,6 +258,59 @@
 
   margin-top: 10%;
   margin-bottom: 10%;
+
+  text-align: center;
+  font-family: 'Crimson Text', serif !important;
+  text-transform: capitalize;
+
+  h1{
+    color: #7dbbe2;
+    font-weight: italic;
+    font-family: 'Crimson Text', serif !important;
+    font-size: 32px;
+    letter-spacing: 2px;
+  }
+
+  h2{
+    color: #7dbbe2;
+    font-style: italic;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 4px;
+  }
+
+  p{
+    color: #d3d3d3;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    padding: 10%;
+    margin-top: -20%;
+  }
+
+  ul{
+    list-style: none;
+    font-size: 12px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    display: block;
+    padding: 5%;
+    padding-bottom: 35%;
+  }
+
+  .addToTankButton{
+    width: 100%;
+    padding: 8%;
+    color: #fff;
+    text-transform: uppercase;
+    background: #7dbbe2;
+    text-shadow: 2px 2px 2px black;
+    display: block;
+  }
 }
 
 .addtoTankIcon{
@@ -272,4 +362,65 @@
   position: absolute;
   background: rgba(0,0,0,0.3);
   z-index: 8000;
+}
+
+
+.saltSwitch{
+  *{
+    --inner-border-width: 0px 0px 0px 0px !important;
+  }
+
+  ion-label{
+    font-family: 'Crimson Text', serif !important;
+    font-size: 21px;
+    color: #8e8e8e;
+    text-align: right;
+  }
+}
+
+.alphabetHeader{
+
+  height: 5vh;
+
+  *{
+    --inner-border-width: 0px 0px 0px 0px !important;
+  }
+
+  .alphabet{
+    display: block;
+    width: 400px;
+    height: 100%;
+    list-style: none;
+    bottom: 0;
+    margin-left: -12.5%;
+    text-align: center;
+    position: relative;
+    display: flex;
+    overflow-x: auto;
+
+    .letter{
+      width: 6px;
+      color: #8e8e8e;
+      margin-left: 3.5px;
+      margin-right: 3.5px;
+      height: 100%;
+      line-height: 12px;
+      font-size: 12px;
+      text-transform: uppercase;
+      font-family: 'Crimson Text', serif !important;
+      display: block;
+      text-align: center !important;
+    }
+
+    .litLetter{
+      color: lightblue;
+    }
+  }
+
+  ion-scroll {
+    white-space: nowrap;
+    height: 250px;
+}
+
+
 }
