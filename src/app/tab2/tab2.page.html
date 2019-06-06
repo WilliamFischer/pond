@@ -146,15 +146,15 @@
       </ion-item> -->
     </ion-list>
 
-    <ion-list class="speciesList">
+    <ion-list *ngIf="fish_in_tank != null" class="speciesList">
       <ion-list-header>
-        <ion-label>Core Tank <a class="lilEdit" href="#">edit</a></ion-label>
+        <ion-label>Contains {{ fish_in_tank.length }} fish<a (click)="openSpeciesSearch()" class="lilEdit">add</a></ion-label>
       </ion-list-header>
-      <ion-item (click)="selectSpecies('Ghost Knife')">1x &nbsp; <b> Ghost Knife </b> &nbsp; <i>(Apteronotus Albifrons)</i></ion-item>
-      <ion-item (click)="selectSpecies('Butterflyfish')">1x &nbsp; <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
+      <ion-item *ngFor="let fish of fish_in_tank">{{fish['quantity']}} &nbsp; <b> {{fish.comm_name | titlecase}} </b> &nbsp; <span class="fish-sci-name"><i>({{fish.sci_name | titlecase}})</i></span></ion-item>
+      <!-- <ion-item (click)="selectSpecies('Butterflyfish')">1x &nbsp; <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
       <ion-item (click)="selectSpecies('Pinoy Blue Angelfish')">2x &nbsp; <b> Pinoy Blue Angelfish </b> &nbsp; <i>(Pterophyllum)</i></ion-item>
       <ion-item (click)="selectSpecies('Kuhli Loach')">4x &nbsp; <b> Kuhli Loach </b> &nbsp; <i>(Actinopterygii)</i></ion-item>
-      <ion-item (click)="selectSpecies('Otocinclus')">1x &nbsp; <b> Otocinclus </b> &nbsp; <i>(Hypoptopomatinae)</i></ion-item>
+      <ion-item (click)="selectSpecies('Otocinclus')">1x &nbsp; <b> Otocinclus </b> &nbsp; <i>(Hypoptopomatinae)</i></ion-item> -->
     </ion-list>
   </div>
 

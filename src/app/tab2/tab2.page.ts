@@ -42,6 +42,8 @@ export class Tab2Page {
     nitrate: 0.0
   }
 
+  fish_in_tank: any;
+
   tanks: any;
   doneLoadingTanks = false;
 
@@ -78,6 +80,51 @@ export class Tab2Page {
       console.log('Gotta log in');
       // this.logout();
     }
+  }
+
+  // fish_in_tank = {
+  //   general_name: '',
+  //   scientific_name: '',
+  //   specCode: 1023,
+  //   quantity: 1
+  // }
+
+  getFish() {
+    var scope = this;
+    var _fishlist = [];
+    var tank_fish = this.fireStore.collection('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'] + '/species');
+    tank_fish.get().forEach(data => {
+      var _data = data.docs;
+      _data.forEach(record => {
+        var fishData = record.data();
+        console.log(fishData);
+        _fishlist.push(fishData);
+      });
+      return;
+    }).then(function() {
+      console.log(_fishlist);
+      var _allfish = [];
+      _fishlist.forEach(fish => {
+        let query = scope.fireStore.doc('Species/' + fish['specCode']).get().toPromise()
+        .then(data => {
+          let _comm_name = fish['name'];
+          let _sci_name = data.data()['genus'] + ' ' + data.data()['species'];
+          let _quantity = 0;
+          let _specCode = fish['specCode'];
+          let fishObj = {
+            'comm_name': _comm_name,
+            'sci_name': _sci_name,
+            'spec_code': _specCode,
+            'quantity': _quantity
+          }
+          _allfish.push(fishObj);
+          return;
+        }).then(function() {
+          scope.fish_in_tank = _allfish;
+          console.log(scope.fish_in_tank);
+        });
+      });
+    });
   }
 
   openNewChemistrySession() {
@@ -163,6 +210,7 @@ export class Tab2Page {
 
         this.initChemistry();
         this.calculateAveragePH();
+        this.getFish();
 
       } else {
         console.log("Cannot find tank data");
@@ -282,6 +330,10 @@ export class Tab2Page {
     this.afAuth.auth.signOut().then(() => {
        this.router.navigateByUrl('/login');
     });
+  }
+
+  openSpeciesSearch() {
+    this.router.navigateByUrl('/tabs/species');
   }
 
   // Add a tank image to the database
