@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <form>
-      <ion-searchbar placeholder="Search Common or Scientific Name..." value="{{searchQuery}}" (change)="checkAPI($event, false)" type="search" (ionClear)="clearSearch()" showSearchButton animated></ion-searchbar>
+    <form action=".">
+      <ion-searchbar placeholder="Search Common or Scientific Name..." value="{{searchQuery}}" (change)="checkAPI($event, false)" type="search" (ionClear)="clearSearch()" [(ngModel)]="singleLetterQuery" [ngModelOptions]="{standalone: true}" showSearchButton animated></ion-searchbar>
     </form>
   </ion-toolbar>
 
@@ -70,7 +70,7 @@
 <ion-content class="blueBack" id="coreScroll">
 
   <div *ngIf="!speciesSelected && selectedLetter">
-    <div class="topTitle centerTit">Searching For all {{selectedLetter}} in {{searchQuery}} <a (click)="clearLetter()">clear</a></div>
+    <div class="topTitle centerTit">{{letterCounter.length}} results for {{selectedLetter}} in {{searchQuery}} <a (click)="clearLetter()">clear</a></div>
 
     <div *ngIf="letterCounter.length >= 1" class="theResults">
       <div *ngFor="let fish of letterCounter">
