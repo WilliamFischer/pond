@@ -166,22 +166,26 @@
         <div class="speciesBrick animated bounceInLeft"  *ngIf="fish.id >= minSpeciesReturn && fish.id <= maxSpeciesReturn">
 
           <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
+           <ion-slide class="imageBox">
+             <img [src]="fish.Pic[0]" *ngIf="fish.Pic[0]" />
+             <img src="../assets/noImg.png" *ngIf="!fish.Pic[0]" />
+           </ion-slide>
+           <ion-slide class="imageBox">
+             <img [src]="fish.Pic[1]" *ngIf="fish.Pic[1]" />
+             <img src="../assets/noImg.png" *ngIf="!fish.Pic[1]" />
+           </ion-slide>
+           <ion-slide class="imageBox">
+             <img [src]="fish.Pic[2]"  *ngIf="fish.Pic[2]" />
+             <img src="../assets/noImg.png" *ngIf="!fish.Pic[2]" />
+           </ion-slide>
+           <ion-slide class="imageBox">
+             <img [src]="fish.Pic[3]" *ngIf="fish.Pic[3]" />
+             <img src="../assets/noImg.png" *ngIf="!fish.Pic[3]" />
+           </ion-slide>
            <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
-             <img [src]="fish.Pic[0]" />
-           </ion-slide>
-           <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
-             <img [src]="fish.Pic[1]" />
-           </ion-slide>
-           <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
-           <img [src]="fish.Pic[2]" />
-           </ion-slide>
-           <ion-slide class="imageBox" *ngIf="fish.Pic[3]">
-           <img [src]="fish.Pic[3]" />
+             <img src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
            </ion-slide>
           </ion-slides>
-
-          <img (click)="selectSpecies(fish, false)" *ngIf="!fish.PicPreferredName && !fish.Pic" src="../assets/noImg.png" />
-          <img (click)="selectSpecies(fish, false)" *ngIf="fish.PicPreferredName && !fish.Pic" src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
 
           <h2 *ngIf="fish.FBname">{{fish.FBname}}</h2>
           <h2 *ngIf="!fish.FBname">The {{fish.Species}}</h2>
@@ -203,22 +207,27 @@
       <div class="speciesBrick animated bounceInLeft" *ngFor="let fish of relatedSpecies">
 
         <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
+         <ion-slide class="imageBox">
+           <img [src]="fish.Pic[0]" *ngIf="fish.Pic[0]" />
+           <img src="../assets/noImg.png" *ngIf="!fish.Pic[0]" />
+         </ion-slide>
+         <ion-slide class="imageBox">
+           <img [src]="fish.Pic[1]" *ngIf="fish.Pic[1]" />
+           <img src="../assets/noImg.png" *ngIf="!fish.Pic[1]" />
+         </ion-slide>
+         <ion-slide class="imageBox">
+           <img [src]="fish.Pic[2]"  *ngIf="fish.Pic[2]" />
+           <img src="../assets/noImg.png" *ngIf="!fish.Pic[2]" />
+         </ion-slide>
+         <ion-slide class="imageBox">
+           <img [src]="fish.Pic[3]" *ngIf="fish.Pic[3]" />
+           <img src="../assets/noImg.png" *ngIf="!fish.Pic[3]" />
+         </ion-slide>
          <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
-           <img [src]="fish.Pic[0]" />
-         </ion-slide>
-         <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
-           <img [src]="fish.Pic[1]" />
-         </ion-slide>
-         <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
-         <img [src]="fish.Pic[2]" />
-         </ion-slide>
-         <ion-slide class="imageBox" *ngIf="fish.Pic[3]">
-         <img [src]="fish.Pic[3]" />
+           <img src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
          </ion-slide>
         </ion-slides>
 
-        <img (click)="selectSpecies(fish, false)" *ngIf="!fish.PicPreferredName && !fish.Pic" src="../assets/noImg.png" />
-        <img (click)="selectSpecies(fish, false)" *ngIf="fish.PicPreferredName && !fish.Pic" src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
 
         <h2 *ngIf="fish.FBname">{{fish.FBname}}</h2>
         <h2 *ngIf="!fish.FBname">The {{fish.Species}}</h2>
@@ -238,8 +247,7 @@
 
   <div *ngIf="speciesSelected" class="speciesSelectedMode">
 
-     <ion-icon name="arrow-back" (click)="unSelectSpecies()" class="backArrow"></ion-icon>
-
+    <ion-icon name="arrow-back" (click)="unSelectSpecies()" class="backArrow"></ion-icon>
 
     <div class="imagesBrick">
       <ion-slides pager="false">

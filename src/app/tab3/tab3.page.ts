@@ -72,7 +72,7 @@ export class Tab3Page {
 
   // COMMANDER
   checkAPI($event, autoQuery){
-      this.keyboard.hide(); 
+      this.keyboard.hide();
       this.speciesSelected = false;
 
       if(autoQuery.length >= 1){
@@ -570,7 +570,7 @@ export class Tab3Page {
     //var searchName = fish['Genus'] + " " + fish['Species'];
     // }
 
-    console.log(fish)
+    //console.log(fish)
 
     this.http.get('https://www.googleapis.com/customsearch/v1?q='+ fish['Genus'] + " " + fish['Species'] + '&searchType=image&num=10&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
       result => {
