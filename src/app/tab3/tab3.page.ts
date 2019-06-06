@@ -25,7 +25,6 @@ export class Tab3Page {
   saltwater: boolean;
   searchQuery: string = '';
   selectedLetter: string = ''
-  selectedSpecCode: string = '';
   species : any = [{
     name : '',
     species : '',
@@ -37,6 +36,7 @@ export class Tab3Page {
   fbSpecies: any = [];
   ourFish: any = [];
   relatedSpecies: any = [];
+  fullImageCollection: any = [];
   tanks: any = [];
   toAddToTankSpecies: any;
   coreCollection: any;
@@ -87,6 +87,7 @@ export class Tab3Page {
       this.rcounter = 0;
       this.speciesImgArray = [];
       this.googleImageArray = [];
+      this.fullImageCollection = [];
       this.species = [];
       this.letterCounter = [];
       this.selectedLetter = '';
@@ -112,6 +113,7 @@ export class Tab3Page {
     this.rcounter = 0;
     this.speciesImgArray = [];
     this.googleImageArray = [];
+    this.fullImageCollection = [];
     this.species = [];
     this.letterCounter = [];
     this.selectedLetter = '';
@@ -129,37 +131,40 @@ export class Tab3Page {
     console.clear();
 
     this.speciesImgArray = [];
+    this.fullImageCollection = [];
     this.species = [];
     this.speciesSelected = true;
 
     if(!inDB){
       console.log("NEW TO SYSTEM... ADDING")
       this.coreCollection.unsubscribe();
-
       this.getMoreGoogleImages(fish);
-      this.selectedSpecCode = fish['SpecCode']
-      this.populateSpecies();
+
+
     }else{
       console.log('Showing existing fish...');
       this.coreCollection.unsubscribe();
 
-      this.selectedSpecCode = fish['specCode']
-      this.populateSpecies();
+      var specCode = fish['specCode']
+      this.populateSpecies(specCode);
     }
 
   }
 
-  populateSpecies(){
-    this.fireStore.doc('Species/' + this.selectedSpecCode).valueChanges().subscribe(values => {
+  populateSpecies(specCode){
+    //console.log(specCode);
+
+    this.fireStore.doc('Species/' + specCode).valueChanges().subscribe(values => {
       this.species = values;
       console.log(this.species);
 
-      this.fireStore.collection('Species/' + this.selectedSpecCode + '/Pic').valueChanges().subscribe(values => {
+      this.fireStore.collection('Species/' + specCode + '/Pic').valueChanges().subscribe(values => {
         values.forEach(eachImg => {
+          //console.log(eachImg['url']);
           this.speciesImgArray.push(eachImg['url'])
         });
 
-        console.log(this.speciesImgArray);
+        //console.log(this.speciesImgArray);
       });
 
 
@@ -183,10 +188,8 @@ export class Tab3Page {
 
   // Leave detail page and clear selected species
   unSelectSpecies(){
-    this.speciesSelected = false;
-    this.selectedSpecCode = ''
-    this.speciesImgArray = [];
-    this.species = [];
+    var searchQuery = this.searchQuery;
+    this.checkAPI(null, searchQuery);
   }
 
   nextPage(){
@@ -543,6 +546,10 @@ export class Tab3Page {
 
       counter++
     });
+
+    var specCode = fish['SpecCode']
+    this.populateSpecies(specCode);
+
   }
 
   plantSearch(searchquery){
@@ -560,24 +567,26 @@ export class Tab3Page {
     //var searchName = fish['Genus'] + " " + fish['Species'];
     // }
 
-    var loopValue = [];
+    console.log(fish)
 
     this.http.get('https://www.googleapis.com/customsearch/v1?q='+ fish['Genus'] + " " + fish['Species'] + '&searchType=image&num=10&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
       result => {
-        loopValue.push(result['items']);
+        this.fullImageCollection.push(result['items']);
+
+        console.log(this.fullImageCollection);
+        this.fullImageCollection.forEach(eachObj => {
+          //console.log(eachObj);
+          eachObj.forEach(eachObj2 => {
+            this.googleImageArray.push(eachObj2['link']);
+          });
+        });
+
+        //console.log(this.googleImageArray);
+        this.addToDatabase(fish);
+
       }, error => {
         console.log(error)
-    }, () => {
-
-      loopValue.forEach(eachObj => {
-        this.googleImageArray.push(eachObj['link']);
-      });
-
-      console.log(this.googleImageArray);
-      this.addToDatabase(fish);
     });
-
-
   }
 
   // GENERATE IMAGES FROM GOOGLE FOR CARDS
