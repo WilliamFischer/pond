@@ -1,0 +1,47 @@
+
+
+.downArrow{
+  margin: 5%;
+  font-size: 32px !important;
+}
+
+.paddingSpace{
+  padding: 10%;
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.addImageSquare{
+  width: 100%;
+  height: 200px;
+  border: 2px solid #8e8e8e;
+  text-align: center;
+  padding-top: 30%;
+}
+
+input{
+  width: 100%;
+  border: 1px solid #e8e8e8;
+  padding: 3%;
+}
+
+textarea{
+  width: 100%;
+  border: 1px solid #e8e8e8;
+  padding: 3%;
+}
+
+.addButton{
+  width: 100%;
+  padding: 5%;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-top: 30%;
+  font-size: 12px;
+  font-family: 'Crimson Text', serif !important;
+  background: linear-gradient(to bottom right, #78CBE5, #ABDEE0);
+}

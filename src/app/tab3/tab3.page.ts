@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonContent, AlertController } from '@ionic/angular';
+import { IonContent, AlertController, ModalController } from '@ionic/angular';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -7,6 +7,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 
 import {HttpClient} from "@angular/common/http";
 import { map } from 'rxjs/operators';
+import { AddVariationModelPage} from '../add-variation-model/add-variation-model.page'
 
 @Component({
   selector: 'app-tab3',
@@ -24,6 +25,7 @@ export class Tab3Page {
   showTankListLoader: boolean;
   showTankListTick: boolean;
   saltwater: boolean;
+  speciesLoaded: boolean;
   searchQuery: string = '';
   selectedLetter: string = ''
   species : any = [{
@@ -31,6 +33,7 @@ export class Tab3Page {
     species : '',
     genus : '',
   }];
+  variations : any = []
   speciesVunFloored;
   speciesImgArray: any = [];
   letterCounter: any = [];
@@ -50,6 +53,7 @@ export class Tab3Page {
   constructor(
     private http:HttpClient,
     public fireStore: AngularFirestore,
+    private modalCtrl:ModalController,
     public afAuth: AngularFireAuth,
     private keyboard: Keyboard){
 
@@ -82,7 +86,7 @@ export class Tab3Page {
       }
 
       this.searchQuery = searchQuery;
-
+      this.selectLetter = this.selectLetter;
       this.fbSpecies = [];
       this.ourFish = [];
       this.relatedSpecies = [];
@@ -92,8 +96,6 @@ export class Tab3Page {
       this.googleImageArray = [];
       this.fullImageCollection = [];
       this.species = [];
-      this.letterCounter = [];
-      this.selectedLetter = '';
 
       if(searchQuery.length > 2){
         // console.log('Running API for ' + searchQuery + '...');
@@ -138,20 +140,32 @@ export class Tab3Page {
     this.species = [];
     this.speciesSelected = true;
 
+    this.getVariations(fish);
+
+    //console.log(fish);
+
     if(!inDB){
       console.log("NEW TO SYSTEM... ADDING")
       this.coreCollection.unsubscribe();
       this.getMoreGoogleImages(fish);
-
-
     }else{
       console.log('Showing existing fish...');
       this.coreCollection.unsubscribe();
 
-      var specCode = fish['specCode']
+      var specCode;
+
+      if(!fish['specCode']){
+        specCode = fish['SpecCode']
+      }else{
+        specCode = fish['specCode']
+      }
+
       this.populateSpecies(specCode);
+
+      this.speciesLoaded = true;
     }
 
+    this.content.scrollToTop(400);
   }
 
   populateSpecies(specCode){
@@ -192,6 +206,8 @@ export class Tab3Page {
   // Leave detail page and clear selected species
   unSelectSpecies(){
     var searchQuery = this.searchQuery;
+    this.clearSearch();
+    this.variations = null;
     this.checkAPI(null, searchQuery);
   }
 
@@ -250,7 +266,7 @@ export class Tab3Page {
         if(this.ourFish.length){
           console.log(this.ourFish);
         }else{
-          console.log('no local species')
+          //console.log('no local species')
         }
 
         this.runFishbaseChecker(searchQuery);
@@ -299,7 +315,7 @@ export class Tab3Page {
       this.fbSpecies[arrayLength]['id'] = arrayLength;
       arrayLength++;
 
-      if(this.fbSpecies.length <= 10){
+      if(arrayLength <= 11){
         this.getGoogleImages(relatedFish, false);
       }else{
         console.log("TOO MANY SPECIES TO RUN GOOGLE IMAGES")
@@ -366,8 +382,9 @@ export class Tab3Page {
                   this.getFullFishResult(subSpecies);
                 }
               }
-
             });
+
+            this.areYouSureTheseArentInTheDatabase();
 
         }, error => {
           console.log("ALL MATCHES FAILED ON COMMON NAMES");
@@ -423,6 +440,61 @@ export class Tab3Page {
 
 
       });
+  }
+
+
+  areYouSureTheseArentInTheDatabase(){
+    console.log("### RECHECKING LOCAL DATABASE ###");
+
+    setTimeout(()=>{
+      if(this.ourFish.length <= 1){
+        this.fireStore.collection('Species').valueChanges().subscribe(values => {
+          values.forEach(localSpecies => {
+
+            if(this.fbSpecies.length != 0){
+              this.fbSpecies.forEach(species => {
+                if(localSpecies['specCode'] == species['SpecCode']){
+                  if(!this.saltwater){
+                    if(localSpecies['fresh'] == -1){
+                      this.ourFish.push(localSpecies);
+                    }
+                  }else{
+                    if(localSpecies['fresh'] != -1){
+                      this.ourFish.push(localSpecies);
+                    }
+                  }
+                }
+              });
+            }
+
+            if(this.relatedSpecies.length != 0){
+              this.relatedSpecies.forEach(species => {
+                if(localSpecies['specCode'] == species['SpecCode']){
+                  if(!this.saltwater){
+                    if(localSpecies['fresh'] == -1){
+                      this.ourFish.push(localSpecies);
+                    }
+                  }else{
+                    if(localSpecies['fresh'] != -1){
+                      this.ourFish.push(localSpecies);
+                    }
+                  }
+                }
+              });
+            }
+
+          });
+
+          console.log(this.ourFish)
+        });
+      }else{
+        console.log('Ourfish already seems to be populated, so a re-check is not required.')
+      }
+    }, 1000);
+
+
+
+
   }
 
   // COMPARE AND DISPLAY RELATED SPECIES
@@ -520,6 +592,7 @@ export class Tab3Page {
     }else{
       commName = fish.Genus + " " + fish.Species;
     }
+    console.log(fish);
 
     speciesAddress.set({
       name: commName.toLowerCase(),
@@ -534,9 +607,11 @@ export class Tab3Page {
       SpeciesRefNo: fish.SpeciesRefNo,
       vulnerability: fish.Vulnerability,
       fresh: fish.Fresh
-    })
+    });
 
     console.log("SPECIES ADDED TO SYSTEM")
+
+    this.speciesLoaded = true;
 
     // SAVE PHOTOS TO DATABASE
     var counter = 0;
@@ -572,25 +647,29 @@ export class Tab3Page {
 
     //console.log(fish)
 
-    this.http.get('https://www.googleapis.com/customsearch/v1?q='+ fish['Genus'] + " " + fish['Species'] + '&searchType=image&num=10&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
+    this.http.get('https://www.googleapis.com/customsearch/v1?q='+ fish['Genus'] + "%20" + fish['Species'] + '&searchType=image&num=10&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
       result => {
         this.fullImageCollection.push(result['items']);
-
-        console.log(this.fullImageCollection);
-        this.fullImageCollection.forEach(eachObj => {
-          //console.log(eachObj);
-          eachObj.forEach(eachObj2 => {
-            this.googleImageArray.push(eachObj2['link']);
-          });
-        });
-
-        //console.log(this.googleImageArray);
-        this.addToDatabase(fish);
-
       }, error => {
         console.log(error)
+      }, () => {
+      console.log(this.fullImageCollection);
+      this.fullImageCollection.forEach(eachObj => {
+        //console.log(eachObj);
+        eachObj.forEach(eachObj2 => {
+          if(eachObj2['link'] && eachObj2['displayLink'] != 'en.wikipedia.org' && eachObj2['displayLink'] != 'www.shutterstock.com' && eachObj2['displayLink'] != 'www.fishbase.us'){
+            this.googleImageArray.push(eachObj2['link']);
+          }
+
+        });
+      });
+
+      //console.log(this.googleImageArray);
+      this.addToDatabase(fish);
+
     });
   }
+
 
   // GENERATE IMAGES FROM GOOGLE FOR CARDS
   getGoogleImages(eachObj, related){
@@ -611,7 +690,8 @@ export class Tab3Page {
       // console.log('retreiving images for...')
       // console.log(eachObj);
 
-      this.http.get('https://www.googleapis.com/customsearch/v1?q='+ eachObj['Genus'] + " " + eachObj['Species'] +'&searchType=image&num=4&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
+      //console.log("getting images for " + eachObj['Species'])
+      this.http.get('https://www.googleapis.com/customsearch/v1?q='+ eachObj['Genus'] + "%20" + eachObj['Species'] +'&searchType=image&num=4&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(
         result => {
 
           var images = [];
@@ -738,6 +818,9 @@ export class Tab3Page {
       }
 
       console.log(this.letterCounter);
+      this.letterCounter.forEach(eachObj => {
+        this.getGoogleImages(eachObj, false);
+      });
 
     }
 
@@ -745,4 +828,25 @@ export class Tab3Page {
       this.letterCounter = [];
       this.selectedLetter = '';
     }
+
+    async addVariation(species){
+      console.log('Opening Variation Model')
+      const showAddVariationModal = await this.modalCtrl.create({
+       component: AddVariationModelPage,
+       componentProps: { species: species }
+     });
+
+     return await showAddVariationModal.present();
+    }
+
+    getVariations(species){
+      var specCode = species['specCode'];
+
+      this.fireStore.collection('Species/' + specCode + "/Variations").valueChanges().subscribe(values => {
+        this.variations = values;
+        console.log(this.variations);
+      });
+    }
+
+
 }

@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-icon class="downArrow" name="arrow-round-down" (click)="goDown()"></ion-icon>
+    <ion-title>Variation Information</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="paddingSpace">
+    <form (ngSubmit)="saveVariation()">
+
+      <ion-list>
+        <ion-item>
+          <div class="addImageSquare">Upload Images</div>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Variation Name (i.e. L333 or White Dragon)</ion-label>
+          <ion-input type="text" [(ngModel)]="variation.name" name="name" name="image" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Variation Features or Comments</ion-label>
+          <ion-textarea [(ngModel)]="variation.comments" name="comments" required></ion-textarea>
+        </ion-item>
+
+        <button class="addButton" type="submit">Upload Variation</button>
+      </ion-list>
+
+    </form>
+  </div>
+</ion-content>

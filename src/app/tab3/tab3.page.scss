@@ -138,14 +138,10 @@
   }
 
   h2{
-    white-space: nowrap;
     font-size: 18px;
     font-weight: 900;
     color: #57637C;
-    white-space: nowrap;
-    overflow: hidden;
     text-align: center;
-    text-overflow: ellipsis;
     font-family: 'Crimson Text', serif !important;
     text-transform: capitalize;
   }
@@ -244,7 +240,7 @@
 
 .informationBrick{
   width: 80%;
-  height: 400px;
+  height: auto;
   border-radius: 10px;
 
   display: block;
@@ -286,7 +282,7 @@
     font-weight: 400;
     font-size: 12px;
     padding: 10%;
-    margin-top: -50%;
+    margin-top: -30%;
   }
 
   ul{
@@ -308,8 +304,43 @@
     color: #fff;
     text-transform: uppercase;
     background: #7dbbe2;
-    text-shadow: 2px 2px 2px black;
+    text-shadow: 1px 1px black;
     display: block;
+  }
+
+  h5{
+    font-size: 12px;
+    z-index: 9000;
+    display: block;
+    color: #7dbbe2;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+    margin-top: 0%;
+  }
+
+  .speciesGrid{
+    width: 100%;
+    display: flex;
+
+    .speciesBlock{
+      width: 50%;
+      height: 50px;
+      margin: 5%;
+      background: 0px 0px 10px black;
+      margin: 10%;
+    }
+  }
+
+  .noVariations{
+    font-size: 12px;
+    color: #8e8e8e;
+    padding: 10%;
+    text-align: center;
+    margin-top: 5%;
   }
 }
 
@@ -353,6 +384,10 @@
       color: #00b35a;
   }
 
+}
+
+.variationsBrick{
+  padding-bottom: 5%;
 }
 
 .backgroundDimmer{

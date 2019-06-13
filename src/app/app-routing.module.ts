@@ -8,7 +8,8 @@ const routes: Routes = [
   { path: 'tank-detail/:tankname', loadChildren: './tank-detail/tank-detail.module#TankDetailPageModule' },
   { path: 'add-shop-modal', loadChildren: './add-shop-modal/add-shop-modal.module#AddShopModalPageModule' },
   { path: 'shop-detail-model', loadChildren: './shop-detail-model/shop-detail-model.module#ShopDetailModelPageModule' },
-  { path: 'select-tank-substrate', loadChildren: './modal/select-tank-substrate/select-tank-substrate.module#SelectTankSubstratePageModule' }
+  { path: 'select-tank-substrate', loadChildren: './modal/select-tank-substrate/select-tank-substrate.module#SelectTankSubstratePageModule' },
+  { path: 'add-variation-model', loadChildren: './add-variation-model/add-variation-model.module#AddVariationModelPageModule' }
 ];
 @NgModule({
   imports: [

@@ -14,6 +14,7 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
 import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
+import { AddVariationModelPage} from './add-variation-model/add-variation-model.page'
 
 import { SelectTankSubstratePage } from './modal/select-tank-substrate/select-tank-substrate.page'
 
@@ -37,11 +38,13 @@ import { AuthProvider } from './providers/auth/auth';
     AppComponent,
     AddShopModalPage,
     ShopDetailModelPage,
+    AddVariationModelPage,
     SelectTankSubstratePage
   ],
   entryComponents: [
     AddShopModalPage,
     ShopDetailModelPage,
+    AddVariationModelPage,
     SelectTankSubstratePage
   ],
   imports: [
