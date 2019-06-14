@@ -17,6 +17,7 @@ import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
 import { AddVariationModelPage} from './add-variation-model/add-variation-model.page'
 
 import { SelectTankSubstratePage } from './modal/select-tank-substrate/select-tank-substrate.page'
+import { FishDetailPage } from './modal/fish-detail/fish-detail.page';
 
 import { LoadingController } from '@ionic/angular';
 
@@ -39,13 +40,15 @@ import { AuthProvider } from './providers/auth/auth';
     AddShopModalPage,
     ShopDetailModelPage,
     AddVariationModelPage,
-    SelectTankSubstratePage
+    SelectTankSubstratePage,
+    FishDetailPage
   ],
   entryComponents: [
     AddShopModalPage,
     ShopDetailModelPage,
     AddVariationModelPage,
-    SelectTankSubstratePage
+    SelectTankSubstratePage,
+    FishDetailPage
   ],
   imports: [
     BrowserModule,

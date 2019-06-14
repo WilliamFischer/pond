@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, NavParams } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -11,6 +11,7 @@ import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import * as firebase from 'firebase/app';
 
 import { SelectTankSubstratePage } from '../modal/select-tank-substrate/select-tank-substrate.page';
+import { FishDetailPage } from '../modal/fish-detail/fish-detail.page';
 
 @Component({
   selector: 'app-tab2',
@@ -271,6 +272,26 @@ export class Tab2Page {
       console.log("tank substrate cannot be 0 or null ! Try again dweeb :)");
     }
   }
+
+  // Show fish detail modal
+  async openFishDetailModal(fish) {
+   console.log("creating fish detail modal");
+   console.log(fish);
+   const modal = await this.modalCtrl.create({
+     component: FishDetailPage,
+     componentProps: { fish: fish }
+   });
+
+   modal.onDidDismiss().then(modalData => {
+     // this.updateCallType(modalData.data);
+     console.log("Fish edit finished");
+     console.log(modalData.data);
+     // Make sure you pass the value object
+     // this.updateTankSubstrate(modalData.data["value"]);
+   })
+
+   return await modal.present();
+ }
 
     // Show susbstrate edit modal
     async presentSubstrateEditModal() {

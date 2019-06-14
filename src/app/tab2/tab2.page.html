@@ -155,7 +155,7 @@
         <ion-label>No Fish Yet<a (click)="openSpeciesSearch()" class="lilEdit">+ add your first fish</a></ion-label>
       </ion-list-header>
       <div *ngIf="fish_in_tank != null">
-      <ion-item *ngFor="let fish of fish_in_tank">{{fish['quantity']}} &nbsp; <b> {{fish.comm_name | titlecase}} </b> &nbsp; <span class="fish-sci-name"><i>({{fish.sci_name | titlecase}})</i></span></ion-item>
+      <ion-item *ngFor="let fish of fish_in_tank" (click)="openFishDetailModal(fish)">{{fish['quantity']}} &nbsp; <b> {{fish.comm_name | titlecase}} </b> &nbsp; <span class="fish-sci-name"><i>({{fish.sci_name | titlecase}})</i></span></ion-item>
       </div>
       <!-- <ion-item (click)="selectSpecies('Butterflyfish')">1x &nbsp; <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
       <ion-item (click)="selectSpecies('Pinoy Blue Angelfish')">2x &nbsp; <b> Pinoy Blue Angelfish </b> &nbsp; <i>(Pterophyllum)</i></ion-item>
