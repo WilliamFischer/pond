@@ -28,7 +28,7 @@ export class AddVariationModelPage implements OnInit {
   }
 
   saveVariation(){
-    var variationCode = Math.floor(Math.random()*90000) + 10000;;
+    var variationCode = Math.floor(Math.random()*90000) + 10000;
     let variationAddress = this.fireStore.doc<any>('Species/' + this.returnedSpecies['specCode'] + '/Variations/' + variationCode);
 
     variationAddress.set({

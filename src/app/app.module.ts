@@ -33,6 +33,7 @@ import { FormsModule } from '@angular/forms';
 
 // Providers
 import { AuthProvider } from './providers/auth/auth';
+import { ImagePreloadDirectiveDirective } from './image-preload-directive.directive';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { AuthProvider } from './providers/auth/auth';
     ShopDetailModelPage,
     AddVariationModelPage,
     SelectTankSubstratePage,
-    FishDetailPage
+    FishDetailPage,
+    ImagePreloadDirectiveDirective
   ],
   entryComponents: [
     AddShopModalPage,

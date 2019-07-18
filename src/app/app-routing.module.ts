@@ -10,7 +10,8 @@ const routes: Routes = [
   { path: 'shop-detail-model', loadChildren: './shop-detail-model/shop-detail-model.module#ShopDetailModelPageModule' },
   { path: 'select-tank-substrate', loadChildren: './modal/select-tank-substrate/select-tank-substrate.module#SelectTankSubstratePageModule' },
   { path: 'add-variation-model', loadChildren: './add-variation-model/add-variation-model.module#AddVariationModelPageModule' },
-  { path: 'fish-detail-modal', loadChildren: './modal/fish-detail/fish-detail.module#FishDetailPageModule' }
+  { path: 'fish-detail-modal', loadChildren: './modal/fish-detail/fish-detail.module#FishDetailPageModule' },
+  { path: 'mainfishdetail', loadChildren: './mainfishdetail/mainfishdetail.module#MainfishdetailPageModule' }
 ];
 @NgModule({
   imports: [
