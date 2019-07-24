@@ -1,15 +1,24 @@
-h1{
+.topTitle1{
   font-weight: 800;
   font-size: 34px !important;
+  z-index: 9000;
+  display: block;
 }
 
-h2{
+.topTitle2{
+  font-weight: 800;
+  font-size: 34px !important;
+  margin-top: -10%;
+  margin-bottom: 10%;
+}
+
+.topTitle2{
   font-weight: 400;
   font-size: 24px !important;
   white-space: nowrap;
 }
 
-h3{
+.topTitle3{
   font-weight: 200;
   font-size: 18px !important;
   margin-top: -20%;
@@ -30,6 +39,8 @@ h3{
   border-radius: 10px;
   margin-top: 10%;
   object-fit: cover;
+  z-index: 9000;
+  display: block;
 }
 
 .infoSection{
@@ -43,25 +54,36 @@ h3{
 }
 
 .splittingLine{
-  width: 100vw;
+  width: 100%;
   margin-top: 10%;
   height: 1px;
-  background: #e8e8e8;
+
+  padding: 0% !important;
+  background: #FEFFFF;
+  font-family: 'Crimson Text', serif !important;
 }
 
 .fadedBack{
-  background: url(https://scontent.fakl2-1.fna.fbcdn.net/v/t1.0-9/13882185_1354509061245524_9026815624279005373_n.jpg?_nc_cat=107&_nc_ht=scontent.fakl2-1.fna&oh=473e087018200dd55f4433bd9da7d568&oe=5D37C6FE);
   width: 100%;
-  height: 392px;
-  margin-top: -15%;
-  background-size: cover;
-  background-repeat: no-repeat;
+  height: 370px;
+  margin-top: -14%;
   position: absolute;
-  z-index: 0;
+  z-index: 100;
   display: block;
-  opacity: 0.1;
-  box-shadow: inset 5px 5px 15px 30px #fff;
+  box-shadow: inset 0px -20px 20px -2px white;
   pointer-events: none;
+  //background: rgba(0,0,0,0.5);
+}
+
+.fadedImg{
+  width: 100%;
+  height: 370px;
+  margin-top: -15%;
+  z-index: 0;
+  position: absolute;
+  display: block;
+  object-fit: cover;
+  opacity: 0.1;
 }
 
 .heartBox{
@@ -120,6 +142,12 @@ h3{
 
 }
 
+.addTankTxt{
+    color: #8e8e8e;
+    margin-top: 10%;
+    font-size: 18px;
+}
+
 .viewProfBtn{
   background: #7eb3ff;
   border: none;
@@ -127,13 +155,20 @@ h3{
   padding-left: 10%;
   padding-right: 10%;
   padding-top: 6%;
-  margin-top: 7%;
+  width: 100px;
   border-radius: 50px;
-  font-size: 12px;
+  font-size: 10px;
   color: #fff;
   font-weight: 900;
   text-transform: uppercase;
   z-index: 9000;
+  white-space: nowrap;
+  display: block;
+  margin-top: 10%;
+}
+
+.logoutBtn{
+  margin-top: -10% !important;
 }
 
 .nextSection{
@@ -192,4 +227,171 @@ h3{
 .lilSelfBlock{
   display: inline-flex;
   margin-top: -10%;
+}
+
+.tankImageBack{
+  width: 100vw;
+  height: 300px;
+  display: block;
+  object-fit: cover;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  box-shadow: 0px 0px 10px black;
+}
+
+.backArrow{
+  margin-left: 80%;
+  margin-top: -80%;
+  position: absolute;
+  color: #fff;
+  text-shadow: 1px 1px black;
+  font-size: 32px;
+  display: block;
+  z-index: 9000;
+}
+
+.backArrowBlack{
+  color: black;
+  display: block;
+  z-index: 9000;
+  margin-top: -20%;
+  margin-bottom: 10%;
+  float: right;
+  font-size: 21px;
+}
+
+.topTitle4{
+  font-size: 32px !important;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  margin-left: 5%;
+  display: block;
+  font-family: 'Crimson Text', serif !important;
+}
+
+.coreName{
+  margin-top: 320px !important;
+  margin-left: 5%;
+  text-align: left;
+}
+
+.deleteTitle{
+  font-size: 14px;
+}
+
+.pushTitleLeft{
+  margin-left: 3%;
+}
+
+.whiteSpaceWraper *{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  min-width: 110px;
+}
+
+.whiteSpaceWraper label{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 20px;
+}
+
+
+.splittingLine{
+  .paddingSpace{
+      margin-bottom: 10% !important;
+  }
+}
+
+.fishMainName *{
+  white-space: nowrap !important;
+}
+
+
+
+
+
+
+
+
+
+
+h1{
+  font-weight: 400;
+  font-size: 34px !important;
+  padding-bottom: 10%;
+  text-align: center;
+  font-family: 'Crimson Text', serif !important;
+}
+
+.paddingSpace{
+    padding: 5% !important;
+    background: #FEFFFF;
+    font-family: 'Crimson Text', serif !important;
+}
+
+.tankSpace{
+  width: 100%;
+  height: 130px;
+  background: linear-gradient(#78CBE5, #ABDEE0);
+  display: block;
+  color: #fff;
+  text-align: left;
+  padding-top: 2%;
+  padding-left: 8%;
+  border-radius: 2px;
+  margin-top: 5%;
+
+  h4{
+    font-size: 14px;
+    margin-top: -3%;
+  }
+
+  h5{
+    font-size: 16px;
+    margin-top: 0%;
+  }
+}
+
+.mySpinner{
+  text-align: center;
+  margin-top: 15%;
+  margin-bottom: 10%;
+
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+}
+
+
+.addTank{
+  padding: 10%;
+}
+
+.addChemistry{
+  padding: 5%;
+}
+
+.confirmBtn{
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(#78CBE5, #ABDEE0);
+  color: #fff;
+  margin-top: 10%;
+  font-family: 'Crimson Text', serif !important;
+  text-transform: uppercase;
+}
+
+.lilEdit {
+  padding-left: 1em;
+}
+
+.fish-sci-name {
+  font-size: 80%;
+  padding-left: 1em;
 }

@@ -6,7 +6,8 @@
   </ion-toolbar>
 
   <ion-toolbar class="saltSwitch" *ngIf="!speciesSelected && !searchQuery">
-    <ion-item>
+    <ion-item class="toggle">
+      <h1 class="pondTitleVersion">Pond v0.5.4</h1>
       <ion-label>Saltwater Mode</ion-label>
       <ion-toggle [(ngModel)]="saltwater"></ion-toggle>
     </ion-item>
@@ -54,7 +55,7 @@
 
   <ion-icon class="checkIcon" name="checkmark" *ngIf="showTankListTick"></ion-icon>
 
-  <div *ngIf="!showTankListLoader && !showTankListTick">
+  <div *ngIf="!showTankListLoader && !showTankListTick && !showTankQuanityList">
     <h1>Add {{toAddToTankSpecies.name}} to Tank?</h1>
 
     <ion-list>
@@ -63,6 +64,13 @@
       </ion-item>
     </ion-list>
   </div>
+
+  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList">
+    <h1>Select quantity of {{toAddToTankSpecies.name}}'s</h1>
+
+    <ion-input class="centerSelectNumber" type="number" value="1" (change)="setSpeciesTankQuantity($event.target.value)"></ion-input>
+  </div>
+
 </div>
 
 <div class="backgroundDimmer" (click)="hideTankMenu()" *ngIf="showSelectTank"></div>
@@ -122,11 +130,11 @@
       <img *ngIf="saltwater" src="../assets/turtleClear.png" class="koiLogo tunaLogo animated pulse infinite"/>
     </div>
 
-    <div  class="loadingSpinner" *ngIf="!doneLoading">
+    <div  class="loadingSpinner" *ngIf="searchQuery.length > 2 && !doneLoading">
       <ion-spinner name="crescent"></ion-spinner>
     </div>
 
-    <label class="nothingFoundTxt" *ngIf="doneLoading && fbSpecies.length < 1 && ourFish.length < 1 && relatedSpecies.length < 1"><b>No results returned.</b> <br  /><br /> Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.</label>
+    <label class="nothingFoundTxt" *ngIf="searchQuery.length > 2 && doneLoading && this.ourFish.length == 0 && this.fbSpecies.length == 0 && this.relatedSpecies.length == 0"><b>No results returned.</b> <br  /><br /> Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.</label>
 
     <div *ngIf="doneLoading && ourFish.length >= 1" class="theResults">
       <div class="topTitle">{{ourFish.length}} Species Found from Pond</div>
@@ -170,9 +178,9 @@
          </ion-slide>
         </ion-slides>
 
-        <ion-card-content>
+        <!-- <ion-card-content>
           <label *ngIf="fish.length">{{fish.habitat}}</label>
-        </ion-card-content>
+        </ion-card-content> -->
       </ion-card>
     </div>
 
@@ -205,10 +213,10 @@
            </ion-slide>
           </ion-slides>
 
-          <ion-card-content>
+          <!-- <ion-card-content>
             <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label>
             Max Length - {{fish.Length}}cm
-          </ion-card-content>
+          </ion-card-content> -->
         </ion-card>
       </div>
       <label class="nextPageTxt" (click)="nextPage()" *ngIf="fbSpecies.length >= 10"> -- NEXT PAGE --</label>
@@ -249,10 +257,10 @@
          </ion-slide>
         </ion-slides>
 
-        <ion-card-content>
+        <!-- <ion-card-content>
           <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label>
           Max Length - {{fish.Length}}cm
-        </ion-card-content>
+        </ion-card-content> -->
       </ion-card>
 
       <label class="nextPageTxt" (click)="nextPage()" *ngIf="relatedSpecies.length >= 10"> -- NEXT PAGE --</label>
@@ -278,21 +286,34 @@
           </ion-slide>
         </ion-slides>
       </ion-card-content>
+      <!-- WIKIPEDIA DESCRIPTION -->
+      <p [ngClass]="{'wikiDescriptionSmall' : !fullWikiText}" class="wikiDescription" *ngIf="species.wikiDesc"> {{species.wikiDesc}} </p>
+      <a class="centerSeeMore" *ngIf="!fullWikiText && species.wikiDesc" (click)="seeFulText()">See More <ion-icon name="arrow-dropdown"></ion-icon></a>
+      <a class="centerSeeMore" *ngIf="fullWikiText && species.wikiDesc" (click)="seeLessText()">See Less <ion-icon name="arrow-dropup"></ion-icon></a>
 
-      <p *ngIf="species.wikiDesc"> {{species.wikiDesc}} </p>
     </ion-card>
 
     <ion-card class="coreInformation" *ngIf="speciesLoaded && species.genus">
       <ion-card-header>
-        <ion-card-subtitle><a (click)="showGenus(species.genus)">{{species.genus}}</a> &bull; <a (click)="addTankTrigger(species)">+ Add Species</a></ion-card-subtitle>
+        <ion-card-subtitle>
+          <a (click)="showGenus(species.genus)">{{species.genus}}</a> <label class="speciesName"> {{species.species}}</label>
+          <br /><br /> <a (click)="addTankTrigger(species)" class="addSpeciesClicker">+ Add Species to tank</a>
+        </ion-card-subtitle>
         <ion-card-title>{{species.name}}</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
         <ul>
+
           <!-- PLANET CATFISH INFO -->
           <li *ngIf="species.etymology"><i>{{species.etymology}}</i></li>
           <br *ngIf="species.etymology" />
+
+          <!-- WIKIPEDIA COMMON NAME -->
+          <label *ngIf="species.wikiName">
+            <li *ngIf="!species.name || species.wikiName.toLowerCase() !== species.name"><b>Other Name :</b><br />  {{species.wikiName}}</li>
+            <br *ngIf="!species.name || species.wikiName.toLowerCase() !== species.name" />
+          </label>
 
           <!-- PULLED FROM BEST SOURCE -->
           <li *ngIf="species.temperature"><b>Recommended Temperature :</b><br />  {{species.temperature}}</li>
@@ -343,9 +364,9 @@
           <!-- FISHBASE INFO -->
           <li *ngIf="species.speciesVunFloored"><b>Vunerability Status :</b><br /> {{speciesVunFloored}}/100</li>
           <br *ngIf="species.speciesVunFloored"/>
-          <li *ngIf="species.dangerous !== 'Harmless'"><b>Danger to human status :</b><br /> {{species.dangerous}}</li>
+          <li *ngIf="species.dangerous !== 'harmless'"><b>Danger to human status :</b><br /> {{species.dangerous}}</li>
 
-          <br *ngIf="species.dangerous != 'Harmless'" /><br *ngIf="species.dangerous && species.dangerous !== 'Harmless'" />
+          <br *ngIf="species.dangerous != 'harmless'" /><br *ngIf="species.dangerous && species.dangerous !== 'harmless'" />
 
           <li *ngIf="species.comments"><b>Other Comments :</b><br /> {{species.comments}}</li>
 

@@ -1,24 +1,259 @@
 <ion-content>
 
-  <div class="fadedBack"></div>
+  <div *ngIf="defaultMode" class="fadedBack"></div>
+  <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" />
 
   <div class="paddingSpace">
-    <h1>Account</h1>
+    <label class="topTitle1" *ngIf="defaultMode">Account</label>
 
-    <div class="infoSection">
-      <img class="profileImg" src="https://scontent.fakl2-1.fna.fbcdn.net/v/t1.0-9/13882185_1354509061245524_9026815624279005373_n.jpg?_nc_cat=107&_nc_ht=scontent.fakl2-1.fna&oh=473e087018200dd55f4433bd9da7d568&oe=5D37C6FE" />
+    <div class="infoSection" *ngIf="defaultMode">
+      <img class="profileImg" src="{{user.photoURL}}" />
       <div class="rightStuff">
-        <h2>William Fischer</h2> <br />
-        <h3>+61 421 959 142</h3>
-        <button class="viewProfBtn">View Profile</button>
+        <label class="topTitle2">{{user.name}}</label> <br />
+        <label class="topTitle3" *ngIf="totalQuanityOfFish">Keeps {{totalQuanityOfFish}} Species</label>
+        <!-- <button class="viewProfBtn">View Profile</button><br /> -->
         <button class="viewProfBtn" (click)="logout()">Logout</button>
       </div>
-
     </div>
 
     <div class="splittingLine">
 
-      <div class="nextSection">
+      <!-- Section 1: ALL TANKS -->
+      <div class="paddingSpace" *ngIf="defaultMode">
+        <label class="topTitle2">Your Tanks</label>
+
+        <h3 class="addTankTxt" *ngIf="!tanks" (click)="addTank()">+ Start your first tank !</h3>
+        <h3 class="addTankTxt" *ngIf="tanks" (click)="addTank()">+ Begin New Tank</h3>
+
+        <div *ngIf="tanks">
+          <div class="tankSpace" *ngFor="let tank of tanks" (click)="initTankDetail(tank.name)">
+            <h3>{{tank.name}}</h3>
+
+            <h4>
+              <label *ngIf="tank.temp">{{tank.temp}}deg &bull; </label>
+              <label *ngIf="tank.ph">PH{{tank.ph}} &bull; </label>
+              <label *ngIf="tank.size">{{tank.size}}L </label>
+            </h4>
+
+            <h5>With a {{tank.substrate}} Substrate</h5>
+          </div>
+        </div>
+
+        <ion-spinner name="bubbles" color="primary" class="mySpinner" *ngIf="!doneLoadingTanks"></ion-spinner>
+      </div>
+
+      <div *ngIf="tankDetailMode && activeTankData">
+        <img class="animated slideInUp tankImageBack" src="https://www.petbarn.com.au/petspot/app/uploads/2011/09/800x533_v1.jpg" />
+        <ion-icon name="close" (click)="closeTank()" class="backArrow"></ion-icon>
+      </div>
+
+      <div class="animated slideInUp" *ngIf="tankDetailMode && activeTankData">
+
+        <div class="listSpace">
+
+          <h1 class="coreName">
+            {{activeTankData.name}} <br />
+            <a (click)="deleteTank()" class="deleteTitle pushTitleLeft">Delete Tank &bull; </a>
+            <a (click)="tankUpload()" class="deleteTitle">Upload Tank Image</a>
+          </h1>
+
+          <ion-list class="speciesList">
+            <ion-list-header *ngIf="fish_in_tank != null">
+              <ion-label>Contains {{ fish_in_tank.length }} fish<a (click)="openSpeciesSearch()" class="lilEdit">+ add</a></ion-label>
+            </ion-list-header>
+            <ion-list-header *ngIf="fish_in_tank == null">
+              <ion-label>No Fish Yet<a (click)="openSpeciesSearch()" class="lilEdit">+ add your first fish</a></ion-label>
+            </ion-list-header>
+            <div *ngIf="fish_in_tank != null">
+              <ion-item class="whiteSpaceWraper" *ngFor="let fish of fish_in_tank" (click)="openFishDetailModal(fish, activeTankData)">
+                <label *ngIf="fish['quantity']">{{fish['quantity']}}x</label> &nbsp;
+                <b>{{fish.comm_name | titlecase}}</b>
+                <span class="fish-sci-name"><i>({{fish.sci_name | titlecase}})</i></span>
+              </ion-item>
+            </div>
+            <!-- <ion-item (click)="selectSpecies('Butterflyfish')">1x c <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
+            <ion-item (click)="selectSpecies('Pinoy Blue Angelfish')">2x &nbsp; <b> Pinoy Blue Angelfish </b> &nbsp; <i>(Pterophyllum)</i></ion-item>
+            <ion-item (click)="selectSpecies('Kuhli Loach')">4x &nbsp; <b> Kuhli Loach </b> &nbsp; <i>(Actinopterygii)</i></ion-item>
+            <ion-item (click)="selectSpecies('Otocinclus')">1x &nbsp; <b> Otocinclus </b> &nbsp; <i>(Hypoptopomatinae)</i></ion-item> -->
+          </ion-list>
+
+          <ion-list class="speciesList">
+            <ion-list-header>
+              <!-- <a class="lilEdit" href="#">edit</a> -->
+              <ion-label>Tank Stats</ion-label>
+            </ion-list-header>
+
+            <ion-item>
+              <ion-icon name="flask" slot="start"></ion-icon>
+              <ion-label>
+                <b> average pH </b> &nbsp;
+                <i *ngIf="activeTankData.average_ph">{{activeTankData.average_ph.toFixed(1)}}</i>
+                <i *ngIf="!activeTankData.average_ph">-</i>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-icon name="flame" slot="start"></ion-icon>
+              <ion-label>
+                <b> Temp (Celcius &deg;) </b> &nbsp;
+              </ion-label>
+              <ion-input (change)="updateTankTemp($event.target.value)" inputmode="numeric" type="number" [value]="activeTankData.temp"></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-icon name="cube" slot="start"></ion-icon>
+              <ion-label>
+                <!-- <b> Size (Litres) </b> &nbsp; <i>{{activeTankData.size}} Litres</i> -->
+                <b> Size (Litres) </b> &nbsp;
+              </ion-label>
+              <ion-input (change)="updateTankSize($event.target.value)" inputmode="numeric" type="number" [value]="activeTankData.size"></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-icon name="funnel" slot="start"></ion-icon>
+              <ion-label (click)="presentSubstrateEditModal()">
+                <b> Substrate </b> &nbsp; <i>{{activeTankData.substrate}}</i>
+              </ion-label>
+            </ion-item>
+            <!-- <ion-item>
+              <ion-icon slot="start" name="flame"></ion-icon>
+              <ion-label slot="end"><b> Temperature </b> &nbsp; <i>23</i></ion-label>
+            </ion-item> -->
+          </ion-list>
+
+          <ion-list *ngIf="lastChemistrySessionDate" class="speciesList">
+            <ion-list-header>
+
+              <ion-label>
+                <ion-icon name="flask" slot="start"></ion-icon>
+                Water Chemistry <br /> As of ~ {{ lastChemistrySessionDate | date:'fullDate' }} &nbsp;&nbsp;
+                <a (click)="openNewChemistrySession()" class="newsession">+ new</a>
+              </ion-label>
+
+              <!-- <ion-label>Tank Chemistry as of - {{  }} <a class="newsession" href="#">+ new</a></ion-label> -->
+            </ion-list-header>
+
+            <ion-item>
+              <ion-label>
+                <b> pH </b> &nbsp; <i>{{lastChemistrySession.ph.toFixed(1)}}</i>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
+              <ion-label>
+                <b> Ammonia (NH<sub>3</sub>) </b> &nbsp; <i>{{lastChemistrySession.ammonia.toFixed(1)}} ppm</i>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
+              <ion-label>
+                <b> Nitrite (NO<sup>-</sup><sub>2</sub>) </b> &nbsp; <i>{{lastChemistrySession.nitrite.toFixed(1)}} ppm</i>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
+              <ion-label>
+                <b> Nitrate (NO<sup>-</sup><sub>3</sub>) </b> &nbsp; <i>{{lastChemistrySession.nitrate.toFixed(1)}} ppm</i>
+              </ion-label>
+            </ion-item>
+
+          </ion-list>
+
+          <ion-list *ngIf="!lastChemistrySessionDate" class="speciesList">
+            <ion-list-header>
+              <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
+              <ion-label>Start measuring water chemistry <label (click)="openNewChemistrySession()" class="newsession">+ new</label></ion-label>
+              <!-- <ion-label>Tank Chemistry as of - {{  }} <a class="newsession" href="#">+ new</a></ion-label> -->
+            </ion-list-header>
+
+            <ion-item>
+              <ion-label>
+                <b> pH </b> &nbsp; <i>-</i>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
+              <ion-label>
+                <b> Ammonia (NH<sub>3</sub>) </b> &nbsp; <i>-</i>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
+              <ion-label>
+                <b> Nitrite (NO<sup>-</sup><sub>2</sub>) </b> &nbsp; <i>-</i>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <!-- <ion-icon name="flask" slot="start"></ion-icon> -->
+              <ion-label>
+                <b> Nitrate (NO<sup>-</sup><sub>3</sub>) </b> &nbsp; <i>-</i>
+              </ion-label>
+            </ion-item>
+
+          </ion-list>
+        </div>
+      </div>
+
+      <!-- Section 2: ADD CHEMISTRY SESSION -->
+      <div class="addChemistry" *ngIf="addChemistryMode">
+
+        <ion-icon style="padding: 0 0 0 0.8em" name="arrow-back" (click)="closeChemistrySession()" class="backArrow"></ion-icon>
+        <h1>Add a Tank</h1>
+
+        <form (ngSubmit)="confirmChemistryForm()">
+          <ion-list>
+
+            <ion-item>
+              <ion-label position="stacked">pH</ion-label>
+
+              <ion-range min="0" max="10.0" step="0.1" snaps="true" ticks="true" pin="true" [(ngModel)]="chemistry.ph" name="ph">
+                <ion-icon size="small" slot="start" name="snow"></ion-icon>
+                <ion-icon slot="end" name="flame"></ion-icon>
+              </ion-range>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Ammonia (NH<sub>3</sub>)</ion-label>
+
+              <ion-range min="0" max="4.0" step="0.1" snaps="true" ticks="true" pin="true" [(ngModel)]="chemistry.ammonia" name="ammonia">
+                <ion-icon size="small" slot="start" name="snow"></ion-icon>
+                <ion-icon slot="end" name="flame"></ion-icon>
+              </ion-range>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Nitrite (NO<sup>-</sup><sub>2</sub>)</ion-label>
+
+              <ion-range min="0" max="6.0" step="0.1" snaps="true" ticks="true" pin="true" [(ngModel)]="chemistry.nitrite" name="nitrite">
+                <ion-icon size="small" slot="start" name="snow"></ion-icon>
+                <ion-icon slot="end" name="flame"></ion-icon>
+              </ion-range>
+
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Nitrate (NO<sup>-</sup><sub>3</sub>)</ion-label>
+
+              <ion-range min="15" max="35" step="1" snaps="true" ticks="true" pin="true" [(ngModel)]="chemistry.nitrate" name="nitrate">
+                <ion-icon size="small" slot="start" name="snow"></ion-icon>
+                <ion-icon slot="end" name="flame"></ion-icon>
+              </ion-range>
+
+            </ion-item>
+
+            <button class="confirmBtn" type="submit">Confirm</button>
+          </ion-list>
+
+        </form>
+      </div>
+
+      <!-- <div class="nextSection">
 
         <div class="heartBox">
           <ion-icon class="heartIco" name="heart"></ion-icon>
@@ -63,8 +298,87 @@
           <div class="emptyItemSaleBox"></div>
         </div>
 
-      </div>
+      </div> -->
 
     </div>
+  </div>
+
+  <!-- Section 2: ADD TANK -->
+  <div class="addTank" *ngIf="addTankMode">
+
+    <ion-icon name="close" (click)="closeTank()" class="backArrowBlack"></ion-icon>
+
+    <label class="topTitle4 animated slideInUp">Add a tank</label>
+
+    <form class="animated slideInUp" (ngSubmit)="confirmForm()">
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">Tank Name</ion-label>
+          <ion-input type="text" [(ngModel)]="tank.name" name="name" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Approximate PH (optional)</ion-label>
+          <ion-input type="number" [(ngModel)]="tank.ph" name="ph"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Temperature (DEG)</ion-label>
+
+          <ion-range min="15" max="35" step="1" snaps="true" ticks="true" pin="true" [(ngModel)]="tank.temp" name="temp" required>
+            <ion-icon size="small" slot="start" name="snow"></ion-icon>
+            <ion-icon slot="end" name="flame"></ion-icon>
+          </ion-range>
+
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Size (Liters &bull; 1ft = approx.28L)</ion-label>
+          <ion-input type="number" [(ngModel)]="tank.size" name="size" required></ion-input>
+        </ion-item>
+
+        <ion-radio-group [(ngModel)]="tank.substrate" name="substrate" required>
+          <ion-list-header>
+            <ion-label>Substrate</ion-label>
+          </ion-list-header>
+
+          <ion-item>
+            <ion-label>Coral Sand</ion-label>
+            <ion-radio slot="start" value="Coral Sand"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>River Sand</ion-label>
+            <ion-radio slot="start" value="River Sand"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Quartz</ion-label>
+            <ion-radio slot="start" value="Quartz"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Laterite</ion-label>
+            <ion-radio slot="start" value="Laterite"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Large Stones</ion-label>
+            <ion-radio slot="start" value="Large Stones"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Medium Stones</ion-label>
+            <ion-radio slot="start" value="Medium Stones"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Micro-Stones</ion-label>
+            <ion-radio slot="start" value="Micro Stones"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Other</ion-label>
+            <ion-radio slot="start" value="Other"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+
+        <button class="confirmBtn" type="submit">Confirm</button>
+      </ion-list>
+
+    </form>
   </div>
 </ion-content>

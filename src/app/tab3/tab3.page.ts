@@ -26,12 +26,15 @@ export class Tab3Page {
   showSelectTank: boolean;
   isLoadingNewSpecies: boolean;
   showTankListLoader: boolean;
+  showTankQuanityList: boolean;
   showTankListTick: boolean;
   saltwater: boolean;
   speciesLoaded: boolean;
   speciesDataLoaded: boolean;
   searchQuery: string = '';
-  selectedLetter: string = ''
+  selectedLetter: string = '';
+  selectedTempTank: any;
+  fullWikiText: boolean;
   species : any = [{
     name : '',
     species : '',
@@ -49,6 +52,7 @@ export class Tab3Page {
   tanks: any = [];
   toAddToTankSpecies: any;
   coreCollection: any;
+  recheckFirebaseDB: any;
   speciesCollection: any;
   speciesImagesCollection: any;
   imageCollection: any;
@@ -70,7 +74,7 @@ export class Tab3Page {
   }
 
   ngOnInit() {
-    console.clear();
+    //console.clear();
 
     var slides = document.querySelector('ion-slides');
 
@@ -96,6 +100,7 @@ export class Tab3Page {
         var searchQuery = $event.srcElement.value;
       }
 
+
       this.searchQuery = searchQuery;
       this.selectLetter = this.selectLetter;
       this.fbSpecies = [];
@@ -109,6 +114,7 @@ export class Tab3Page {
       if(searchQuery.length > 2){
         // console.log('Running API for ' + searchQuery + '...');
 
+        this.doneLoading = false;
         this.displayFirebase(searchQuery);
 
         // this.checkFirebase(searchQuery);
@@ -153,7 +159,9 @@ export class Tab3Page {
     this.coreCollection.unsubscribe();
 
     setTimeout(()=>{
+      if(this.speciesCollection)
       this.speciesCollection.unsubscribe();
+      if(this.speciesImagesCollection)
       this.speciesImagesCollection.unsubscribe();
     }, 3000);
 
@@ -161,13 +169,17 @@ export class Tab3Page {
       this.recheckerCollection.unsubscribe();
     }
 
-    if(!inDB){
-      console.log("NEW TO SYSTEM... ADDING");
+    if(this.recheckFirebaseDB){
+      this.recheckFirebaseDB.unsubscribe();
+    }
 
+    if(!inDB){
       console.clear();
 
-      this.presentNewSpeciesLoading();
-      this.getMoreGoogleImages(fish);
+      console.log("NEW TO SYSTEM... ADDING");
+
+      this.isItReallyNewTho(fish);
+
 
     }else{
       console.log('########################');
@@ -186,14 +198,46 @@ export class Tab3Page {
       this.speciesDonePopulating();
     }
 
-    setTimeout(()=>{
-
-      if(!inDB && fish){
-        this.theInternetIsMyBitchAndShesBeenABadGirl(fish);
-      }
-    }, 3500);
-
     this.content.scrollToTop(400);
+  }
+
+  isItReallyNewTho(fish){
+    console.log('### VERIFYING FISH IS REALLY NEW ###');
+
+    //console.log(fish['SpecCode'])
+
+    this.recheckFirebaseDB = this.fireStore.collection('Species').valueChanges().subscribe(values => {
+      //console.log(values);
+      var speciesfound;
+
+      values.forEach(eachImg => {
+        //console.log(fish['SpecCode'] + ' vs ' + eachImg['specCode']);
+        if(fish['SpecCode'] == eachImg['specCode']){
+          speciesfound = true;
+        }
+        //console.log(eachImg['specCode'])
+      });
+
+      if(!speciesfound){
+        console.log('FISH IS NEW');
+
+        this.presentNewSpeciesLoading();
+        this.getMoreGoogleImages(fish);
+
+        setTimeout(()=>{
+
+          if(fish){
+            this.theInternetIsMyBitchAndShesBeenABadGirl(fish);
+          }
+        }, 3500);
+
+      }else{
+        console.log('FISH EXITS');
+
+        this.selectSpecies(fish, true)
+      }
+    });
+
   }
 
   populateSpecies(specCode){
@@ -201,21 +245,30 @@ export class Tab3Page {
 
     this.speciesCollection = this.fireStore.doc('Species/' + specCode).valueChanges().subscribe(values => {
       this.species = values;
-      console.log(this.species);
+      //console.log(this.species);
 
-      setTimeout(()=>{
-        this.speciesImagesCollection = this.fireStore.collection('Species/' + specCode + '/Pic').valueChanges().subscribe(values => {
-          values.forEach(eachImg => {
-            //console.log(eachImg['url']);
-            this.speciesImgArray.push(eachImg['url'])
+      if(!this.species){
+        alert('Error collecting species, please try again...')
+        this.clearSearch();
+      }else{
+        setTimeout(()=>{
+          this.speciesImagesCollection = this.fireStore.collection('Species/' + specCode + '/Pic').valueChanges().subscribe(values => {
+            values.forEach(eachImg => {
+              //console.log(eachImg['url']);
+              this.speciesImgArray.push(eachImg['url'])
+            });
+
+            //console.log(this.speciesImgArray);
           });
-
-          //console.log(this.speciesImgArray);
-        });
-      }, 1000);
+        }, 1000);
 
 
-      if(values['vulnerability']){this.speciesVunFloored = Math.floor(values['vulnerability']);}
+        if(values['vulnerability']){
+          this.speciesVunFloored = Math.floor(values['vulnerability']);
+        }
+      }
+
+
 
     });
   }
@@ -258,7 +311,7 @@ export class Tab3Page {
     slicedSpecies.forEach(obj => {
       if(obj['id'] >= this.minSpeciesReturn && obj['id'] <= this.maxSpeciesReturn){
         this.getGoogleImages(obj)
-      console.log('generated')
+        console.log('generated')
       }else{
         console.log('not generated')
       }
@@ -539,7 +592,7 @@ export class Tab3Page {
     var counter = 0;
 
     this.relatedSpecies.forEach(relatedFish => {
-      console.log(counter);
+      //console.log(counter);
 
       if(counter <= 10){
         this.getGoogleImages(relatedFish);
@@ -740,6 +793,9 @@ export class Tab3Page {
     }else{
       commName = fish.Genus + " " + fish.Species;
     }
+
+    var proccessedComments = fish.Comments.replace(/ *\([^)]*\) */g, "").replace(/ *\<[^>]*\) */g, "");
+
     console.log(fish);
 
     speciesAddress.set({
@@ -747,7 +803,7 @@ export class Tab3Page {
       species: fish.Species.toLowerCase(),
       fishBaseImg: fish.PicPreferredName,
       genus: fish.Genus.toLowerCase(),
-      comments: fish.Comments,
+      comments: proccessedComments,
       dangerous: fish.Dangerous,
       length: fish.Length,
       genCode: fish.GenCode,
@@ -854,18 +910,34 @@ export class Tab3Page {
     }
 
     addFishToTank(tank){
-      this.showTankListLoader = true;
       this.showTankListTick = false;
 
       let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['name'] + '/species/' + this.toAddToTankSpecies['specCode']);
 
+      var scientificName = this.toAddToTankSpecies['genus'] + " " + this.toAddToTankSpecies['species']
       tankAddress.set({
         dateSet: new Date(),
         name: this.toAddToTankSpecies['name'],
-        specCode: this.toAddToTankSpecies['specCode']
+        specCode: this.toAddToTankSpecies['specCode'],
+        sciName: scientificName
       });
 
       console.log("Species added to tank!")
+
+      this.showTankQuanityList = true;
+
+      this.selectedTempTank = tank
+
+    }
+
+    setSpeciesTankQuantity(speciesCount){
+      this.showTankListLoader = true;
+
+      let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.selectedTempTank['name'] + '/species/' + this.toAddToTankSpecies['specCode']);
+
+      tankAddress.update({
+        quantity: speciesCount
+      });
 
       setTimeout(()=>{
         this.showTankListLoader = false;
@@ -873,8 +945,11 @@ export class Tab3Page {
 
         setTimeout(()=>{
           this.showSelectTank = false;
+          this.selectedTempTank = '';
         }, 1000);
       }, 1000);
+
+
 
     }
 
@@ -1007,7 +1082,7 @@ export class Tab3Page {
               if(value['text'].includes('pH:')){
                 // console.log('--- PH of species: ---');
                 // console.log(value['text']);
-                var ph = value['text'].replace('pH:','').replace('&deg;','').replace('&#8211;','-').replace(/\s/g,'');
+                var ph = value['text'].replace('pH:','').replace('&deg;','').replace('&#8211;','-');
                 detailedFishInformation['ph'] = ph;
               }
 
@@ -1024,7 +1099,7 @@ export class Tab3Page {
                 detailedFishInformation['size'] = value['text'];
               }
 
-              if(value['text'].includes('base dimensions') || value['text'].includes('An aquarium measuring')){
+              if(value['text'].includes('base dimensions') || value['text'].includes('An aquarium measuring') || value['text'].includes('An aquarium with a base measuring')){
                 // console.log('--- Recommended Tank Size of species: ---');
                 // console.log(value['text']);
                 detailedFishInformation['tankSize'] = value['text'];
@@ -1390,9 +1465,23 @@ export class Tab3Page {
     }
 
     everythingsDone(){
+      console.log('everythings done...')
+
       setTimeout(()=>{
         this.doneLoading = true;
-      }, 3000);
+
+        if(this.coreCollection)
+        this.coreCollection.unsubscribe();
+        if(this.speciesCollection)
+        this.speciesCollection.unsubscribe();
+        if(this.recheckerCollection)
+        this.recheckerCollection.unsubscribe();
+        if(this.speciesImagesCollection)
+        this.speciesImagesCollection.unsubscribe()
+        if(this.recheckFirebaseDB)
+        this.recheckFirebaseDB.unsubscribe();
+      }, 2000);
+
     }
 
     async presentNewSpeciesLoading() {
@@ -1401,7 +1490,8 @@ export class Tab3Page {
         message: 'This species is new! Adding to system...'
       }).then(a => {
         a.present().then(() => {
-          console.log('presented');
+          //console.log('presented');
+          this.doneLoading = true;
           if (!this.isLoadingNewSpecies) {
             a.dismiss().then(() => console.log('abort presenting'));
           }
@@ -1443,13 +1533,22 @@ export class Tab3Page {
       //var corsFix = 'https://bypasscors.herokuapp.com/api/?url=';
       this.http.get('https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&prop=extracts&exintro&explaintext&indexpageids&redirects=1&titles=' + searchName).subscribe(
         result => {
-          var wikiLink = result['query']['pages'];
+          var wikiLink = result['query'].pages;
           console.log(wikiLink)
 
-          if(wikiLink){
-            speciesAddress.update({
-              wikiDesc:wikiLink[0].extract
-            });
+          for (var i in wikiLink) {
+            var extract = wikiLink[i].extract;
+
+            if(!extract){
+              console.log('Species couldn\'t be located')
+            }else{
+              var title = wikiLink[i].title;
+
+              speciesAddress.update({
+                wikiDesc:extract,
+                wikiName:title
+              });
+            }
           }
 
       }, error => {
@@ -1457,5 +1556,14 @@ export class Tab3Page {
       });
 
       this.newSpeciesDonePopulating(fish)
+
+    }
+
+    seeFulText(){
+      this.fullWikiText = true;
+    }
+
+    seeLessText(){
+      this.fullWikiText = false;
     }
 }

@@ -43,7 +43,7 @@ export class Tab2Page {
     nitrate: 0.0
   }
 
-  fish_in_tank: any;
+  fish_in_tank: any = [];
 
   tanks: any;
   doneLoadingTanks = false;
@@ -91,41 +91,46 @@ export class Tab2Page {
   // }
 
   getFish() {
-    var scope = this;
-    var _fishlist = [];
-    var tank_fish = this.fireStore.collection('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'] + '/species');
-    tank_fish.get().forEach(data => {
-      var _data = data.docs;
-      _data.forEach(record => {
-        var fishData = record.data();
-        console.log(fishData);
-        _fishlist.push(fishData);
-      });
-      return;
-    }).then(function() {
-      console.log(_fishlist);
-      var _allfish = [];
-      _fishlist.forEach(fish => {
-        let query = scope.fireStore.doc('Species/' + fish['specCode']).get().toPromise()
-        .then(data => {
-          let _comm_name = fish['name'];
-          let _sci_name = data.data()['genus'] + ' ' + data.data()['species'];
-          let _quantity = 0;
-          let _specCode = fish['specCode'];
+
+    this.fireStore.collection('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'] + '/species').valueChanges().subscribe(values => {
+      console.log(this.fish_in_tank);
+      values.forEach(fish => {
+
+          let comm_name = fish['name'];
+          let quantity = fish['quantity'];
+          let specCode = fish['specCode'];
+          let sci_name = fish['sciName'];
+
           let fishObj = {
-            'comm_name': _comm_name,
-            'sci_name': _sci_name,
-            'spec_code': _specCode,
-            'quantity': _quantity
+            'comm_name': comm_name,
+            'sci_name': sci_name,
+            'spec_code': specCode,
+            'quantity': quantity
           }
-          _allfish.push(fishObj);
-          return;
-        }).then(function() {
-          scope.fish_in_tank = _allfish;
-          console.log(scope.fish_in_tank);
-        });
+
+          this.fish_in_tank.push(fishObj);
+
       });
+
+      console.log(this.fish_in_tank);
     });
+
+    // var scope = this;
+    // var _fishlist = [];
+    // var tank_fish = this.fireStore.collection('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'] + '/species');
+    // tank_fish.get().forEach(data => {
+    //   var _data = data.docs;
+    //   _data.forEach(record => {
+    //     var fishData = record.data();
+    //     console.log(fishData);
+    //     _fishlist.push(fishData);
+    //   });
+    //   return;
+    // }).then(function() {
+    //   console.log(_fishlist);
+    //   var _allfish = [];
+    //
+    // });
   }
 
   openNewChemistrySession() {
@@ -208,7 +213,6 @@ export class Tab2Page {
         this.defaultMode = false;
         this.addTankMode = false;
         this.addChemistryMode = false;
-        this.fish_in_tank = null;
 
         this.initChemistry();
         this.calculateAveragePH();

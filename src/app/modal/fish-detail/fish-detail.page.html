@@ -1,37 +1,44 @@
 <ion-header>
   <ion-toolbar>
     <p class="close" (click)="closeModal()">Back</p>
-    <ion-title>fish-detail</ion-title>
+    <ion-title>{{ tankObj.name }} - <i>{{fishObj['sci_name'] | titlecase}}</i></ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="dataToDisplay">
 
   <ion-card>
 
   <ion-card-header>
     <ion-card-subtitle><i>{{fishObj['sci_name'] | titlecase}}</i></ion-card-subtitle>
     <ion-card-title>{{fishObj['comm_name'] | titlecase}}</ion-card-title>
+    <p *ngIf="dataToDisplay.etymology"> {{dataToDisplay.etymology}} </p>
   </ion-card-header>
 
-  <div *ngIf="dataToDisplay">
+  <div *ngIf="dataToDisplay && !photosToDisplay">
     <img src="https://www.fishbase.de/images/species/{{dataToDisplay.fishBaseImg}}">
   </div>
 
-  <ion-card-content>
-    {{ fishObj['comments'] }}
+  <ion-slides pager="true" *ngIf="photosToDisplay">
+   <ion-slide class="imageBox"  *ngFor="let pic of photosToDisplay">
+     <img [src]="pic.url" default="../assets/noImg.png"/>
+   </ion-slide>
+  </ion-slides>
+
+  <ion-card-content class="smallStuffContent">
+    {{ dataToDisplay.wikiDesc }}
   </ion-card-content>
 </ion-card>
 
-<ion-card>
+<ion-card *ngIf="dataToDisplay.habitat">
   <ion-item>
     <ion-icon name="pin" slot="start"></ion-icon>
-    <ion-label>Columbia</ion-label>
-    <ion-button fill="outline" slot="end">View Natural Habitat</ion-button>
+    <ion-label class="smallStuffContent">{{ dataToDisplay.locality }}</ion-label>
+    <!-- <ion-button fill="outline" slot="end">View Natural Habitat</ion-button> -->
   </ion-item>
 
   <ion-card-content>
-    Inhabits fast flowing streams in Columbia and around the Congo
+    {{ dataToDisplay.habitat }}
   </ion-card-content>
 </ion-card>
 
@@ -42,36 +49,97 @@
     <ion-label>Recommended Environment</ion-label>
   </ion-card-header>
 
-  <ion-item>
+  <ion-item *ngIf="dataToDisplay.ph">
     <ion-icon name="ios-flask" slot="start"></ion-icon>
-    <ion-label>pH: 7.6</ion-label>
+    <ion-label>pH: {{ dataToDisplay.ph }}</ion-label>
   </ion-item>
 
-  <ion-item>
+  <ion-item *ngIf="dataToDisplay.temperature">
     <ion-icon name="ios-thermometer" slot="start"></ion-icon>
-    <ion-label>Temperature: 18&deg;</ion-label>
+    <ion-label>{{ dataToDisplay.temperature }}</ion-label>
   </ion-item>
 
-  <ion-item>
+  <ion-item *ngIf="dataToDisplay.size">
     <ion-icon name="md-resize" slot="start"></ion-icon>
-    <ion-label>Max size: 1 foot (20")</ion-label>
+    <ion-label>Average size: {{ dataToDisplay.size }}</ion-label>
   </ion-item>
 
-  <ion-item>
+  <ion-item *ngIf="dataToDisplay.lifespan">
     <ion-icon name="walk" slot="start"></ion-icon>
     <ion-label>Lifespan: 10 years</ion-label>
   </ion-item>
 
-  <ion-item>
+  <ion-item *ngIf="dataToDisplay.hardness">
     <ion-icon name="warning" slot="start"></ion-icon>
-    <ion-label>Hardyness: 8/10</ion-label>
+    <ion-label>Hardyness: {{ dataToDisplay.hardness }}</ion-label>
   </ion-item>
 
-  <ion-item>
+  <ion-item *ngIf="dataToDisplay.vunerability">
+    <ion-icon name="warning" slot="start"></ion-icon>
+    <ion-label>Vunerability: {{ dataToDisplay.vunerability }} / 100</ion-label>
+  </ion-item>
+
+  <ion-item *ngIf="dataToDisplay.blackWater">
     <ion-icon name="md-pizza" slot="start"></ion-icon>
-    <ion-label>Diet: small fish, crustaceans & some wood</ion-label>
+    <ion-label>Requires BlackWater</ion-label>
   </ion-item>
 
+  <ion-item *ngIf="dataToDisplay.aquaticPlants">
+    <ion-icon name="md-pizza" slot="start"></ion-icon>
+    <ion-label>Requires Aquarium plants</ion-label>
+  </ion-item>
+
+</ion-card>
+
+<ion-card *ngIf="dataToDisplay.distribution">
+  <ion-card-header>
+    <ion-label>Distribution</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.distribution }}
+  </ion-item>
+</ion-card>
+
+<ion-card *ngIf="dataToDisplay.sexIdentificationFeatures">
+  <ion-card-header>
+    <ion-label>Sexing</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.sexIdentificationFeatures }}
+  </ion-item>
+</ion-card>
+
+<ion-card *ngIf="dataToDisplay.recommendedTankSize">
+  <ion-card-header>
+    <ion-label>Recommended Tank Dimensions</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.recommendedTankSize }}
+  </ion-item>
+</ion-card>
+
+
+<ion-card *ngIf="dataToDisplay.SFFishSize">
+  <ion-card-header>
+    <ion-label>Fish Size Info</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.SFFishSize }}
+  </ion-item>
+</ion-card>
+
+<ion-card *ngIf="dataToDisplay.comments">
+  <ion-card-header>
+    <ion-label>Comments</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.comments }}
+  </ion-item>
 </ion-card>
 
 </ion-content>

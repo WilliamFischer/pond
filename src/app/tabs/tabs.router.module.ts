@@ -54,7 +54,7 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/tabs/tanks',
+        redirectTo: '/tabs/species',
         pathMatch: 'full'
       }
     ]

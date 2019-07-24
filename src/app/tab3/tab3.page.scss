@@ -10,7 +10,7 @@
 
 
 .blueBack{
-  --background: #E1EEF7 !important;
+  --background: #fff !important;
 }
 
 .nothingFoundTxt{
@@ -41,13 +41,21 @@
   display: block;
   width: 100%;
   height: 20px;
-  text-align: left;
-  color: #F0F5FB;
+  text-align: center;
+  color: #8e8e8e;
   padding-top: 15%;
-  font-weight: 800;
+  font-weight: 400;
   font-size: 14px;
   text-transform: capitalize;
-  text-shadow: 1px 1px 1px #8e8e8e;
+  //text-shadow: 1px 1px 1px #8e8e8e;
+}
+
+ion-toolbar{
+  box-shadow: 0 4px 10px -2px #e8e8e8 !important;
+}
+
+ion-searchbar{
+  font-family: 'Crimson Text', serif !important;
 }
 
 .centerTit{
@@ -62,12 +70,29 @@
   }
 }
 
+
+.centerSelectNumber{
+  width: 100%;
+  text-align: center;
+  font-weight: 800;
+  font-family: 'Crimson Text', serif !important;
+
+}
+
 .coreInformation{
     ul{
       list-style: none;
       margin-left: -15%;
-      margin-top: -2%;
+      margin-top: -10%;
       font-size: 12px;
+    }
+
+    ion-card-title{
+      margin-top: 5%;
+    }
+
+    .addSpeciesClicker{
+      text-transform: uppercase;
     }
 
     .hydrated{
@@ -293,6 +318,9 @@ ion-card{
   margin-right: auto;
   left: 0;
   right: 0;
+  border-bottom-left-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+
 }
 .informationBrick{
   width: 80%;
@@ -409,6 +437,42 @@ ion-card{
     display: block;
 }
 
+.wikiDescription{
+  padding: 7%;
+  font-style: italic;
+  text-align: left;
+  color: #8e8e8e;
+  font-size: 12px;
+  margin-top: -5%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  margin-bottom: 10%;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical !important;
+  transition: 1s all ease;
+  height: inherit;
+}
+
+.speciesName{
+  color: #d3d3d3;
+  text-transform: capitalize;
+}
+
+.centerSeeMore{
+  text-transform: lowercase;
+  text-align: center;
+  font-size: 12px;
+  display: block;
+  width: 100%;
+  margin-bottom: 5%;
+}
+
+.wikiDescriptionSmall{
+  height: 80px;
+}
+
 .selectTankPopup{
   position: absolute;
   margin-left: auto;
@@ -463,9 +527,25 @@ ion-card{
 
   ion-label{
     font-family: 'Crimson Text', serif !important;
-    font-size: 21px;
+    font-size: 18px;
     color: #8e8e8e;
     text-align: right;
+    white-space: nowrap;
+  }
+
+  .pondTitleVersion{
+    text-align: left;
+    font-family: 'Crimson Text', serif !important;
+    font-size: 16px;
+    color: #a7d1ec;
+    margin-top: 3%;
+    padding-left: 5%;
+    white-space: nowrap;
+  }
+
+  .toggle{
+    margin-top: -1%;
+    padding-right: 5%;
   }
 }
 

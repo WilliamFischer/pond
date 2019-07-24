@@ -11,6 +11,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { NavigationBar } from '@ionic-native/navigation-bar/ngx';
 
 import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
 import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
@@ -78,6 +79,7 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     Facebook,
     Camera,
     Keyboard,
+    NavigationBar,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

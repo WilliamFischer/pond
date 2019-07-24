@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { NavigationBar } from '@ionic-native/navigation-bar/ngx';
 
 import { Router } from '@angular/router';
 
@@ -20,13 +21,20 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private router: Router,
-    private afAuth: AngularFireAuth
+    private afAuth: AngularFireAuth,
+    private navigationBar: NavigationBar
   ) {
+
     this.initializeApp();
   }
 
+
+
   initializeApp() {
     this.platform.ready().then(() => {
+      let autoHide: boolean = true;
+      this.navigationBar.setUp(autoHide);
+      
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 
