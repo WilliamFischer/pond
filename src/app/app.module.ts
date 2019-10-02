@@ -9,9 +9,13 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { NavigationBar } from '@ionic-native/navigation-bar/ngx';
+import { HTTP } from '@ionic-native/http/ngx';
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
+import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet/ngx';
 
 import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
 import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
@@ -28,9 +32,13 @@ import { AppComponent } from './app.component';
 // Firebase
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
+import { FirestoreSettingsToken } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFireStorageModule } from '@angular/fire/storage';
 
 import { FormsModule } from '@angular/forms';
+
+import { OrderModule } from 'ngx-order-pipe';
 
 // Providers
 import { AuthProvider } from './providers/auth/auth';
@@ -51,11 +59,13 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     ShopDetailModelPage,
     AddVariationModelPage,
     SelectTankSubstratePage,
-    FishDetailPage
+    FishDetailPage,
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(),
+    IonicModule.forRoot({
+      mode: 'ios'
+    }),
     AppRoutingModule,
     AngularFireModule.initializeApp({
       apiKey: "AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ",
@@ -67,8 +77,10 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     }),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    AngularFireStorageModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    OrderModule
   ],
   providers: [
     StatusBar,
@@ -77,9 +89,14 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     AuthProvider,
     Geolocation,
     Facebook,
+    GooglePlus,
     Camera,
     Keyboard,
     NavigationBar,
+    HTTP,
+    ScreenOrientation,
+    ActionSheet,
+    { provide: FirestoreSettingsToken, useValue: {} },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

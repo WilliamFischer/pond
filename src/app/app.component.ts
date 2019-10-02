@@ -4,6 +4,8 @@ import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { NavigationBar } from '@ionic-native/navigation-bar/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
 import { Router } from '@angular/router';
 
@@ -22,9 +24,10 @@ export class AppComponent {
     private statusBar: StatusBar,
     private router: Router,
     private afAuth: AngularFireAuth,
-    private navigationBar: NavigationBar
+    private navigationBar: NavigationBar,
+    private keyboard: Keyboard,
+    private screenOrientation: ScreenOrientation
   ) {
-
     this.initializeApp();
   }
 
@@ -34,9 +37,14 @@ export class AppComponent {
     this.platform.ready().then(() => {
       let autoHide: boolean = true;
       this.navigationBar.setUp(autoHide);
-      
+
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.keyboard.hideFormAccessoryBar(false);
+
+      if (this.platform.is('android') || this.platform.is('ios')) {
+        this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+      }
 
       //** AUTH LOGIN CHECKER **//
       this.afAuth.authState.subscribe(auth=>{
@@ -48,7 +56,10 @@ export class AppComponent {
             console.log('setting to localStorage')
             localStorage.setItem('auth', this.afAuth.auth.currentUser.uid);
           }
+
           this.router.navigateByUrl('/tabs');
+          console.clear();
+          console.log('POND v1.0.0 by William Fischer')
         }
       });
 

@@ -12,3 +12,146 @@
 @import '~animate.css/animate.min.css';
 
 @import url('https://fonts.googleapis.com/css?family=Crimson+Text:400,600,700&Montserrat:300,400,500');
+
+
+.overflow-scroll {
+  overflow: scroll !important;
+  overflow-x: hidden !important;
+  overflow-y: scroll !important;
+}
+
+.broswerText{
+  display: none;
+}
+
+.footerTxt{
+  display: none;
+}
+
+.sc-ion-card-md-s img {
+    object-fit: cover !important;
+}
+
+.searchbar-input.sc-ion-searchbar-md {
+    border-radius: 5px !important;
+}
+
+//SHORT (DWARF) MODE
+// @media (min-height: 735px) and (max-width: 1024px)  {
+//   ion-router-outlet{
+//     width: 380px !important;
+//     height: 1200px !important;
+//     margin-bottom: 3% !important;
+//   }
+// }
+
+//BROWSER MODE
+@media (min-width: 500px) {
+
+  ion-router-outlet{
+    width: 375px !important;
+    height: 667px !important;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+
+    box-shadow: 0px 0px 10px #8e8e8e;
+    /* position: absolute; */
+
+    position: relative;
+    margin-bottom: 3%;
+  }
+
+  ion-app{
+    background: #88b9c9 !important;
+  }
+
+  // ion-backdrop{
+  //   width: 375px !important;
+  //   height: 667px !important;
+  //   display: block;
+  //   margin-left: auto;
+  //   margin-right: auto;
+  //   left: 0;
+  //   right: 0;
+  // }
+
+
+  .broswerText{
+    display: block;
+    text-align: center;
+    font-size: 42px;
+    margin-top: 1%;
+    color: #3e8196;
+    font-family: 'Crimson Text', serif !important;
+  }
+
+  .footerTxt{
+    display: block;
+    text-align: center;
+    font-size: 16px;
+    color: #cfd6d8;
+    font-family: 'Crimson Text', serif !important;
+    /* margin-top: -10%; */
+
+    a{
+      color: #cfd6d8;
+    }
+  }
+
+  .addTank{
+    margin-top: -27%;
+  }
+
+  .loadingSpinner{
+    margin-bottom: 60% !important;
+  }
+
+  .tempLoader{
+    margin-top: 0px !important;
+  }
+
+  .theResults{
+    margin-bottom: 15% !important;
+  }
+
+  .speciesSelectedMode{
+    margin-bottom: 20% !important;
+  }
+
+  .paddingSpace{
+    margin-bottom: 20% !important;
+  }
+}
+
+//NO TITLE MODE
+@media (max-height: 750px) {
+  ion-router-outlet{
+    margin-bottom: 0%;
+  }
+
+  .broswerText{
+    display: none;
+  }
+}
+
+//IPAD MODE
+@media (min-width: 768px) and (max-width: 1024px) and (orientation:portrait) {
+  ion-router-outlet{
+    width: 500px !important;
+    height: 900px !important;
+  }
+}
+
+
+//GIGANTIC MODE
+@media (min-width: 1920px) {
+  ion-router-outlet{
+    width: 500px !important;
+    height: 867px !important;
+    margin-bottom: 15%;
+  }
+}

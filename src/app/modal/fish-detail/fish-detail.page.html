@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <p class="close" (click)="closeModal()">Back</p>
-    <ion-title>{{ tankObj.name }} - <i>{{fishObj['sci_name'] | titlecase}}</i></ion-title>
+    <ion-title>{{fishObj['quantity']}} x {{fishObj['comm_name'] | titlecase}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,7 +10,7 @@
   <ion-card>
 
   <ion-card-header>
-    <ion-card-subtitle><i>{{fishObj['sci_name'] | titlecase}}</i></ion-card-subtitle>
+    <ion-card-subtitle><i>{{fishObj['genus'] | titlecase}}</i></ion-card-subtitle>
     <ion-card-title>{{fishObj['comm_name'] | titlecase}}</ion-card-title>
     <p *ngIf="dataToDisplay.etymology"> {{dataToDisplay.etymology}} </p>
   </ion-card-header>
@@ -25,7 +25,7 @@
    </ion-slide>
   </ion-slides>
 
-  <ion-card-content class="smallStuffContent">
+  <ion-card-content class="smallStuffContent" *ngIf="dataToDisplay.wikiDesc">
     {{ dataToDisplay.wikiDesc }}
   </ion-card-content>
 </ion-card>
@@ -42,7 +42,7 @@
   </ion-card-content>
 </ion-card>
 
-<ion-card>
+<ion-card class="enviroCard">
 
   <ion-card-header>
     <ion-icon name="pin" slot="start"></ion-icon>
@@ -64,8 +64,13 @@
     <ion-label>Average size: {{ dataToDisplay.size }}</ion-label>
   </ion-item>
 
+  <ion-item *ngIf="dataToDisplay.length">
+    <ion-icon name="md-resize" slot="start"></ion-icon>
+    <ion-label>Disputed size: {{ dataToDisplay.length }}</ion-label>
+  </ion-item>
+
   <ion-item *ngIf="dataToDisplay.lifespan">
-    <ion-icon name="walk" slot="start"></ion-icon>
+    <ion-icon name="hourglass" slot="start"></ion-icon>
     <ion-label>Lifespan: 10 years</ion-label>
   </ion-item>
 
@@ -75,17 +80,17 @@
   </ion-item>
 
   <ion-item *ngIf="dataToDisplay.vunerability">
-    <ion-icon name="warning" slot="start"></ion-icon>
+    <ion-icon name="alert" slot="start"></ion-icon>
     <ion-label>Vunerability: {{ dataToDisplay.vunerability }} / 100</ion-label>
   </ion-item>
 
   <ion-item *ngIf="dataToDisplay.blackWater">
-    <ion-icon name="md-pizza" slot="start"></ion-icon>
-    <ion-label>Requires BlackWater</ion-label>
+    <ion-icon name="water" slot="start"></ion-icon>
+    <ion-label>Requires Black-Water</ion-label>
   </ion-item>
 
   <ion-item *ngIf="dataToDisplay.aquaticPlants">
-    <ion-icon name="md-pizza" slot="start"></ion-icon>
+    <ion-icon name="leaf" slot="start"></ion-icon>
     <ion-label>Requires Aquarium plants</ion-label>
   </ion-item>
 
@@ -108,6 +113,16 @@
 
   <ion-item class="itemInfo">
     {{ dataToDisplay.sexIdentificationFeatures }}
+  </ion-item>
+</ion-card>
+
+<ion-card *ngIf="dataToDisplay.sexing">
+  <ion-card-header>
+    <ion-label>Sexing</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.sexing }}
   </ion-item>
 </ion-card>
 
@@ -141,5 +156,47 @@
     {{ dataToDisplay.comments }}
   </ion-item>
 </ion-card>
+
+<ion-card *ngIf="dataToDisplay.furniture">
+  <ion-card-header>
+    <ion-label>Decorations</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.furniture }}
+  </ion-item>
+</ion-card>
+
+<ion-card *ngIf="dataToDisplay.feeding">
+  <ion-card-header>
+    <ion-label>Feeding</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.feeding }}
+  </ion-item>
+</ion-card>
+
+<ion-card *ngIf="dataToDisplay.compatibility">
+  <ion-card-header>
+    <ion-label>Compatibility</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.compatibility }}
+  </ion-item>
+</ion-card>
+
+<ion-card *ngIf="dataToDisplay.identification">
+  <ion-card-header>
+    <ion-label>Species Identification</ion-label>
+  </ion-card-header>
+
+  <ion-item class="itemInfo">
+    {{ dataToDisplay.identification }}
+  </ion-item>
+</ion-card>
+
+
 
 </ion-content>

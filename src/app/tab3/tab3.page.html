@@ -1,54 +1,115 @@
-<ion-header>
+<ion-header [ngClass]="{'androidHeader' : userOnAndroid }">
   <ion-toolbar>
     <form action=".">
-      <ion-searchbar placeholder="Search Common or Scientific Name..." value="{{searchQuery}}" (change)="checkAPI($event, false)" type="search" (ionClear)="clearSearch()" [(ngModel)]="singleLetterQuery" [ngModelOptions]="{standalone: true}" showSearchButton animated></ion-searchbar>
+      <ion-searchbar [ngClass]="{'littleSearcher' : littleSearchbar }" placeholder="Search Common or Scientific Name..." value="{{searchQuery}}" (change)="checkAPI($event, false)" type="search" (ionClear)="clearSearch()" [(ngModel)]="singleLetterQuery" [ngModelOptions]="{standalone: true}" showSearchButton animated></ion-searchbar>
     </form>
-  </ion-toolbar>
-
-  <ion-toolbar class="saltSwitch" *ngIf="!speciesSelected && !searchQuery">
-    <ion-item class="toggle">
-      <h1 class="pondTitleVersion">Pond v0.5.4</h1>
-      <ion-label>Saltwater Mode</ion-label>
-      <ion-toggle [(ngModel)]="saltwater"></ion-toggle>
+    <ion-item class="toggle littleSwitch animated fadeIn" *ngIf="littleSearchbar">
+      <ion-toggle [(ngModel)]="saltwater" (click)="switchSalt()"></ion-toggle>
     </ion-item>
   </ion-toolbar>
 
-  <ion-toolbar class="alphabetHeader" *ngIf="!speciesSelected && searchQuery">
-    <ion-item>
-      <ul class="alphabet">
-        <li class="letter" (click)="selectLetter('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
-        <li class="letter" (click)="selectLetter('b')" [ngClass]="{'litLetter' : selectedLetter == 'b'}">b</li>
-        <li class="letter" (click)="selectLetter('c')" [ngClass]="{'litLetter' : selectedLetter == 'c'}">c</li>
-        <li class="letter" (click)="selectLetter('d')" [ngClass]="{'litLetter' : selectedLetter == 'd'}">d</li>
-        <li class="letter" (click)="selectLetter('e')" [ngClass]="{'litLetter' : selectedLetter == 'e'}">e</li>
-        <li class="letter" (click)="selectLetter('f')" [ngClass]="{'litLetter' : selectedLetter == 'f'}">f</li>
-        <li class="letter" (click)="selectLetter('g')" [ngClass]="{'litLetter' : selectedLetter == 'g'}">g</li>
-        <li class="letter" (click)="selectLetter('h')" [ngClass]="{'litLetter' : selectedLetter == 'h'}">h</li>
-        <li class="letter" (click)="selectLetter('i')" [ngClass]="{'litLetter' : selectedLetter == 'i'}">i</li>
-        <li class="letter" (click)="selectLetter('j')" [ngClass]="{'litLetter' : selectedLetter == 'j'}">j</li>
-        <li class="letter" (click)="selectLetter('k')" [ngClass]="{'litLetter' : selectedLetter == 'k'}">k</li>
-        <li class="letter" (click)="selectLetter('l')" [ngClass]="{'litLetter' : selectedLetter == 'l'}">l</li>
-        <li class="letter" (click)="selectLetter('m')" [ngClass]="{'litLetter' : selectedLetter == 'm'}">m</li>
-        <li class="letter" (click)="selectLetter('n')" [ngClass]="{'litLetter' : selectedLetter == 'n'}">n</li>
-        <li class="letter" (click)="selectLetter('o')" [ngClass]="{'litLetter' : selectedLetter == 'o'}">o</li>
-        <li class="letter" (click)="selectLetter('p')" [ngClass]="{'litLetter' : selectedLetter == 'p'}">p</li>
-        <li class="letter" (click)="selectLetter('q')" [ngClass]="{'litLetter' : selectedLetter == 'q'}">q</li>
-        <li class="letter" (click)="selectLetter('r')" [ngClass]="{'litLetter' : selectedLetter == 'r'}">r</li>
-        <li class="letter" (click)="selectLetter('s')" [ngClass]="{'litLetter' : selectedLetter == 's'}">s</li>
-        <li class="letter" (click)="selectLetter('t')" [ngClass]="{'litLetter' : selectedLetter == 't'}">t</li>
-        <li class="letter" (click)="selectLetter('u')" [ngClass]="{'litLetter' : selectedLetter == 'u'}">u</li>
-        <li class="letter" (click)="selectLetter('v')" [ngClass]="{'litLetter' : selectedLetter == 'v'}">v</li>
-        <li class="letter" (click)="selectLetter('w')" [ngClass]="{'litLetter' : selectedLetter == 'w'}">w</li>
-        <li class="letter" (click)="selectLetter('x')" [ngClass]="{'litLetter' : selectedLetter == 'x'}">x</li>
-        <li class="letter" (click)="selectLetter('y')" [ngClass]="{'litLetter' : selectedLetter == 'y'}">y</li>
-        <li class="letter" (click)="selectLetter('z')" [ngClass]="{'litLetter' : selectedLetter == 'z'}">z</li>
+  <ion-toolbar class="saltSwitch" *ngIf="!speciesSelected && searchQuery < 2">
+    <ion-item class="toggle">
+
+    <!-- <h1 class="pondTitleVersion" *ngIf="!popularMode" (click)="loadPopular()">More</h1> -->
+
+    <h1 class="pondTitleVersion" *ngIf="!popularMode && !randomMode">
+      <label (click)="loadPopular()">Popular</label>
+      <font color="#8e8e8e"> &bull; </font>
+      <label (click)="loadRandom()">Random</label>
+    </h1>
+
+    <h1 class="pondTitleVersion" *ngIf="popularMode || randomMode">
+      <label *ngIf="randomMode" (click)="loadRandom()">Reload</label>
+      <font *ngIf="randomMode" color="#8e8e8e"> &bull; </font>
+      <label (click)="unloadAll()">Done</label>
+    </h1>
+
+
+      <ion-label *ngIf="saltwater">Saltwater</ion-label>
+      <ion-label *ngIf="!saltwater">Freshwater</ion-label>
+      <ion-toggle [(ngModel)]="saltwater" (click)="switchPopular()"></ion-toggle>
+    </ion-item>
+  </ion-toolbar>
+
+  <ion-toolbar class="alphabetHeader" *ngIf="searchQuery.length > 2 && !speciesSelected">
+    <ion-item *ngIf="!doneLoading">
+      <!-- <h2 class="alphabetSpeciesLoading">Loading All Species...</h2> -->
+      <img class="tempLoader animated fadeIn" src="../assets/dnaLoader.gif" />
+    </ion-item>
+
+    <ion-item *ngIf="doneLoading">
+      <ul class="alphabet animated fadeIn">
+        <li class="letter" (click)="newLetterSwitcher('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
+        <li class="letter" (click)="newLetterSwitcher('b')" [ngClass]="{'litLetter' : selectedLetter == 'b'}">b</li>
+        <li class="letter" (click)="newLetterSwitcher('c')" [ngClass]="{'litLetter' : selectedLetter == 'c'}">c</li>
+        <li class="letter" (click)="newLetterSwitcher('d')" [ngClass]="{'litLetter' : selectedLetter == 'd'}">d</li>
+        <li class="letter" (click)="newLetterSwitcher('e')" [ngClass]="{'litLetter' : selectedLetter == 'e'}">e</li>
+        <li class="letter" (click)="newLetterSwitcher('f')" [ngClass]="{'litLetter' : selectedLetter == 'f'}">f</li>
+        <li class="letter" (click)="newLetterSwitcher('g')" [ngClass]="{'litLetter' : selectedLetter == 'g'}">g</li>
+        <li class="letter" (click)="newLetterSwitcher('h')" [ngClass]="{'litLetter' : selectedLetter == 'h'}">h</li>
+        <li class="letter" (click)="newLetterSwitcher('i')" [ngClass]="{'litLetter' : selectedLetter == 'i'}">i</li>
+        <li class="letter" (click)="newLetterSwitcher('j')" [ngClass]="{'litLetter' : selectedLetter == 'j'}">j</li>
+        <li class="letter" (click)="newLetterSwitcher('k')" [ngClass]="{'litLetter' : selectedLetter == 'k'}">k</li>
+        <li class="letter" (click)="newLetterSwitcher('l')" [ngClass]="{'litLetter' : selectedLetter == 'l'}">l</li>
+        <li class="letter" (click)="newLetterSwitcher('m')" [ngClass]="{'litLetter' : selectedLetter == 'm'}">m</li>
+        <li class="letter" (click)="newLetterSwitcher('n')" [ngClass]="{'litLetter' : selectedLetter == 'n'}">n</li>
+        <li class="letter" (click)="newLetterSwitcher('o')" [ngClass]="{'litLetter' : selectedLetter == 'o'}">o</li>
+        <li class="letter" (click)="newLetterSwitcher('p')" [ngClass]="{'litLetter' : selectedLetter == 'p'}">p</li>
+        <li class="letter" (click)="newLetterSwitcher('q')" [ngClass]="{'litLetter' : selectedLetter == 'q'}">q</li>
+        <li class="letter" (click)="newLetterSwitcher('r')" [ngClass]="{'litLetter' : selectedLetter == 'r'}">r</li>
+        <li class="letter" (click)="newLetterSwitcher('s')" [ngClass]="{'litLetter' : selectedLetter == 's'}">s</li>
+        <li class="letter" (click)="newLetterSwitcher('t')" [ngClass]="{'litLetter' : selectedLetter == 't'}">t</li>
+        <li class="letter" (click)="newLetterSwitcher('u')" [ngClass]="{'litLetter' : selectedLetter == 'u'}">u</li>
+        <li class="letter" (click)="newLetterSwitcher('v')" [ngClass]="{'litLetter' : selectedLetter == 'v'}">v</li>
+        <li class="letter" (click)="newLetterSwitcher('w')" [ngClass]="{'litLetter' : selectedLetter == 'w'}">w</li>
+        <li class="letter" (click)="newLetterSwitcher('x')" [ngClass]="{'litLetter' : selectedLetter == 'x'}">x</li>
+        <li class="letter" (click)="newLetterSwitcher('y')" [ngClass]="{'litLetter' : selectedLetter == 'y'}">y</li>
+        <li class="letter" (click)="newLetterSwitcher('z')" [ngClass]="{'litLetter' : selectedLetter == 'z'}">z</li>
       </ul>
     </ion-item>
   </ion-toolbar>
 
+  <!-- <ion-toolbar class="alphabetHeader" *ngIf="searchQuery.length > 2 && selectedLetter">
+    <ion-item *ngIf="!doneLoading">
+      <img class="tempLoader animated fadeIn" src="../assets/dnaLoader.gif" />
+    </ion-item>
+
+    <ion-item *ngIf="doneLoading">
+      <ul class="alphabet animated fadeIn">
+        <li class="letter" (click)="newLetterSwitcher('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
+        <li class="letter" (click)="newLetterSwitcher('b')" [ngClass]="{'litLetter' : selectedLetter == 'b'}">b</li>
+        <li class="letter" (click)="newLetterSwitcher('c')" [ngClass]="{'litLetter' : selectedLetter == 'c'}">c</li>
+        <li class="letter" (click)="newLetterSwitcher('d')" [ngClass]="{'litLetter' : selectedLetter == 'd'}">d</li>
+        <li class="letter" (click)="newLetterSwitcher('e')" [ngClass]="{'litLetter' : selectedLetter == 'e'}">e</li>
+        <li class="letter" (click)="newLetterSwitcher('f')" [ngClass]="{'litLetter' : selectedLetter == 'f'}">f</li>
+        <li class="letter" (click)="newLetterSwitcher('g')" [ngClass]="{'litLetter' : selectedLetter == 'g'}">g</li>
+        <li class="letter" (click)="newLetterSwitcher('h')" [ngClass]="{'litLetter' : selectedLetter == 'h'}">h</li>
+        <li class="letter" (click)="newLetterSwitcher('i')" [ngClass]="{'litLetter' : selectedLetter == 'i'}">i</li>
+        <li class="letter" (click)="newLetterSwitcher('j')" [ngClass]="{'litLetter' : selectedLetter == 'j'}">j</li>
+        <li class="letter" (click)="newLetterSwitcher('k')" [ngClass]="{'litLetter' : selectedLetter == 'k'}">k</li>
+        <li class="letter" (click)="newLetterSwitcher('l')" [ngClass]="{'litLetter' : selectedLetter == 'l'}">l</li>
+        <li class="letter" (click)="newLetterSwitcher('m')" [ngClass]="{'litLetter' : selectedLetter == 'm'}">m</li>
+        <li class="letter" (click)="newLetterSwitcher('n')" [ngClass]="{'litLetter' : selectedLetter == 'n'}">n</li>
+        <li class="letter" (click)="newLetterSwitcher('o')" [ngClass]="{'litLetter' : selectedLetter == 'o'}">o</li>
+        <li class="letter" (click)="newLetterSwitcher('p')" [ngClass]="{'litLetter' : selectedLetter == 'p'}">p</li>
+        <li class="letter" (click)="newLetterSwitcher('q')" [ngClass]="{'litLetter' : selectedLetter == 'q'}">q</li>
+        <li class="letter" (click)="newLetterSwitcher('r')" [ngClass]="{'litLetter' : selectedLetter == 'r'}">r</li>
+        <li class="letter" (click)="newLetterSwitcher('s')" [ngClass]="{'litLetter' : selectedLetter == 's'}">s</li>
+        <li class="letter" (click)="newLetterSwitcher('t')" [ngClass]="{'litLetter' : selectedLetter == 't'}">t</li>
+        <li class="letter" (click)="newLetterSwitcher('u')" [ngClass]="{'litLetter' : selectedLetter == 'u'}">u</li>
+        <li class="letter" (click)="newLetterSwitcher('v')" [ngClass]="{'litLetter' : selectedLetter == 'v'}">v</li>
+        <li class="letter" (click)="newLetterSwitcher('w')" [ngClass]="{'litLetter' : selectedLetter == 'w'}">w</li>
+        <li class="letter" (click)="newLetterSwitcher('x')" [ngClass]="{'litLetter' : selectedLetter == 'x'}">x</li>
+        <li class="letter" (click)="newLetterSwitcher('y')" [ngClass]="{'litLetter' : selectedLetter == 'y'}">y</li>
+        <li class="letter" (click)="newLetterSwitcher('z')" [ngClass]="{'litLetter' : selectedLetter == 'z'}">z</li>
+      </ul>
+    </ion-item>
+  </ion-toolbar> -->
+
 </ion-header>
 
-<div class="selectTankPopup" *ngIf="showSelectTank">
+<div class="selectTankPopup animated bounceIn" *ngIf="showSelectTank">
   <div class="loadingSpinner lessTopSpinner" *ngIf="showTankListLoader">
     <ion-spinner name="crescent"></ion-spinner>
   </div>
@@ -58,139 +119,188 @@
   <div *ngIf="!showTankListLoader && !showTankListTick && !showTankQuanityList">
     <h1>Add {{toAddToTankSpecies.name}} to Tank?</h1>
 
-    <ion-list>
+    <label class="noTanksYet" *ngIf="tanks.length < 1">You have no tanks yet</label>
+
+    <ion-list *ngIf="tanks.length >= 1">
       <ion-item *ngFor="let tank of tanks">
-        <ion-label (click)="addFishToTank(tank)">{{tank.name}}</ion-label>
+        <ion-label (click)="selectTank(tank)">{{tank.name}}</ion-label>
       </ion-item>
     </ion-list>
   </div>
 
-  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList">
-    <h1>Select quantity of {{toAddToTankSpecies.name}}'s</h1>
+  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && !currentQuantity">
+    <h1>Select quantity of {{toAddToTankSpecies.name}}'s in {{activeTankSelect.name}}</h1>
 
-    <ion-input class="centerSelectNumber" type="number" value="1" (change)="setSpeciesTankQuantity($event.target.value)"></ion-input>
+    <ion-input class="centerSelectNumber" pattern="[0-9]*" type="text" placeholder="1" (change)="setSpeciesTankQuantity($event.target.value)"></ion-input>
+
+    <div class="buttonsLive">
+      <div class="block" (click)="cancelAddToTank()">CANCEL</div>
+      <div class="block" (click)="addFishToTank(tank)">ADD</div>
+    </div>
+  </div>
+
+  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity">
+    <h1>Update quantity of {{toAddToTankSpecies.name}}'s in {{activeTankSelect.name}}</h1>
+
+    <ion-input class="centerSelectNumber" value="{{currentQuantity}}" pattern="[0-9]*" type="text" placeholder="1" (change)="setSpeciesTankQuantity($event.target.value)"></ion-input>
+
+    <div class="buttonsLive">
+      <div class="block" (click)="cancelAddToTank()">CANCEL</div>
+      <div class="block right" (click)="addFishToTank(tank)">ADD</div>
+    </div>
   </div>
 
 </div>
 
 <div class="backgroundDimmer" (click)="hideTankMenu()" *ngIf="showSelectTank"></div>
 
+
 <ion-content *ngIf="!speciesSelected" class="blueBack" id="coreScroll">
 
-  <div *ngIf="selectedLetter">
-    <div class="topTitle centerTit">{{letterCounter.length}} results for {{selectedLetter}} in {{searchQuery}} <a (click)="clearLetter()">clear</a></div>
+  <ion-icon class="clearSearchTxt" *ngIf="selectedLetter" (click)="clearSwitcher()" name="close-circle-outline"></ion-icon>
 
-    <div *ngIf="letterCounter.length >= 1" class="theResults">
-      <div *ngFor="let fish of letterCounter">
-        <div class="speciesBrick animated bounceInLeft">
+  <div *ngIf="!speciesSelected">
 
-          <ion-slides pager="true" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
-           <ion-slide class="imageBox">
-             <img [src]="fish.Pic[0]" *ngIf="fish.Pic[0]" />
-             <img src="../assets/noImg.png" *ngIf="!fish.Pic[0]" />
-           </ion-slide>
-           <ion-slide class="imageBox">
-             <img [src]="fish.Pic[1]" *ngIf="fish.Pic[1]" />
-             <img src="../assets/noImg.png" *ngIf="!fish.Pic[1]" />
-           </ion-slide>
-           <ion-slide class="imageBox">
-             <img [src]="fish.Pic[2]"  *ngIf="fish.Pic[2]" />
-             <img src="../assets/noImg.png" *ngIf="!fish.Pic[2]" />
-           </ion-slide>
-           <ion-slide class="imageBox">
-             <img [src]="fish.Pic[3]" *ngIf="fish.Pic[3]" />
-             <img src="../assets/noImg.png" *ngIf="!fish.Pic[3]" />
-           </ion-slide>
-           <ion-slide class="imageBox" *ngIf="fish.PicPreferredName">
-             <img src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
-           </ion-slide>
-          </ion-slides>
-
-          <h2 *ngIf="fish.FBname" (click)="selectSpecies(fish, false)">{{fish.FBname}}</h2>
-          <h2 *ngIf="!fish.FBname" (click)="selectSpecies(fish, false)">The {{fish.Species}}</h2>
-          <h3>
-            <b (click)="showGenus(fish.Genus)"> {{fish.Genus}}</b>
-            <i> {{fish.Species}}</i> <br />
-            <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label>
-            Max Length - {{fish.Length}}cm
-          </h3>
-
-        </div>
-      </div>
-    </div>
-
-    <label class="nothingFoundTxt" *ngIf="letterCounter.length < 1"><b>No results returned :(</b></label>
-
-  </div>
-
-  <div *ngIf="!speciesSelected && !selectedLetter">
-
-    <div *ngIf="searchQuery.length <= 2">
+    <!-- LOGOS -->
+    <div *ngIf="searchQuery.length <= 2 && !popularMode && !randomMode">
       <img *ngIf="!saltwater" src="../assets/whiteKoiClear.png" class="koiLogo animated pulse infinite"/>
       <img *ngIf="saltwater" src="../assets/turtleClear.png" class="koiLogo tunaLogo animated pulse infinite"/>
     </div>
 
-    <div  class="loadingSpinner" *ngIf="searchQuery.length > 2 && !doneLoading">
-      <ion-spinner name="crescent"></ion-spinner>
+    <!-- NOTHING FOUND TEXT  -->
+    <label class="nothingFoundTxt" [ngClass]="{'pushNothingUp' : shortRelatedPassage.length >= 1}" *ngIf="searchQuery.length > 2 && doneLoading && this.ourFish.length == 0 && this.fbSpecies.length == 0 && this.relatedSpecies.length == 0">
+      <b>No results returned.</b>
+      <br  /><br />
+      Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.
+      <br /><br />
+      When searching for a saltwater or ocean fish,  try a
+      <a *ngIf="saltwater" (click)="showFreshWater()">freshwater search</a>
+      <a *ngIf="!saltwater" (click)="showSaltWater()">saltwater search</a>?
+
+      <!-- DID YOU MEAN RESULTS -->
+      <div *ngIf="doneLoading && relatedSearchResults" class="genusDescription cyaTxt" [innerHTML]="relatedSearchResults"></div>
+
+      <div *ngIf="doneLoading && shortRelatedPassage" class="didYouMeanResults">
+        <h1 *ngIf="shortRelatedPassage.length >= 1">Potentially Related Species:</h1>
+        <p *ngIf="shortRelatedPassage.length >= 1" [innerHTML]="shortRelatedPassage"></p>
+        <h1 *ngIf="finalRelatedSearchResults >= 1">Species Match:</h1>
+        <ul>
+          <li class="didYouMeanItem" *ngFor="let species of finalRelatedSearchResults" (click)="showGenus(species)">{{species}}</li>
+        </ul>
+      </div>
+    </label>
+
+    <!-- GENUS DESCRIPTION -->
+    <span *ngIf="searchingGenus && genusDescription && this.ourFish.length !== 0 && this.fbSpecies.length !== 0 && this.relatedSpecies.length !== 0">
+      <div *ngIf="!fullGenusDescription" class="genusDescription animated slideInLeft" [innerHTML]="genusDescription" (click)="generateFullGenusDescription()"></div>
+      <div *ngIf="fullGenusDescription" class="genusDescription animated slideInLeft" [innerHTML]="genusDescription" (click)="generateGenusDescription()"></div>
+    </span>
+
+    <!-- POPULAR SPECIES -->
+    <div *ngIf="popularMode" class="theResults">
+      <div class="topTitle" *ngIf="!saltwater">The most viewed freshwater species</div>
+      <div class="topTitle" *ngIf="saltwater">The most viewed saltwater species</div>
+
+      <ion-card class="animated bounceInLeft" *ngFor="let fish of popularSpecies">
+        <ion-card-header>
+          <ion-card-subtitle>
+            <b (click)="showGenus(fish.genus)">{{fish.genus}}</b>
+            <i> {{fish.species}}</i>
+
+            <ion-icon *ngIf="!fish.isFavourited" class="rightIconMore" (click)="addFishToWishlist(fish)" name="star-outline"></ion-icon>
+            <ion-icon *ngIf="fish.isFavourited" class="rightIconMore starIco" (click)="addFishToWishlist(fish)" name="star"></ion-icon>
+
+            <ion-icon class="rightIconMore" (click)="addTankTrigger(fish)" name="add-circle-outline"></ion-icon>
+
+          </ion-card-subtitle>
+          <ion-card-title (click)="selectSpecies(fish, true)">{{fish.name}}</ion-card-title>
+        </ion-card-header>
+
+        <ion-slides pager="false">
+          <ng-template let-img ngFor [ngForOf]="fish['Pics']">
+           <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(fish, true)">
+             <img [src]="img" onerror="this.src='../assets/noImg.png'; document.getElementById('myImg').style.display='none'" />
+           </ion-slide>
+           </ng-template>
+        </ion-slides>
+
+      </ion-card>
     </div>
 
-    <label class="nothingFoundTxt" *ngIf="searchQuery.length > 2 && doneLoading && this.ourFish.length == 0 && this.fbSpecies.length == 0 && this.relatedSpecies.length == 0"><b>No results returned.</b> <br  /><br /> Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.</label>
+    <!-- RANDOM SPECIES -->
+    <div *ngIf="randomMode" class="theResults">
+      <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh == -1">Freshwater species generated</h1>
+      <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh != -1">Saltwater species generated</h1>
 
-    <div *ngIf="doneLoading && ourFish.length >= 1" class="theResults">
-      <div class="topTitle">{{ourFish.length}} Species Found from Pond</div>
+      <ion-card class="animated bounceInLeft" *ngIf="randomSpecies.fresh">
+        <ion-card-header>
+          <ion-card-subtitle>
+            <b (click)="showGenus(randomSpecies.genus)">{{randomSpecies.genus}}</b>
+            <i> {{randomSpecies.species}}</i>
+
+            <ion-icon *ngIf="!randomSpecies.isFavourited" class="rightIconMore" (click)="addRandomFishToWishlist()" name="star-outline"></ion-icon>
+            <ion-icon *ngIf="randomSpecies.isFavourited" class="rightIconMore starIco" (click)="addRandomFishToWishlist()" name="star"></ion-icon>
+
+            <ion-icon class="rightIconMore" (click)="addTankTrigger(randomSpecies)" name="add-circle-outline"></ion-icon>
+          </ion-card-subtitle>
+          <ion-card-title (click)="selectSpecies(randomSpecies, true)">{{randomSpecies.name}}</ion-card-title>
+        </ion-card-header>
+
+        <ion-slides pager="false">
+          <ng-template let-img ngFor [ngForOf]="randomSpecies['Pics']">
+           <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(fish, true)">
+             <img [src]="img" onerror="this.src='../assets/noImg.png'; document.getElementById('myImg').style.display='none'" />
+           </ion-slide>
+           </ng-template>
+        </ion-slides>
+
+      </ion-card>
+    </div>
+
+    <!-- POND'S SPECIES -->
+    <div *ngIf="loadedLocalSpecies && ourFish.length >= 1 && !hideOurFish" class="theResults">
+      <div class="topTitle" *ngIf="ourFishLength >= 1">{{ ourFishLength }} Species Found from Pond</div>
 
       <ion-card class="animated bounceInLeft" *ngFor="let fish of ourFish">
         <ion-card-header>
-          <ion-card-subtitle>{{fish.genus}} <i>{{fish.species}}</i></ion-card-subtitle>
-          <ion-card-title (click)="selectSpecies(fish, false)">{{fish.name}}</ion-card-title>
+          <ion-card-subtitle>
+            <b (click)="showGenus(fish.genus)">{{fish.genus}}</b>
+            <i> {{fish.species}}</i>
+
+            <ion-icon *ngIf="!fish.isFavourited" class="rightIconMore" (click)="addFishToWishlist(fish)" name="star-outline"></ion-icon>
+            <ion-icon *ngIf="fish.isFavourited" class="rightIconMore starIco" (click)="addFishToWishlist(fish)" name="star"></ion-icon>
+
+            <ion-icon class="rightIconMore" (click)="addTankTrigger(fish)" name="add-circle-outline"></ion-icon>
+          </ion-card-subtitle>
+          <ion-card-title (click)="selectSpecies(fish, true)" class="fishNameText">{{fish.name}}</ion-card-title>
         </ion-card-header>
 
-        <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, true)">
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[0]" [src]="fish.Pic[0]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[1]" [src]="fish.Pic[1]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[2]" [src]="fish.Pic[2]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[3]" [src]="fish.Pic[3]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[4]" [src]="fish.Pic[4]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[5]" [src]="fish.Pic[5]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[6]" [src]="fish.Pic[6]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[7]" [src]="fish.Pic[7]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[8]" [src]="fish.Pic[8]" default="../assets/noImg.png"/>
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img *ngIf="fish.Pic[9]" [src]="fish.Pic[9]" default="../assets/noImg.png"/>
-         </ion-slide>
+        <ion-slides pager="false">
+          <ng-template let-img ngFor [ngForOf]="fish['Pics']">
+           <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(fish, true)">
+             <img [src]="img" onerror="this.src='../assets/noImg.png'; document.getElementById('myImg').style.display='none'" />
+           </ion-slide>
+           </ng-template>
         </ion-slides>
 
-        <!-- <ion-card-content>
-          <label *ngIf="fish.length">{{fish.habitat}}</label>
-        </ion-card-content> -->
+        <!-- <ion-slides pager="false">
+         <ion-slide class="imageBox" *ngFor="let img of species['Pics']; let i = index" >
+           <img [src]="img" onerror="this.src='../assets/noImg.png'" />
+         </ion-slide>
+        </ion-slides> -->
+
+        <ion-card-content *ngIf="fish.wikiDesc" class="maxSizeContent" [innerHTML]="fish.wikiDesc">
+        </ion-card-content>
+
       </ion-card>
     </div>
 
     <!-- FISHBASE SPECIES -->
     <div *ngIf="doneLoading && fbSpecies.length >= 1" class="theResults">
 
-      <div class="topTitle"><label *ngIf="fbSpecies.length >= 10">{{maxSpeciesReturn}}/</label>{{fbSpecies.length}} Species Found from Fishbase</div>
+      <div class="topTitle" *ngIf="fbSpeciesLength >= 1">{{ fbSpeciesLength }} Species Found from Fishbase</div>
 
       <div *ngFor="let fish of fbSpecies">
-
         <ion-card class="animated bounceInLeft" *ngIf="fish.id >= minSpeciesReturn && fish.id <= maxSpeciesReturn">
           <ion-card-header>
             <ion-card-subtitle><b (click)="showGenus(fish.Genus)">{{fish.Genus}}</b><i> {{fish.Species}}</i></ion-card-subtitle>
@@ -199,24 +309,19 @@
           </ion-card-header>
 
           <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
-           <ion-slide class="imageBox">
-             <img *ngIf="fish.Pic[0]" [src]="fish.Pic[0]" default="../assets/noImg.png"/>
+            <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
+              <img [src]="fish.Pic[0]" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+            </ion-slide>
+            <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
+              <img [src]="fish.Pic[1]" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+            </ion-slide>
+           <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
+             <img [src]="fish.Pic[2]" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
            </ion-slide>
-           <ion-slide class="imageBox">
-             <img *ngIf="fish.Pic[1]" [src]="fish.Pic[1]" default="../assets/noImg.png"/>
-           </ion-slide>
-           <ion-slide class="imageBox">
-             <img *ngIf="fish.Pic[2]" [src]="fish.Pic[2]" default="../assets/noImg.png"/>
-           </ion-slide>
-           <ion-slide class="imageBox">
-             <img *ngIf="fish.Pic[3]" [src]="fish.Pic[3]" default="../assets/noImg.png"/>
-           </ion-slide>
+            <ion-slide class="imageBox" *ngIf="fish.Pic[3]">
+              <img [src]="fish.Pic[3]" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+            </ion-slide>
           </ion-slides>
-
-          <!-- <ion-card-content>
-            <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label>
-            Max Length - {{fish.Length}}cm
-          </ion-card-content> -->
         </ion-card>
       </div>
       <label class="nextPageTxt" (click)="nextPage()" *ngIf="fbSpecies.length >= 10"> -- NEXT PAGE --</label>
@@ -226,52 +331,48 @@
     <!-- FISHBASE RELATED SPECIES -->
 
     <div *ngIf="doneLoading && relatedSpecies.length >= 1" class="theResults">
-      <div class="topTitle">{{relatedSpecies.length}} Species Related</div>
+      <div class="topTitle" *ngIf="relatedSpeciesLength >= 1">{{ relatedSpeciesLength }} Species Related</div>
 
-      <ion-card class="animated bounceInLeft" *ngFor="let fish of relatedSpecies">
-        <ion-card-header>
-          <ion-card-subtitle><b (click)="showGenus(fish.Genus)">{{fish.Genus}}</b><i> {{fish.Species}}</i></ion-card-subtitle>
-          <ion-card-title *ngIf="fish.FBname">{{fish.FBname}}</ion-card-title>
-          <ion-card-title *ngIf="!fish.FBname" (click)="selectSpecies(fish, false)" >The {{fish.Species}}</ion-card-title>
-        </ion-card-header>
+      <div *ngFor="let fish of relatedSpecies">
+        <ion-card class="animated bounceInLeft" *ngIf="fish.id >= minSpeciesReturn && fish.id <= maxSpeciesReturn">
+          <ion-card-header>
+            <ion-card-subtitle><b (click)="showGenus(fish.Genus)">{{fish.Genus}}</b><i> {{fish.Species}}</i></ion-card-subtitle>
+            <ion-card-title *ngIf="fish.FBname">{{fish.FBname}}</ion-card-title>
+            <ion-card-title *ngIf="!fish.FBname" (click)="selectSpecies(fish, false)" >The {{fish.Species}}</ion-card-title>
+          </ion-card-header>
 
-        <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
-         <ion-slide class="imageBox">
-           <img src="../assets/noImg.png" [src]="fish.Pic[0]" *ngIf="fish.Pic[0]" />
-           <img src="../assets/noImg.png" *ngIf="!fish.Pic[0]" />
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img src="../assets/noImg.png" [src]="fish.Pic[1]" *ngIf="fish.Pic[1]" />
-           <img src="../assets/noImg.png" *ngIf="!fish.Pic[1]" />
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img src="../assets/noImg.png" [src]="fish.Pic[2]"  *ngIf="fish.Pic[2]" />
-           <img src="../assets/noImg.png" *ngIf="!fish.Pic[2]" />
-         </ion-slide>
-         <ion-slide class="imageBox">
-           <img src="../assets/noImg.png" [src]="fish.Pic[3]" *ngIf="fish.Pic[3]" />
-           <img src="../assets/noImg.png" *ngIf="!fish.Pic[3]" />
-         </ion-slide>
-         <ion-slide class="imageBox" *ngIf="fish.PicPreferredName">
-           <img src="https://www.fishbase.de/images/species/{{fish.PicPreferredName}}" />
-         </ion-slide>
-        </ion-slides>
-
-        <!-- <ion-card-content>
-          <label *ngIf="fish.CommonLength">Length - {{fish.CommonLength}}cm &bull;</label>
-          Max Length - {{fish.Length}}cm
-        </ion-card-content> -->
-      </ion-card>
+          <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
+           <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
+             <img [src]="fish.Pic[0]" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+           </ion-slide>
+           <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
+             <img [src]="fish.Pic[1]" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+           </ion-slide>
+          <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
+            <img [src]="fish.Pic[2]" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+          </ion-slide>
+           <ion-slide class="imageBox" *ngIf="fish.Pic[3]">
+             <img [src]="fish.Pic[3]" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+           </ion-slide>
+          </ion-slides>
+        </ion-card>
+      </div>
 
       <label class="nextPageTxt" (click)="nextPage()" *ngIf="relatedSpecies.length >= 10"> -- NEXT PAGE --</label>
       <label class="nextPageTxt prev" (click)="previousPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label>
     </div>
   </div>
 
+
+  <!-- LOADING SPINNER  -->
+  <div  class="loadingSpinner" [ngClass]="{'lessTopLocal': loadedLocalSpecies}" *ngIf="searchQuery.length > 2 && !doneLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
 </ion-content>
 
 <ion-content *ngIf="speciesSelected">
-  <div  class="speciesSelectedMode">
+  <div class="speciesSelectedMode">
     <ion-icon name="arrow-back" (click)="unSelectSpecies()" class="backArrow"></ion-icon>
 
     <div class="loadingSpinner detailSpinner" *ngIf="!speciesLoaded || !species.species">
@@ -281,9 +382,11 @@
     <ion-card *ngIf="speciesLoaded && species.genus">
       <ion-card-content>
         <ion-slides pager="false">
-         <ion-slide class="imageBox" *ngFor="let img of speciesImgArray; let i = index">
-           <img *ngIf="img" [src]="img" />
-          </ion-slide>
+          <ng-template let-img ngFor [ngForOf]="species['Pics']">
+           <ion-slide id="myImg" class="imageBox">
+             <img [src]="img" onerror="this.src='../assets/noImg.png'; document.getElementById('myImg').style.display='none'" />
+           </ion-slide>
+           </ng-template>
         </ion-slides>
       </ion-card-content>
       <!-- WIKIPEDIA DESCRIPTION -->
@@ -303,10 +406,15 @@
       </ion-card-header>
 
       <ion-card-content>
+
         <ul>
 
+          <!-- AUS Etymology -->
+          <li *ngIf="species.ausEty" [innerHTML]="species.ausEty"></li>
+          <br *ngIf="species.ausEty" />
+
           <!-- PLANET CATFISH INFO -->
-          <li *ngIf="species.etymology"><i>{{species.etymology}}</i></li>
+          <li *ngIf="species.etymology" [innerHTML]="species.etymology"></li>
           <br *ngIf="species.etymology" />
 
           <!-- WIKIPEDIA COMMON NAME -->
@@ -316,60 +424,196 @@
           </label>
 
           <!-- PULLED FROM BEST SOURCE -->
-          <li *ngIf="species.temperature"><b>Recommended Temperature :</b><br />  {{species.temperature}}</li>
+          <li *ngIf="species.temperature"><b>Recommended Temperature :</b><br />
+            <span [innerHTML]="species.temperature"></span>
+          </li>
           <br *ngIf="species.temperature" />
-          <li *ngIf="species.ph"><b>Recommended PH :</b><br /> {{species.ph}}</li>
+          <li *ngIf="species.ph"><b>Recommended PH :</b><br />
+            <span [innerHTML]="species.ph"></span>
+          </li>
           <br *ngIf="species.ph" />
-          <li *ngIf="species.hardness"><b>Recommended Hardness :</b><br /> {{species.hardness}}</li>
-
-
+          <li *ngIf="species.hardness"><b>Recommended Hardness :</b><br />
+            <span [innerHTML]="species.hardness"></span>
+          </li>
           <br *ngIf="species.hardness" />
 
-          <li *ngIf="species.locality"><b>Locality :</b><br /> {{species.locality}}</li>
+          <li *ngIf="species.locality"><b>Locality :</b><br />
+            <span [innerHTML]="species.locality"></span>
+          </li>
 
           <br *ngIf="species.locality" />
 
           <!-- PULLED FROM SERIOUSLY FISH -->
-          <li *ngIf="species.habitat"><b>Habitat :</b><br /> {{species.habitat}}</li>
-          <br *ngIf="species.habitat" />
-          <li *ngIf="species.blackWater"><b>Black Water? :</b><br /> {{species.blackWater}}</li>
+          <li *ngIf="species.habitat || species.norHabit || species.sharkHabitat || species.ausHabitat">
+            <b>Habitat :</b><br />
+            <span [innerHTML]="species.habitat"></span>
+            <label *ngIf="species.habitat && species.norHabit"><br /> - <br /></label>
+            <span [innerHTML]="species.norHabit"></span>
+            <label *ngIf="species.norHabit && species.sharkHabitat"><br /> - <br /></label>
+            <span [innerHTML]="species.sharkHabitat"></span>
+            <label *ngIf="species.sharkHabitat && species.ausHabitat"><br /> - <br /></label>
+            <span [innerHTML]="species.ausHabitat"></span>
+          </li>
+          <br *ngIf="species.habitat || species.norHabit || species.sharkHabitat || species.ausHabitat" />
+          <li *ngIf="species.blackWater"><b>Black Water? :</b><br />
+            <span [innerHTML]="species.size"></span>
+          </li>
           <br *ngIf="species.blackWater" />
-          <li *ngIf="species.aquaticPlants"><b>Aquatic Plants Recommended? :</b><br /> {{species.aquaticPlants}}</li>
+          <li *ngIf="species.aquaticPlants"><b>Aquatic Plants Recommended? :</b><br />
+            <span [innerHTML]="species.size"></span>
+          </li>
           <br *ngIf="species.aquaticPlants" />
-          <li *ngIf="species.recommendedTankSize"><b>Recommended Tank Size :</b><br /> {{species.recommendedTankSize}}</li>
+          <li *ngIf="species.recommendedTankSize"><b>Recommended Tank Size :</b><br />
+            <span [innerHTML]="species.recommendedTankSize"></span>
+          </li>
           <br *ngIf="species.recommendedTankSize" />
-          <li *ngIf="species.sexIdentificationFeatures"><b>Sexing Identification Features :</b><br /> {{species.sexIdentificationFeatures}}</li>
-
+          <li *ngIf="species.sexIdentificationFeatures"><b>Sexing Identification Features :</b><br />
+            <span [innerHTML]="species.sexIdentificationFeatures"></span>
+          </li>
           <br *ngIf="species.sexIdentificationFeatures" />
+          <li *ngIf="species.diet"><b>Diet :</b><br />
+            <span [innerHTML]="species.diet"></span>
+          </li>
+          <br *ngIf="species.diet" />
+          <li *ngIf="species.enviroment"><b>Environment :</b><br />
+            <span [innerHTML]="species.enviroment"></span>
+          </li>
+          <br *ngIf="species.enviroment" />
+          <li *ngIf="species.tankMates"><b>Recommended Tank Mates :</b><br />
+            <span [innerHTML]="species.tankMates"></span>
+          </li>
+          <br *ngIf="species.tankMates" />
+
+          <!-- AUSTRALIAN LAWS -->
+          <b *ngIf="species.rules">Potential Legality <br /></b>
+
+          <li *ngIf="species.rules">
+            <i>Legal species of the {{species.genus}} Genus in Australia:</i>
+            <br /><br />
+            <label *ngFor="let rule of species['rules']">
+              &bull; {{rule}} <br />
+            </label>
+          </li>
+
+          <!-- <li *ngIf="!species.rules">
+            The genus of this species is illegal in Australia
+          </li> -->
+          <br *ngIf="species.rules"/>
 
           <!-- PLANET CATFISH INFO -->
-          <li *ngIf="species.size"><b>Size :</b><br /> {{species.size}}</li>
-          <br *ngIf="species.size" />
+          <li *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize">
+            <b>Size :</b><br />
+            <span [innerHTML]="species.size"></span>
+            <label *ngIf="species.size && species.sharkSize"><br /> - <br /></label>
+            <span [innerHTML]="species.sharkSize"></span>
+            <label *ngIf="species.sharkSize && species.ausSize"><br /> - <br /></label>
+            <span [innerHTML]="species.ausSize"></span>
+            <label *ngIf="species.ausSize && species.ausRegSize"><br /> - <br /></label>
+            <span [innerHTML]="species.ausRegSize"></span>
+          </li>
+          <br *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize" />
           <li *ngIf="species.identification"><b>Identification :</b><br /> {{species.identification}}</li>
           <br *ngIf="species.identification" />
           <li *ngIf="species.sexing"><b>Sexing :</b><br /> {{species.sexing}}</li>
           <br *ngIf="species.sexing" />
-          <li *ngIf="species.distribution"><b>Distribution :</b><br /> {{species.distribution}}</li>
-          <br *ngIf="species.distribution" />
-          <li *ngIf="species.feeding"><b>Feeding :</b><br /> {{species.feeding}}</li>
-          <br *ngIf="species.feeding" />
-          <li *ngIf="species.furniture"><b>Recommended Tank Decoration :</b><br /> {{species.furniture}}</li>
+          <li *ngIf="species.distribution || species.sharkDist || species.norDist">
+            <b>Distribution :</b><br />
+            <span [innerHTML]="species.distribution"></span>
+            <label *ngIf="species.distribution && species.sharkDist"><br /> - <br /></label>
+            <span [innerHTML]="species.species"></span>
+            <label *ngIf="species.sharkDist && species.norDist"><br /> - <br /></label>
+            <span [innerHTML]="species.norDist"></span>
+          </li>
+          <br *ngIf="species.distribution || species.sharkDist || species.norDist" />
+          <li *ngIf="species.feeding || species.ausFeed">
+            <b>Feeding :</b><br />
+            <span [innerHTML]="species.feeding"></span>
+            <label *ngIf="species.feeding && species.ausFeed"><br /> - <br /></label>
+            <span [innerHTML]="species.ausFeed"></span>
+          </li>
+          <br *ngIf="species.feeding || species.ausFeed" />
+          <li *ngIf="species.furniture"><b>Recommended Tank Decoration :</b><br /> <span [innerHTML]="species.furniture"></span></li>
           <br *ngIf="species.furniture" />
-          <li *ngIf="species.compatibility"><b>Compatibility :</b><br /> {{species.compatibility}}</li>
+          <li *ngIf="species.compatibility"><b>Compatibility :</b><br /> <span [innerHTML]="species.compatibility"></span></li>
           <br *ngIf="species.compatibility" />
-          <li *ngIf="species.tankMates"><b>Recommended Tank Mates :</b><br /> {{species.tankMates}}</li>
+          <li *ngIf="species.SFtankMates"><b>Recommended Tank Mates :</b><br /> <span [innerHTML]="species.SFtankMates"></span></li>
+          <br *ngIf="species.SFtankMates" />
+          <li *ngIf="species.repoduction"><b>Breeding :</b><br /> <span [innerHTML]="species.repoduction"></span></li>
+          <br *ngIf="species.repoduction" />
 
-          <br *ngIf="species.tankMates" />
+          <li *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc">
+            <b>Species Information :</b><br />
+            <span [innerHTML]="species.SFComments"></span>
+            <label *ngIf="species.SFComments && species.norChar"><br /> - <br /></label>
+            <span [innerHTML]="species.norChar"></span>
+            <label *ngIf="species.norChar && species.comments"><br /> - <br /></label>
+            <span [innerHTML]="species.comments"></span>
+            <label *ngIf="species.comments && species.description"><br /> - <br /></label>
+            <span [innerHTML]="species.description"></span>
+            <label *ngIf="species.description && species.sharkDesc"><br /> - <br /></label>
+            <span [innerHTML]="species.sharkDesc"></span>
+          </li>
+          <br *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc" />
 
-          <!-- FISHBASE INFO -->
-          <li *ngIf="species.speciesVunFloored"><b>Vunerability Status :</b><br /> {{speciesVunFloored}}/100</li>
+          <li *ngIf="species.speciesVunFloored">
+            <b>Vunerability Status :</b><br />
+            {{speciesVunFloored}}/100
+          </li>
           <br *ngIf="species.speciesVunFloored"/>
-          <li *ngIf="species.dangerous !== 'harmless'"><b>Danger to human status :</b><br /> {{species.dangerous}}</li>
 
-          <br *ngIf="species.dangerous != 'harmless'" /><br *ngIf="species.dangerous && species.dangerous !== 'harmless'" />
+          <li *ngIf="species.dangerous !== 'harmless'">
+            <b>Danger to human status :</b><br />
+            {{species.dangerous}}
+          </li>
+          <br *ngIf="species.dangerous != 'harmless'" />
 
-          <li *ngIf="species.comments"><b>Other Comments :</b><br /> {{species.comments}}</li>
 
+          <li *ngIf="species.depth || species.ausDepth">
+            <b>Depth :</b><br />
+            <span [innerHTML]="species.depth"></span>
+            <label *ngIf="species.depth && species.ausDepth"><br /> - <br /></label>
+            <span [innerHTML]="species.ausDepth"></span>
+          </li>
+          <br *ngIf="species.depth || species.ausDepth" />
+
+          <!-- SHARK INFO -->
+          <li *ngIf="species.sharkBio || species.ausBio"><b>Biology :</b><br />
+            <span [innerHTML]="species.sharkBio"></span>
+            <label *ngIf="species.sharkBio && species.ausBio"><br /> - <br /></label>
+            <span [innerHTML]="species.ausBio"></span>
+          </li>
+          <br *ngIf="species.sharkBio || species.ausBio" />
+
+          <li *ngIf="species.ausFeatures">
+            <b>Features :</b><br />
+            <span [innerHTML]="species.ausFeatures"></span>
+          </li>
+          <br *ngIf="species.ausFeatures" />
+          <li *ngIf="species.ausColour">
+            <b>Colour :</b><br />
+            <span [innerHTML]="species.ausColour"></span>
+          </li>
+          <br *ngIf="species.ausColour" />
+          <li *ngIf="species.ausFisheries">
+            <b>Fisheries :</b><br />
+            <span [innerHTML]="species.ausFisheries"></span>
+            </li>
+          <br *ngIf="species.ausFisheries" />
+          <li *ngIf="species.ausRemarks">
+            <b>Remarks :</b><br />
+            <span [innerHTML]="species.ausRemarks"></span>
+          </li>
+          <br *ngIf="species.ausRemarks" />
+          <li *ngIf="species.ausConserve">
+            <b>Conservation :</b><br />
+            <span [innerHTML]="species.ausConserve"></span>
+          </li>
+          <br *ngIf="species.ausConserve" />
+          <li *ngIf="species.ausSimilar">
+            <b>Similar Species :</b><br />
+            <span [innerHTML]="species.ausSimilar"></span>
+          </li>
+          <br *ngIf="species.ausSimilar" />
         </ul>
 
       </ion-card-content>

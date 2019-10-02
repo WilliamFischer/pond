@@ -33,6 +33,10 @@
     }
 }
 
+.pushNothingUp{
+  margin-top: 20% !important;
+}
+
 .highlightGreen{
     color: #BBD0FA;
 }
@@ -43,7 +47,7 @@
   height: 20px;
   text-align: center;
   color: #8e8e8e;
-  padding-top: 15%;
+  padding-top: 5%;
   font-weight: 400;
   font-size: 14px;
   text-transform: capitalize;
@@ -56,6 +60,11 @@ ion-toolbar{
 
 ion-searchbar{
   font-family: 'Crimson Text', serif !important;
+  // text-align: center !important;
+  //
+  // input{
+  //   padding-left: 0px !important;
+  // }
 }
 
 .centerTit{
@@ -80,11 +89,13 @@ ion-searchbar{
 }
 
 .coreInformation{
+
     ul{
       list-style: none;
-      margin-left: -15%;
-      margin-top: -10%;
+      margin-left: -5%;
+      margin-top: -6%;
       font-size: 12px;
+      padding: 6%;
     }
 
     ion-card-title{
@@ -100,11 +111,31 @@ ion-searchbar{
     }
 }
 
+.noTanksYet{
+  text-align: center;
+  width: 100%;
+  display: block;
+  color: #8e8e8e;
+  margin-top: 10%;
+}
 
+.textNoneCenter{
+  text-align: center;
+  width: 50vw;
+  display: block;
+  font-size: 10px;
+  text-align: center;
+  color: #8e8e8e;
+  /* background: green; */
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  position: absolute;
+}
 .speciesSelectedMode{
   background: #fefefe;
   padding: 10%;
-  height: 100%;
   width: 100%;
   position: absolute;
 
@@ -154,7 +185,7 @@ ion-searchbar{
 
 .theResults{
   padding: 10%;
-  padding-top: 0%;
+  padding-top: 10%;
   padding-bottom: 0%;
 }
 
@@ -252,6 +283,11 @@ ion-card-subtitle b{
 
 }
 
+.lessTopLocal{
+  margin-top: 10% !important;
+  margin-bottom: 10%;
+}
+
 .lessTopSpinner{
   margin-top: 15%;
 }
@@ -320,8 +356,9 @@ ion-card{
   right: 0;
   border-bottom-left-radius: 3px !important;
   border-bottom-right-radius: 3px !important;
-
+  box-shadow: 0 10px 20px rgba(0,0,0,.14) !important;
 }
+
 .informationBrick{
   width: 80%;
   height: auto;
@@ -335,6 +372,7 @@ ion-card{
 
   background: #fff;
   overflow: scroll;
+  -webkit-overflow-scrolling: touch;
 
   margin-top: 10%;
   margin-bottom: 10%;
@@ -445,14 +483,25 @@ ion-card{
   font-size: 12px;
   margin-top: -5%;
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  margin-bottom: 10%;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical !important;
+  display: block;
+
   transition: 1s all ease;
   height: inherit;
+  padding-bottom: 10%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 4 !important;
+  /* autoprefixer: off */
+  -webkit-box-orient: vertical !important;
+  /* autoprefixer: on */
+}
+
+.wikiDescriptionSmall{
+  height: 79px;
+  margin-bottom: 10%;
+  display: -webkit-box !important;
+
 }
 
 .speciesName{
@@ -469,19 +518,15 @@ ion-card{
   margin-bottom: 5%;
 }
 
-.wikiDescriptionSmall{
-  height: 80px;
-}
-
 .selectTankPopup{
-  position: absolute;
+  position: fixed;
   margin-left: auto;
   margin-right: auto;
   left: 0;
   right: 0;
   background: #fff;
   width: 80%;
-  min-height: 25vh;
+  min-height: 180px;
   margin-top: 35%;
   z-index: 9000;
   padding: 5%;
@@ -521,6 +566,7 @@ ion-card{
 
 
 .saltSwitch{
+
   *{
     --inner-border-width: 0px 0px 0px 0px !important;
   }
@@ -537,50 +583,218 @@ ion-card{
     text-align: left;
     font-family: 'Crimson Text', serif !important;
     font-size: 16px;
-    color: #a7d1ec;
+    color: #7dbbe2;
     margin-top: 3%;
     padding-left: 5%;
     white-space: nowrap;
   }
 
+  .loadMoreIco{
+    color: #7dbbe2;
+    font-size: 26px;
+    position: absolute;
+    display: block;
+    margin-top: 2%;
+  }
+
   .toggle{
     margin-top: -1%;
     padding-right: 5%;
+    --background: #F5F7F9 !important;
   }
 }
 
-.alphabetHeader{
+.fishGeneratedType{
+  color: #8e8e8e;
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
 
-  height: 5vh;
+.rightIconMore{
+  float: right;
+  margin-right: 3%;
+  display: block;
+  font-size: 21px;
+}
+
+.buttonsLive {
+  width: 100%;
+  margin-top: 10%;
+  display: inline-flex;
+
+  .block{
+    width: 50%;
+    text-align: center;
+    font-size: 14px;
+    display: block;
+    color: #D1E7F5;
+  }
+
+  .right{
+    color: #7dbbe2;
+  }
+}
+
+.ausTitle{
+  font-size: 14px !important;
+  color: #8e8e8e !important;
+  text-align: left !important;
+  margin-bottom: 5% !important;
+  margin-top: 5% !important
+}
+
+
+.alphabetSpeciesLoading{
+  margin-top: 18px;
+  z-index: 9000;
+  font-size: 24px;
+  text-align: center;
+  margin-top: -6%;
+  text-transform: lowercase;
+  font-size: 12px;
+  width: 100%;
+  display: block;
+}
+
+// TWITTER HEART
+.heart {
+  width: 100px;
+  height: 100px;
+  background: url("https://cssanimation.rocks/images/posts/steps/heart.png") no-repeat;
+  background-position: 0 0;
+  cursor: pointer;
+  transition: background-position 1s steps(28);
+  transition-duration: 0s;
+
+  &.is-active {
+    transition-duration: 1s;
+    background-position: -2800px 0;
+  }
+}
+
+.starIco{
+  color:	#EEE8AA;
+}
+
+.fishNameText{
+  text-transform: capitalize;
+}
+
+// .shineStar{
+//   font-size: 3em;
+//   margin: 0 auto;
+//   margin-bottom: 1em;
+//   font-weight: bold;
+//
+//   background: #222 -webkit-gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff)) 0 0 no-repeat;
+//   -webkit-background-size: 150px;
+//   color: rgba(255, 255, 255, 0.3);
+//   -webkit-background-clip: text;
+//   -webkit-animation-name: shine;
+//   -webkit-animation-duration: 5s;
+//   -webkit-animation-iteration-count: infinite;
+//   text-shadow: 0 0px 0px rgba(255, 255, 255, 0.5);
+// }
+//
+// @-webkit-keyframes shine {
+//   0%, 10% {
+//     background-position: -100px;
+//   }
+//   20% {
+//     background-position: top left;
+//   }
+//   90% {
+//     background-position: top right;
+//   }
+//   100% {
+//     background-position: 100px;
+//   }
+// }
+
+
+.tempLoader{
+  object-fit: cover;
+  height: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  margin-top: 4%;
+}
+
+ion-toolbar{
+  --background: #F5F7F9 !important;
+  padding-bottom: 0px !important;
+}
+
+
+.clearSearchTxt{
+  font-size: 26px;
+  color: #8e8e8e;
+  display: block;
+  margin-left: auto;
+  margin-right: 10%;
+  margin-top: 12%;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.clearAbs{
+  margin-top: 45%;
+  z-index: 9000;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.alphabetHeader{
+  height: 50px !important;
+  min-height: 50px !important;
 
   *{
     --inner-border-width: 0px 0px 0px 0px !important;
   }
 
+  ion-item{
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+    margin-top: -4%;
+    width: 100%;
+    --background: #F5F7F9;
+  }
+
   .alphabet{
-    display: block;
-    width: 400px;
-    height: 100%;
     list-style: none;
-    bottom: 0;
-    margin-left: -12.5%;
+    /* bottom: 0; */
+    margin-left: -12%;
+    padding-right: 12%;
     text-align: center;
     position: relative;
-    display: flex;
-    overflow-x: auto;
+    white-space: nowrap;
+    display: inline-flex;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
 
     .letter{
-      width: 6px;
-      color: #8e8e8e;
-      margin-left: 3.5px;
-      margin-right: 3.5px;
-      height: 100%;
-      line-height: 12px;
-      font-size: 12px;
+      min-width: 40px;
+      color: #6b746e;
+      font-size: 18px;
       text-transform: uppercase;
       font-family: 'Crimson Text', serif !important;
       display: block;
       text-align: center !important;
+    }
+
+    .letter:last-child{
+      margin-right: 60px;
+    }
+
+    .extraWidth{
+      width: 30px;
+      display: block;
+      height: 100%;
     }
 
     .litLetter{
@@ -594,4 +808,102 @@ ion-card{
 }
 
 
+}
+
+.maxSizeContent{
+  max-height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  display: -webkit-box;
+  /* autoprefixer: off */
+  -webkit-box-orient: vertical;
+  /* autoprefixer: on */
+  -webkit-line-clamp: 5;
+  transition: 1s all ease;
+  height: inherit;
+  margin-bottom: 5%;
+  font-size: 12px;
+}
+
+.genusDescription{
+  font-size: 12px;
+  padding: 10%;
+  padding-bottom: 0%;
+  color: #8e8e8e;
+
+  h2{
+    font-size: 14px;
+  }
+}
+
+.cyaTxt{
+  height: 0px;
+  color: #fff;
+}
+
+.didYouMeanResults{
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  /* position: absolute; */
+  /* text-align: center; */
+  /* width: 10%; */
+  z-index: 9000;
+  position: absolute;
+  width: 80%;
+  margin-top: 10%;
+  text-align: center;
+
+  h1{
+    padding-left: 10%;
+    padding-right: 10%;
+    color: #3875F1;
+    font-size: 16px;
+    font-weight: normal;
+  }
+
+  p{
+    padding-left: 10%;
+    padding-right: 10%;
+    font-size: 12px;
+    color: #8e8e8e;
+  }
+
+  .didYouMeanItem:first-child{
+    margin-top: 10%;
+  }
+
+  .didYouMeanItem{
+    font-size: 12px;
+    list-style: none;
+    margin: 5%;
+    margin-left: 0%;
+    margin-right: 0%;
+    color: #7dbbe2;
+    font-size: 21px;
+    text-align: center;
+    width: 85%;
+  }
+}
+
+
+
+.littleSearcher{
+  width: 85%;
+  transition: 0.5s all ease;
+}
+
+.littleSwitch{
+  width: 32%;
+  --background: transparent;
+  --inner-border-width: 0px 0px 0px 0px;
+  margin-left: 80%;
+  margin-top: -14%;
+}
+
+.androidHeader{
+  margin-top: 5% !important;
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 // Providers
@@ -11,49 +11,74 @@ import { AuthProvider } from '../providers/auth/auth';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+  loading: any;
 
   constructor(
     private router: Router,
     public loadingController: LoadingController,
-    private authService: AuthProvider
+    private authService: AuthProvider,
+    public plt: Platform
   ) { }
 
   ngOnInit() {
   }
 
-  // async presentLoading() {
-  //   const loading = await this.loadingController.create({
-  //     message: 'Logging you in...',
-  //     duration: 2000
-  //   });
-  //   await loading.present();
-  //
-  //   const { role, data } = await loading.onDidDismiss();
-  //
-  //   console.log('Loading dismissed!');
-  // }
+  async presentLoading() {
+    this.loading = await this.loadingController.create({
+      message: 'Logging you in...',
+      duration: 2000
+    });
+    await this.loading.present();
+
+    const { role, data } = await this.loading.onDidDismiss();
+
+    console.log('Loading dismissed!');
+  }
 
   facebookLogin(){
-    // this.presentLoading();
+    this.presentLoading();
+    console.log(this.plt);
 
-    this.authService.loginWithFacebook().then(res=>{
-      console.log("SUCCESS");
-      this.router.navigateByUrl('/tabs');
-    }).catch(err=>{
-      alert(err)
-    })
+    if (!this.plt.is('mobileweb') && (this.plt.is('android') || this.plt.is('ios'))) {
+      this.authService.loginWithFacebook().then(res=>{
+        console.log("SUCCESS");
+        this.loading.dismiss();
+        this.router.navigateByUrl('/tabs');
+      }).catch(err=>{
+        alert(err)
+      })
+    }else{
+      this.authService.loginWithLegacyFacebook().then(res=>{
+        console.log("SUCCESS");
+        this.loading.dismiss();
+      }).catch(err=>{
+        alert(err)
+      })
+    }
+
+
   }
 
   googleLogin(){
-    // this.presentLoading();
+    this.presentLoading();
 
+    if (!this.plt.is('mobileweb') && (this.plt.is('android') || this.plt.is('ios'))) {
+      this.authService.loginWithGoogle().then(res=>{
+        console.log("SUCCESS");
+        this.loading.dismiss();
+        this.router.navigateByUrl('/tabs');
+      }).catch(err=>{
+        alert(err)
+      })
+    }else{
+      this.authService.loginWithLegacyGoogle().then(res=>{
+        console.log("SUCCESS");
+        this.loading.dismiss();
+      }).catch(err=>{
+        alert(err)
+      })
+    }
 
-    this.authService.loginWithGoogle().then(res=>{
-      console.log("SUCCESS");
-      this.router.navigateByUrl('/tabs');
-    }).catch(err=>{
-      alert(err)
-    })
   }
 
   // Temp solution - route user in without authentication.
