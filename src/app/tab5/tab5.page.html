@@ -25,7 +25,7 @@
         <label class="topTitle2">Your Tanks</label>
 
         <h3 class="addTankTxt" *ngIf="tanks" (click)="addTank()">+ Begin New Tank</h3>
-        <h3 class="wishlistTxt" *ngIf="wishlist" (click)="triggerWishlist()">Wishlist</h3>
+        <h3 class="wishlistTxt" *ngIf="wishlist.length >= 1" (click)="triggerWishlist()">Wishlist</h3>
 
         <h4 class="noFishYetTxt" *ngIf="tanks && tanks.length < 1">Start your first tank to begin</h4>
 
@@ -150,8 +150,8 @@
 
                   <ion-item lines="none" class="whiteSpaceWraper" *ngIf="fish.type == 'fish'">
                     <ion-note *ngIf="fish['quantity']" slot="start">{{fish['quantity']}}x</ion-note>
-                    <b (click)="openFishDetailModal(fish, activeTankData)" *ngIf="!fish.nickname">{{fish.comm_name | titlecase}}</b>
-                    <b (click)="openFishDetailModal(fish, activeTankData)" *ngIf="fish.nickname">
+                    <b (click)="openFishDetailModal(fish)" *ngIf="!fish.nickname">{{fish.comm_name | titlecase}}</b>
+                    <b (click)="openFishDetailModal(fish)" *ngIf="fish.nickname">
                       {{fish.nickname | titlecase}}
                       <ion-note slot="end" class="noteTxt">({{fish.comm_name | titlecase}})</ion-note>
                     </b>
@@ -507,26 +507,28 @@
 
 
   <!-- Section 4: WISHLIST -->
-  <div class="wishlistMode" *ngIf="wishlistMode">
+  <div class="wishlistMode theResults animated slideInUp" *ngIf="wishlistMode">
+
+    <ion-icon name="arrow-back" (click)="backFromWishlist()" class="backArrowDes animated fadeIn"></ion-icon>
+    <h1 class="desSpeciesTitle animated fadeIn">Your Wishlist</h1>
 
     <ion-card class="animated bounceInLeft" *ngFor="let fish of wishlistItems">
       <ion-card-header>
         <ion-card-subtitle>
-          <b (click)="showGenus(fish.genus)">{{fish.genus}}</b>
+          <b>{{fish.genus}}</b>
           <i> {{fish.species}}</i>
 
-          <ion-icon *ngIf="!fish.isFavourited" class="rightIconMore" (click)="addFishToWishlist(fish)" name="star-outline"></ion-icon>
-          <ion-icon *ngIf="fish.isFavourited" class="rightIconMore starIco" (click)="addFishToWishlist(fish)" name="star"></ion-icon>
+          <ion-icon class="rightIconMore starIco" (click)="removeFishFromWishlist(fish)" name="star"></ion-icon>
 
           <ion-icon class="rightIconMore" (click)="addTankTrigger(fish)" name="add-circle-outline"></ion-icon>
         </ion-card-subtitle>
-        <ion-card-title (click)="selectSpecies(fish, true)" class="fishNameText">{{fish.name}}</ion-card-title>
+        <ion-card-title (click)="openFishDetailModal(fish)" class="fishNameText">{{fish.name}}</ion-card-title>
       </ion-card-header>
 
       <ion-slides pager="false">
         <ng-template let-img ngFor [ngForOf]="fish['Pics']">
-         <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(fish, true)">
-           <img [src]="img" onerror="this.src='../assets/noImg.png'; document.getElementById('myImg').style.display='none'" />
+         <ion-slide id="myImg" class="imageBox" (click)="openFishDetailModal(fish)">
+           <img [src]="img"  onerror="this.parentNode.style.display='none'"  />
          </ion-slide>
          </ng-template>
       </ion-slides>
@@ -548,11 +550,11 @@
 </ion-content>
 
 
+<!-- FULL SPECIES MODE -->
 <ion-content *ngIf="speciesSelected" class="newTopContent">
   <ion-icon name="arrow-back" (click)="unSelectSpecies()" class="backArrow backArrowSpeciesSelet animated fadeIn"></ion-icon>
 
-  <div class="speciesSelectedMode animated slideInUp">
-
+  <div class="speciesSelectedMode">
     <div class="loadingSpinner detailSpinner" *ngIf="!speciesLoaded || !species.species">
       <ion-spinner name="crescent"></ion-spinner>
     </div>
@@ -560,11 +562,14 @@
     <ion-card *ngIf="speciesLoaded && species.genus">
       <ion-card-content>
         <ion-slides pager="false">
-         <ion-slide class="imageBox" *ngFor="let img of species['Pics']; let i = index" >
-           <img [src]="img" onerror="this.src='../assets/noImg.png'" />
-         </ion-slide>
+          <ng-template let-img ngFor [ngForOf]="species['Pics']">
+           <ion-slide id="myImg" class="imageBox" (click)="seeFullImage(img)">
+             <img [src]="img" onerror="this.parentNode.style.display='none'"  />
+           </ion-slide>
+           </ng-template>
         </ion-slides>
       </ion-card-content>
+
       <!-- WIKIPEDIA DESCRIPTION -->
       <p [ngClass]="{'wikiDescriptionSmall' : !fullWikiText}" class="wikiDescription" *ngIf="species.wikiDesc"> {{species.wikiDesc}} </p>
       <a class="centerSeeMore" *ngIf="!fullWikiText && species.wikiDesc" (click)="seeFulText()">See More <ion-icon name="arrow-dropdown"></ion-icon></a>
@@ -575,7 +580,12 @@
     <ion-card class="coreInformation" *ngIf="speciesLoaded && species.genus">
       <ion-card-header>
         <ion-card-subtitle>
+
+          <ion-icon *ngIf="!species.isFavourited" class="innerStarIcon" (click)="addFishToWishlist(species)" name="star-outline"></ion-icon>
+          <ion-icon *ngIf="species.isFavourited" class="innerStarIcon starIco" (click)="addFishToWishlist(species)" name="star"></ion-icon>
+
           <a (click)="showGenus(species.genus)">{{species.genus}}</a> <label class="speciesName"> {{species.species}}</label>
+
         </ion-card-subtitle>
         <ion-card-title>{{species.name}}</ion-card-title>
       </ion-card-header>
@@ -585,11 +595,11 @@
         <ul>
 
           <!-- AUS Etymology -->
-          <li *ngIf="species.ausEty"><i>{{species.ausEty}}</i></li>
+          <li *ngIf="species.ausEty" [innerHTML]="species.ausEty"></li>
           <br *ngIf="species.ausEty" />
 
           <!-- PLANET CATFISH INFO -->
-          <li *ngIf="species.etymology"><i>{{species.etymology}}</i></li>
+          <li *ngIf="species.etymology" [innerHTML]="species.etymology"></li>
           <br *ngIf="species.etymology" />
 
           <!-- WIKIPEDIA COMMON NAME -->
@@ -599,47 +609,68 @@
           </label>
 
           <!-- PULLED FROM BEST SOURCE -->
-          <li *ngIf="species.temperature"><b>Recommended Temperature :</b><br />  {{species.temperature}}</li>
+          <li *ngIf="species.temperature"><b>Recommended Temperature :</b><br />
+            <span [innerHTML]="species.temperature"></span>
+          </li>
           <br *ngIf="species.temperature" />
-          <li *ngIf="species.ph"><b>Recommended PH :</b><br /> {{species.ph}}</li>
+          <li *ngIf="species.ph"><b>Recommended PH :</b><br />
+            <span [innerHTML]="species.ph"></span>
+          </li>
           <br *ngIf="species.ph" />
-          <li *ngIf="species.hardness"><b>Recommended Hardness :</b><br /> {{species.hardness}}</li>
+          <li *ngIf="species.hardness"><b>Recommended Hardness :</b><br />
+            <span [innerHTML]="species.hardness"></span>
+          </li>
           <br *ngIf="species.hardness" />
 
-          <li *ngIf="species.locality"><b>Locality :</b><br /> {{species.locality}}</li>
+          <li *ngIf="species.locality"><b>Locality :</b><br />
+            <span [innerHTML]="species.locality"></span>
+          </li>
 
           <br *ngIf="species.locality" />
 
           <!-- PULLED FROM SERIOUSLY FISH -->
           <li *ngIf="species.habitat || species.norHabit || species.sharkHabitat || species.ausHabitat">
             <b>Habitat :</b><br />
-            {{species.habitat}}
+            <span [innerHTML]="species.habitat"></span>
             <label *ngIf="species.habitat && species.norHabit"><br /> - <br /></label>
-            {{species.norHabit}}
+            <span [innerHTML]="species.norHabit"></span>
             <label *ngIf="species.norHabit && species.sharkHabitat"><br /> - <br /></label>
-            {{species.sharkHabitat}}
+            <span [innerHTML]="species.sharkHabitat"></span>
             <label *ngIf="species.sharkHabitat && species.ausHabitat"><br /> - <br /></label>
-            {{species.ausHabitat}}
+            <span [innerHTML]="species.ausHabitat"></span>
           </li>
           <br *ngIf="species.habitat || species.norHabit || species.sharkHabitat || species.ausHabitat" />
-          <li *ngIf="species.blackWater"><b>Black Water? :</b><br /> {{species.blackWater}}</li>
+          <li *ngIf="species.blackWater"><b>Black Water? :</b><br />
+            <span [innerHTML]="species.size"></span>
+          </li>
           <br *ngIf="species.blackWater" />
-          <li *ngIf="species.aquaticPlants"><b>Aquatic Plants Recommended? :</b><br /> {{species.aquaticPlants}}</li>
+          <li *ngIf="species.aquaticPlants"><b>Aquatic Plants Recommended? :</b><br />
+            <span [innerHTML]="species.size"></span>
+          </li>
           <br *ngIf="species.aquaticPlants" />
-          <li *ngIf="species.recommendedTankSize"><b>Recommended Tank Size :</b><br /> {{species.recommendedTankSize}}</li>
+          <li *ngIf="species.recommendedTankSize"><b>Recommended Tank Size :</b><br />
+            <span [innerHTML]="species.recommendedTankSize"></span>
+          </li>
           <br *ngIf="species.recommendedTankSize" />
-          <li *ngIf="species.sexIdentificationFeatures"><b>Sexing Identification Features :</b><br /> {{species.sexIdentificationFeatures}}</li>
+          <li *ngIf="species.sexIdentificationFeatures"><b>Sexing Identification Features :</b><br />
+            <span [innerHTML]="species.sexIdentificationFeatures"></span>
+          </li>
           <br *ngIf="species.sexIdentificationFeatures" />
-          <li *ngIf="species.diet"><b>Diet :</b><br /> {{species.diet}}</li>
+          <li *ngIf="species.diet"><b>Diet :</b><br />
+            <span [innerHTML]="species.diet"></span>
+          </li>
           <br *ngIf="species.diet" />
-          <li *ngIf="species.enviroment"><b>Environment :</b><br /> {{species.enviroment}}</li>
+          <li *ngIf="species.enviroment"><b>Environment :</b><br />
+            <span [innerHTML]="species.enviroment"></span>
+          </li>
           <br *ngIf="species.enviroment" />
-          <li *ngIf="species.tankMates"><b>Recommended Tank Mates :</b><br /> {{species.tankMates}}</li>
+          <li *ngIf="species.tankMates"><b>Recommended Tank Mates :</b><br />
+            <span [innerHTML]="species.tankMates"></span>
+          </li>
           <br *ngIf="species.tankMates" />
 
           <!-- AUSTRALIAN LAWS -->
           <b *ngIf="species.rules">Potential Legality <br /></b>
-
 
           <li *ngIf="species.rules">
             <i>Legal species of the {{species.genus}} Genus in Australia:</i>
@@ -657,13 +688,13 @@
           <!-- PLANET CATFISH INFO -->
           <li *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize">
             <b>Size :</b><br />
-            {{species.size}}
+            <span [innerHTML]="species.size"></span>
             <label *ngIf="species.size && species.sharkSize"><br /> - <br /></label>
-            {{species.sharkSize}}
+            <span [innerHTML]="species.sharkSize"></span>
             <label *ngIf="species.sharkSize && species.ausSize"><br /> - <br /></label>
-            {{species.ausSize}}
+            <span [innerHTML]="species.ausSize"></span>
             <label *ngIf="species.ausSize && species.ausRegSize"><br /> - <br /></label>
-            {{species.ausRegSize}}
+            <span [innerHTML]="species.ausRegSize"></span>
           </li>
           <br *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize" />
           <li *ngIf="species.identification"><b>Identification :</b><br /> {{species.identification}}</li>
@@ -672,40 +703,40 @@
           <br *ngIf="species.sexing" />
           <li *ngIf="species.distribution || species.sharkDist || species.norDist">
             <b>Distribution :</b><br />
-            {{species.distribution}}
+            <span [innerHTML]="species.distribution"></span>
             <label *ngIf="species.distribution && species.sharkDist"><br /> - <br /></label>
-            {{species.sharkDist}}
+            <span [innerHTML]="species.species"></span>
             <label *ngIf="species.sharkDist && species.norDist"><br /> - <br /></label>
-            {{species.norDist}}
+            <span [innerHTML]="species.norDist"></span>
           </li>
           <br *ngIf="species.distribution || species.sharkDist || species.norDist" />
           <li *ngIf="species.feeding || species.ausFeed">
             <b>Feeding :</b><br />
-            {{species.feeding}}
+            <span [innerHTML]="species.feeding"></span>
             <label *ngIf="species.feeding && species.ausFeed"><br /> - <br /></label>
-            {{species.ausFeed}}
+            <span [innerHTML]="species.ausFeed"></span>
           </li>
           <br *ngIf="species.feeding || species.ausFeed" />
-          <li *ngIf="species.furniture"><b>Recommended Tank Decoration :</b><br /> {{species.furniture}}</li>
+          <li *ngIf="species.furniture"><b>Recommended Tank Decoration :</b><br /> <span [innerHTML]="species.furniture"></span></li>
           <br *ngIf="species.furniture" />
-          <li *ngIf="species.compatibility"><b>Compatibility :</b><br /> {{species.compatibility}}</li>
+          <li *ngIf="species.compatibility"><b>Compatibility :</b><br /> <span [innerHTML]="species.compatibility"></span></li>
           <br *ngIf="species.compatibility" />
-          <li *ngIf="species.SFtankMates"><b>Recommended Tank Mates :</b><br /> {{species.SFtankMates}}</li>
+          <li *ngIf="species.SFtankMates"><b>Recommended Tank Mates :</b><br /> <span [innerHTML]="species.SFtankMates"></span></li>
           <br *ngIf="species.SFtankMates" />
-          <li *ngIf="species.repoduction"><b>Breeding :</b><br /> {{species.repoduction}}</li>
+          <li *ngIf="species.repoduction"><b>Breeding :</b><br /> <span [innerHTML]="species.repoduction"></span></li>
           <br *ngIf="species.repoduction" />
 
           <li *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc">
             <b>Species Information :</b><br />
-            {{species.SFComments}}
+            <span [innerHTML]="species.SFComments"></span>
             <label *ngIf="species.SFComments && species.norChar"><br /> - <br /></label>
-            {{species.norChar}}
+            <span [innerHTML]="species.norChar"></span>
             <label *ngIf="species.norChar && species.comments"><br /> - <br /></label>
-            {{species.comments}}
+            <span [innerHTML]="species.comments"></span>
             <label *ngIf="species.comments && species.description"><br /> - <br /></label>
-            {{species.description}}
+            <span [innerHTML]="species.description"></span>
             <label *ngIf="species.description && species.sharkDesc"><br /> - <br /></label>
-            {{species.sharkDesc}}
+            <span [innerHTML]="species.sharkDesc"></span>
           </li>
           <br *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc" />
 
@@ -724,31 +755,49 @@
 
           <li *ngIf="species.depth || species.ausDepth">
             <b>Depth :</b><br />
-            {{species.depth}}
+            <span [innerHTML]="species.depth"></span>
             <label *ngIf="species.depth && species.ausDepth"><br /> - <br /></label>
-            {{species.ausDepth}}
+            <span [innerHTML]="species.ausDepth"></span>
           </li>
           <br *ngIf="species.depth || species.ausDepth" />
 
           <!-- SHARK INFO -->
           <li *ngIf="species.sharkBio || species.ausBio"><b>Biology :</b><br />
-            {{species.sharkBio}}
+            <span [innerHTML]="species.sharkBio"></span>
             <label *ngIf="species.sharkBio && species.ausBio"><br /> - <br /></label>
-            {{species.ausBio}}
+            <span [innerHTML]="species.ausBio"></span>
           </li>
           <br *ngIf="species.sharkBio || species.ausBio" />
 
-          <li *ngIf="species.ausFeatures"><b>Features :</b><br /> {{species.ausFeatures}}</li>
+          <li *ngIf="species.ausFeatures">
+            <b>Features :</b><br />
+            <span [innerHTML]="species.ausFeatures"></span>
+          </li>
           <br *ngIf="species.ausFeatures" />
-          <li *ngIf="species.ausColour"><b>Colour :</b><br /> {{species.ausColour}}</li>
+          <li *ngIf="species.ausColour">
+            <b>Colour :</b><br />
+            <span [innerHTML]="species.ausColour"></span>
+          </li>
           <br *ngIf="species.ausColour" />
-          <li *ngIf="species.ausFisheries"><b>Fisheries :</b><br /> {{species.ausFisheries}}</li>
+          <li *ngIf="species.ausFisheries">
+            <b>Fisheries :</b><br />
+            <span [innerHTML]="species.ausFisheries"></span>
+            </li>
           <br *ngIf="species.ausFisheries" />
-          <li *ngIf="species.ausRemarks"><b>Remarks :</b><br /> {{species.ausRemarks}}</li>
+          <li *ngIf="species.ausRemarks">
+            <b>Remarks :</b><br />
+            <span [innerHTML]="species.ausRemarks"></span>
+          </li>
           <br *ngIf="species.ausRemarks" />
-          <li *ngIf="species.ausConserve"><b>Conservation :</b><br /> {{species.ausConserve}}</li>
+          <li *ngIf="species.ausConserve">
+            <b>Conservation :</b><br />
+            <span [innerHTML]="species.ausConserve"></span>
+          </li>
           <br *ngIf="species.ausConserve" />
-          <li *ngIf="species.ausSimilar"><b>Similar Species :</b><br /> {{species.ausSimilar}}</li>
+          <li *ngIf="species.ausSimilar">
+            <b>Similar Species :</b><br />
+            <span [innerHTML]="species.ausSimilar"></span>
+          </li>
           <br *ngIf="species.ausSimilar" />
         </ul>
 

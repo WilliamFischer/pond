@@ -16,6 +16,7 @@ import { NavigationBar } from '@ionic-native/navigation-bar/ngx';
 import { HTTP } from '@ionic-native/http/ngx';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet/ngx';
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 
 import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
 import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
@@ -96,6 +97,7 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     HTTP,
     ScreenOrientation,
     ActionSheet,
+    PhotoViewer,
     { provide: FirestoreSettingsToken, useValue: {} },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

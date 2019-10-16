@@ -46,7 +46,7 @@
   width: 100%;
   height: 20px;
   text-align: center;
-  color: #8e8e8e;
+  color: #575a64;
   padding-top: 5%;
   font-weight: 400;
   font-size: 14px;
@@ -184,15 +184,35 @@ ion-searchbar{
 }
 
 .theResults{
-  padding: 10%;
+  margin: 10%;
+  padding: 3%;
   padding-top: 10%;
-  padding-bottom: 0%;
+  padding-bottom: 15%;
+  border: 1px dotted #eaeaea;
 }
 
-.theResults:last-child{
-  padding-bottom: 10%;
+.leftArr{
+  padding-right: 20% !important;
 }
 
+.rightArr{
+  padding-right: 12% !important;
+}
+
+.seeMoreIco{
+  float: right;
+  margin-top: -9%;
+  font-size: 21px;
+  padding-right: 2%;
+  /* margin-left: -15%; */
+  color: #c6c3c3;
+  transition: 1s all ease;
+}
+
+.rotate{
+  transform: rotate(90deg);
+  margin-top: -8% !important;
+}
 
 ion-slide{
   height: 150px !important;
@@ -681,6 +701,24 @@ ion-card{
   text-transform: capitalize;
 }
 
+.innerStarIcon{
+  position: absolute;
+  margin-left: 93%;
+  font-size: 18px;
+}
+
+
+.theResults .subtitleTxt{
+  max-width: 75%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inline-block;
+  /* position: absolute; */
+  margin-top: 1%;
+  height: 20px;
+}
+
 // .shineStar{
 //   font-size: 3em;
 //   margin: 0 auto;
@@ -736,9 +774,11 @@ ion-toolbar{
   margin-left: auto;
   margin-right: 10%;
   margin-top: 12%;
-  position: absolute;
+  /* position: absolute; */
   left: 0;
   right: 0;
+  /* margin-bottom: 10%; */
+  margin-bottom: -10%;
 }
 
 .clearAbs{
@@ -896,12 +936,45 @@ ion-toolbar{
   transition: 0.5s all ease;
 }
 
+.littleRightSearcher{
+  width: 95%;
+  margin-left: 5%;
+  transition: 0.5s all ease;
+
+  // input{
+  //   padding-left: 12% !important;
+  // }
+  //
+  // .searchbar-search-icon{
+  //   margin-left: 0% !important;
+  // }
+}
+
+.tinySearcher{
+  width: 80%;
+  transition: 0.5s all ease;
+}
+
 .littleSwitch{
   width: 32%;
   --background: transparent;
   --inner-border-width: 0px 0px 0px 0px;
   margin-left: 80%;
   margin-top: -14%;
+}
+
+.backArrowTop{
+  --background: none;
+  --inner-border-width: 0px 0px 0px 0px;
+  font-size: 12px;
+  color: #74797b;
+  margin: 0;
+  height: 0px;
+  margin-left: -3%;
+
+  ion-icon{
+    margin-top: 5% !important;
+  }
 }
 
 .androidHeader{

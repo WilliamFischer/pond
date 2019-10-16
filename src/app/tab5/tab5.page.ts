@@ -2,6 +2,8 @@ import { Component, ViewChild } from '@angular/core';
 import { IonContent, ModalController, Platform, AlertController, IonReorderGroup, NavParams } from '@ionic/angular';
 import { Router } from '@angular/router';
 
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
@@ -22,9 +24,9 @@ export class Tab5Page {
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
+  debug: boolean = true;
 
   defaultMode: boolean = true;
-  debug: boolean = false;
   addTankMode: boolean;
   tankDetailMode: boolean;
   addChemistryMode: boolean;
@@ -103,7 +105,8 @@ export class Tab5Page {
     private storage: AngularFireStorage,
     private router: Router,
     public plt: Platform,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private photoViewer: PhotoViewer
   ) { }
 
 
@@ -176,28 +179,49 @@ export class Tab5Page {
           }
 
           this.wishlist = values;
-          this.wishListChanges.unsubscribe();
         });
       }
     }
 
     triggerWishlist(){
-      
+
+      this.populateWishlist();
+
       this.wishListTrueSpeciesChanges = this.fireStore.collection('Species').valueChanges().subscribe(
       values =>{
         this.wishlistMode = true;
+        let wishlistArray = [];
 
         this.wishlist.forEach(eachSpecies => {
           values.forEach(eachWishlistSpecies => {
-            if(eachWishlistSpecies['specCode'] == eachSpecies['specCode']){
-              this.wishlistItems.push(eachWishlistSpecies)
+            if(eachSpecies['specCode'] == eachWishlistSpecies['specCode']){
+              wishlistArray.push(eachWishlistSpecies)
             }
           });
         });
 
+        this.wishlistItems = wishlistArray
         console.log(this.wishlistItems);
-        this.wishListTrueSpeciesChanges.unsubscribe();
+        this.content.scrollToTop(400);
       });
+
+    }
+
+    backFromWishlist(){
+      this.wishlistMode = false;
+      this.wishlistItems = [];
+
+      this.wishListChanges.unsubscribe();
+      this.wishListTrueSpeciesChanges.unsubscribe();
+    }
+
+    removeFishFromWishlist(fish){
+      fish['isFavourited'] = false;
+
+      let wishlistAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/wishlist/' + fish['specCode']);
+      wishlistAddress.delete();
+
+      this.triggerWishlist();
 
     }
 
@@ -1148,8 +1172,9 @@ export class Tab5Page {
      this.speciesSelected = false;
    }
 
-   openFishDetailModal(fish, tankData){
+   openFishDetailModal(fish){
 
+     //this.backFromWishlist();
      this.speciesImgArray = [];
      this.species = [];
      this.speciesSelected = true;
@@ -1158,7 +1183,15 @@ export class Tab5Page {
        console.log(fish);
      }
 
-     this.fireStore.doc('Species/' + fish["spec_code"]).valueChanges().subscribe(
+     let fishSpecCode;
+
+     if(fish["spec_code"]){
+       fishSpecCode = fish["spec_code"];
+     }else{
+       fishSpecCode = fish['specCode']
+     }
+
+     this.fireStore.doc('Species/' + fishSpecCode).valueChanges().subscribe(
      species =>{
        console.log(species);
        this.species = species;
@@ -1505,6 +1538,10 @@ export class Tab5Page {
 
   closeTankSizeTrigger(){
     this.tankSizeImages = false;
+  }
+
+  seeFullImage(img){
+    this.photoViewer.show(img);
   }
 
 }
