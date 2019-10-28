@@ -20,12 +20,18 @@ export class AuthProvider {
 
   // FACEBOOK HANDLER
   loginWithFacebook(){
+    console.log("LOGIN WITH FACEBOOK ON IOS")
     return this.fb.login(['email','public_profile'])
     .then( response => {
       const facebookCredential = firebase.auth.FacebookAuthProvider
         .credential(response.authResponse.accessToken);
 
+          console.log("LOGIN SUCCESS")
+          console.log(facebookCredential)
+
       return firebase.auth().signInAndRetrieveDataWithCredential(facebookCredential)
+   }, error => {
+     console.log(error);
    })
   }
 

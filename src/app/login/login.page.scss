@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Noto+Serif+TC');
-
-ion-content{
-  background: #9acdff;
-}
-
-.centerStuff{
-  height: 100%;
-}
+//
+// ion-content{
+//   background: #9acdff;
+// }
+//
+// .centerStuff{
+//   height: 100%;
+// }
 h1{
   text-align: center;
   font-size: 21px;
@@ -41,6 +41,10 @@ h1 b{
 }
 
 .rippleCanvas{
+}
+
+.centerStuff{
+    pointer-events: none !important;
     width: 100%;
     height: 100%;
     display: block;
@@ -49,13 +53,7 @@ h1 b{
   //  position: absolute;
     background: linear-gradient(#D1E7F5 50%, #F7D0D5);
     --background: linear-gradient(#D1E7F5 50%, #F7D0D5);
-    position: relative;
-}
-
-.centerStuff{
     position: absolute;
-    z-index: 0;
-    pointer-events: none !important;
 }
 
 .darkOverlay{
@@ -118,4 +116,13 @@ canvas{
 
 .legalTxt a{
 
+}
+
+.backIco{
+  font-size: 21px;
+  margin: 8%;
+  position: absolute;
+  z-index: 90000;
+  color: #8ca6d2;
+  pointer-events: auto;
 }

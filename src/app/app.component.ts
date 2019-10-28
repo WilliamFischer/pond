@@ -42,26 +42,21 @@ export class AppComponent {
       this.splashScreen.hide();
       this.keyboard.hideFormAccessoryBar(false);
 
-      if (this.platform.is('android') || this.platform.is('ios')) {
+      if (window.cordova) {
         this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
       }
 
-      //** AUTH LOGIN CHECKER **//
-      this.afAuth.authState.subscribe(auth=>{
-        if(!auth){
-          this.router.navigateByUrl('/login');
-        }else{
-          var currentUser = localStorage.getItem('auth');
-          if(!currentUser){
-            console.log('setting to localStorage')
-            localStorage.setItem('auth', this.afAuth.auth.currentUser.uid);
-          }
+      var currentUser = localStorage.getItem('auth');
+      if(!currentUser){
+        console.log('setting to localStorage')
+        localStorage.setItem('auth', this.afAuth.auth.currentUser.uid);
+      }
 
-          this.router.navigateByUrl('/tabs');
-          console.clear();
-          console.log('POND v1.0.0 by William Fischer')
-        }
-      });
+      if(window.location.pathname == '/' || window.location.pathname == '/species/undefined' ){
+        this.router.navigateByUrl('/tabs');
+      }
+      console.clear();
+      console.log('%c POND v1.0.0 by William Fischer', 'color: #add8e6')
 
     });
   }

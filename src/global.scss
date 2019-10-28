@@ -20,6 +20,8 @@
   overflow-y: scroll !important;
 }
 
+button:focus {outline:0 !important;}
+
 .broswerText{
   display: none;
 }
@@ -115,10 +117,10 @@
   .loadingSpinner{
     margin-bottom: 60% !important;
   }
-
-  .tempLoader{
-    margin-top: 0px !important;
-  }
+  //
+  // .tempLoader{
+  //   margin-top: 0px !important;
+  // }
 
   .theResults{
     margin-bottom: 15% !important;
@@ -149,6 +151,19 @@
   ion-router-outlet{
     width: 500px !important;
     height: 900px !important;
+  }
+}
+
+//TALL MODE (IPHONE X, 11, etc.)
+@media (max-width: 450px) and (min-height : 600px) and (min-height : 800px){
+  .centerStuff{
+    h1{
+      margin-top: 13vh !important;
+    }
+
+    .backIco{
+      margin-top: 15% !important;
+    }
   }
 }
 

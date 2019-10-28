@@ -2,8 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { IonContent, ModalController, Platform, AlertController, IonReorderGroup, NavParams } from '@ionic/angular';
 import { Router } from '@angular/router';
 
-import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
-
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
@@ -11,7 +9,6 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { finalize } from 'rxjs/operators';
 
 import { SelectTankSubstratePage } from '../modal/select-tank-substrate/select-tank-substrate.page';
-import { FishDetailPage } from '../modal/fish-detail/fish-detail.page';
 
 
 @Component({
@@ -105,8 +102,7 @@ export class Tab5Page {
     private storage: AngularFireStorage,
     private router: Router,
     public plt: Platform,
-    public alertController: AlertController,
-    private photoViewer: PhotoViewer
+    public alertController: AlertController
   ) { }
 
 
@@ -119,18 +115,24 @@ export class Tab5Page {
 
       //Populate user
       this.afAuth.authState.subscribe(auth=>{
-        //console.log(auth);
+        console.log(auth);
 
-        this.userTankChanges = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid).valueChanges().subscribe(values =>{
-          //console.log(values)
+        if(this.afAuth.auth.currentUser.uid){
+          this.userTankChanges = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid).valueChanges().subscribe(values =>{
+            //console.log(values)
 
-          if(values && values['uid']){
-            this.populateUser(auth);
-          }else{
-            console.log('User dosen\'t exist in Firebase! Populating..')
-            this.addUserToFirebase(auth);
-          }
-        })
+            if(values && values['uid']){
+              this.populateUser(auth);
+            }else{
+              console.log('User dosen\'t exist in Firebase! Populating..')
+              this.addUserToFirebase(auth);
+            }
+          });
+
+        }else{
+          console.log('Error logging user in');
+          this.logout();
+        }
 
       });
 
@@ -146,6 +148,10 @@ export class Tab5Page {
     ionViewDidEnter(){
       //console.log('WELCOME TO TAB 5');
       this.closeTank()
+    }
+
+    login(){
+      this.router.navigateByUrl('/login');
     }
 
     ionViewDidLeave(){}
@@ -1173,16 +1179,6 @@ export class Tab5Page {
    }
 
    openFishDetailModal(fish){
-
-     //this.backFromWishlist();
-     this.speciesImgArray = [];
-     this.species = [];
-     this.speciesSelected = true;
-
-     if(this.debug){
-       console.log(fish);
-     }
-
      let fishSpecCode;
 
      if(fish["spec_code"]){
@@ -1191,30 +1187,7 @@ export class Tab5Page {
        fishSpecCode = fish['specCode']
      }
 
-     this.fireStore.doc('Species/' + fishSpecCode).valueChanges().subscribe(
-     species =>{
-       console.log(species);
-       this.species = species;
-
-       if(!this.species){
-         console.log('Can\'t yet populate species...')
-       }else{
-         if(species['vulnerability']){
-           this.speciesVunFloored = Math.floor(species['vulnerability']);
-         }
-
-         this.speciesLoaded = true;
-       }
-
-     });
-   }
-
-   seeFulText(){
-     this.fullWikiText = true;
-   }
-
-   seeLessText(){
-     this.fullWikiText = false;
+      this.router.navigateByUrl('/species/' + fishSpecCode);
    }
 
     // Show susbstrate edit modal
@@ -1473,7 +1446,8 @@ export class Tab5Page {
     console.log('Logging out...')
 
     this.afAuth.auth.signOut().then(() => {
-       this.router.navigateByUrl('/login');
+       //this.router.navigateByUrl('/login');
+       location.reload();
     });
   }
 
@@ -1538,10 +1512,6 @@ export class Tab5Page {
 
   closeTankSizeTrigger(){
     this.tankSizeImages = false;
-  }
-
-  seeFullImage(img){
-    this.photoViewer.show(img);
   }
 
 }

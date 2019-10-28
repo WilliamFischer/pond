@@ -17,13 +17,13 @@ import { HTTP } from '@ionic-native/http/ngx';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet/ngx';
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
 import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
 import { AddVariationModelPage} from './add-variation-model/add-variation-model.page'
 
 import { SelectTankSubstratePage } from './modal/select-tank-substrate/select-tank-substrate.page'
-import { FishDetailPage } from './modal/fish-detail/fish-detail.page';
 
 import { LoadingController } from '@ionic/angular';
 
@@ -43,6 +43,7 @@ import { OrderModule } from 'ngx-order-pipe';
 
 // Providers
 import { AuthProvider } from './providers/auth/auth';
+import { ApiProvider } from './providers/api/api';
 import { ImagePreloadDirectiveDirective } from './image-preload-directive.directive';
 
 @NgModule({
@@ -52,7 +53,6 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     ShopDetailModelPage,
     AddVariationModelPage,
     SelectTankSubstratePage,
-    FishDetailPage,
     ImagePreloadDirectiveDirective
   ],
   entryComponents: [
@@ -60,7 +60,6 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     ShopDetailModelPage,
     AddVariationModelPage,
     SelectTankSubstratePage,
-    FishDetailPage,
   ],
   imports: [
     BrowserModule,
@@ -88,6 +87,7 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     SplashScreen,
     LoadingController,
     AuthProvider,
+    ApiProvider,
     Geolocation,
     Facebook,
     GooglePlus,
@@ -98,6 +98,7 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
     ScreenOrientation,
     ActionSheet,
     PhotoViewer,
+    InAppBrowser,
     { provide: FirestoreSettingsToken, useValue: {} },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

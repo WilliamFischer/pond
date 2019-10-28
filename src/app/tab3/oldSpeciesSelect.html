@@ -1,0 +1,1110 @@
+<ion-icon class="homeButn" name="home" (click)="goHome()"></ion-icon>
+
+<div class="speciesSelectedMode" (swipe)="swipeEvent($event)">
+  <!-- <ion-icon name="arrow-back" (click)="unSelectSpecies()" class="backArrow"></ion-icon> -->
+
+  <div class="loadingSpinner detailSpinner" *ngIf="!speciesLoaded || !species.species">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-card *ngIf="speciesLoaded && species.genus">
+    <ion-card-content>
+      <ion-slides pager="false">
+        <ng-template let-img ngFor [ngForOf]="species['Pics']">
+         <ion-slide id="myImg" class="imageBox" (click)="seeFullImage(img)">
+           <img [src]="img" onerror="this.parentNode.style.display='none'"  />
+         </ion-slide>
+         </ng-template>
+      </ion-slides>
+    </ion-card-content>
+
+    <!-- WIKIPEDIA DESCRIPTION -->
+    <p [ngClass]="{'wikiDescriptionSmall' : !fullWikiText}" class="wikiDescription" *ngIf="species.wikiDesc"> {{species.wikiDesc}} </p>
+    <a class="centerSeeMore" *ngIf="!fullWikiText && species.wikiDesc" (click)="seeFulText()">See More <ion-icon name="arrow-dropdown"></ion-icon></a>
+    <a class="centerSeeMore" *ngIf="fullWikiText && species.wikiDesc" (click)="seeLessText()">See Less <ion-icon name="arrow-dropup"></ion-icon></a>
+
+  </ion-card>
+
+  <ion-card class="coreInformation" *ngIf="speciesLoaded && species.genus">
+    <ion-card-header>
+      <ion-card-subtitle>
+
+        <ion-icon *ngIf="!species.isFavourited && loggedIn" class="innerStarIcon" (click)="addFishToWishlist(species)" name="star-outline"></ion-icon>
+        <ion-icon *ngIf="species.isFavourited && loggedIn" class="innerStarIcon starIco" (click)="addFishToWishlist(species)" name="star"></ion-icon>
+
+        <a (click)="showGenus(species.genus)">{{species.genus}}</a> <label class="speciesName"> {{species.species}}</label>
+        <br /><br /> <a (click)="addTankTrigger(species)" class="addSpeciesClicker" *ngIf="loggedIn">+ Add Species to tank</a>
+      </ion-card-subtitle>
+      <ion-card-title>{{species.name}}</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ul>
+
+        <!-- AUS Etymology -->
+        <li *ngIf="species.ausEty" [innerHTML]="species.ausEty"></li>
+        <br *ngIf="species.ausEty" />
+
+        <!-- PLANET CATFISH INFO -->
+        <li *ngIf="species.etymology" [innerHTML]="species.etymology"></li>
+        <br *ngIf="species.etymology" />
+
+        <!-- WIKIPEDIA COMMON NAME -->
+        <label *ngIf="species.wikiName">
+          <li *ngIf="!species.name || species.wikiName.toLowerCase() !== species.name"><b>Other Name :</b><br />  {{species.wikiName}}</li>
+          <br *ngIf="!species.name || species.wikiName.toLowerCase() !== species.name" />
+        </label>
+
+        <!-- PULLED FROM BEST SOURCE -->
+        <li *ngIf="species.temperature"><b>Recommended Temperature :</b><br />
+          <span [innerHTML]="species.temperature"></span>
+        </li>
+        <br *ngIf="species.temperature" />
+        <li *ngIf="species.ph"><b>Recommended PH :</b><br />
+          <span [innerHTML]="species.ph"></span>
+        </li>
+        <br *ngIf="species.ph" />
+        <li *ngIf="species.hardness"><b>Recommended Hardness :</b><br />
+          <span [innerHTML]="species.hardness"></span>
+        </li>
+        <br *ngIf="species.hardness" />
+
+        <li *ngIf="species.locality"><b>Locality :</b><br />
+          <span [innerHTML]="species.locality"></span>
+        </li>
+
+        <br *ngIf="species.locality" />
+
+        <!-- PULLED FROM SERIOUSLY FISH -->
+        <li *ngIf="species.habitat || species.norHabit || species.sharkHabitat || species.ausHabitat">
+          <b>Habitat :</b><br />
+          <span [innerHTML]="species.habitat"></span>
+          <label *ngIf="species.habitat && species.norHabit"><br /> - <br /></label>
+          <span [innerHTML]="species.norHabit"></span>
+          <label *ngIf="species.norHabit && species.sharkHabitat"><br /> - <br /></label>
+          <span [innerHTML]="species.sharkHabitat"></span>
+          <label *ngIf="species.sharkHabitat && species.ausHabitat"><br /> - <br /></label>
+          <span [innerHTML]="species.ausHabitat"></span>
+        </li>
+        <br *ngIf="species.habitat || species.norHabit || species.sharkHabitat || species.ausHabitat" />
+        <li *ngIf="species.blackWater"><b>Black Water? :</b><br />
+          <span [innerHTML]="species.size"></span>
+        </li>
+        <br *ngIf="species.blackWater" />
+        <li *ngIf="species.aquaticPlants"><b>Aquatic Plants Recommended? :</b><br />
+          <span [innerHTML]="species.size"></span>
+        </li>
+        <br *ngIf="species.aquaticPlants" />
+        <li *ngIf="species.recommendedTankSize"><b>Recommended Tank Size :</b><br />
+          <span [innerHTML]="species.recommendedTankSize"></span>
+        </li>
+        <br *ngIf="species.recommendedTankSize" />
+        <li *ngIf="species.sexIdentificationFeatures"><b>Sexing Identification Features :</b><br />
+          <span [innerHTML]="species.sexIdentificationFeatures"></span>
+        </li>
+        <br *ngIf="species.sexIdentificationFeatures" />
+        <li *ngIf="species.diet"><b>Diet :</b><br />
+          <span [innerHTML]="species.diet"></span>
+        </li>
+        <br *ngIf="species.diet" />
+        <li *ngIf="species.enviroment"><b>Environment :</b><br />
+          <span [innerHTML]="species.enviroment"></span>
+        </li>
+        <br *ngIf="species.enviroment" />
+        <li *ngIf="species.tankMates"><b>Recommended Tank Mates :</b><br />
+          <span [innerHTML]="species.tankMates"></span>
+        </li>
+        <br *ngIf="species.tankMates" />
+
+        <!-- AUSTRALIAN LAWS -->
+        <b *ngIf="species.rules">Potential Legality <br /></b>
+
+        <li *ngIf="species.rules">
+          <i>Legal species of the {{species.genus}} Genus in Australia:</i>
+          <br /><br />
+          <label *ngFor="let rule of species['rules']">
+            &bull; {{rule}} <br />
+          </label>
+        </li>
+
+        <!-- <li *ngIf="!species.rules">
+          The genus of this species is illegal in Australia
+        </li> -->
+        <br *ngIf="species.rules"/>
+
+        <!-- PLANET CATFISH INFO -->
+        <li *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize">
+          <b>Size :</b><br />
+          <span [innerHTML]="species.size"></span>
+          <label *ngIf="species.size && species.sharkSize"><br /> - <br /></label>
+          <span [innerHTML]="species.sharkSize"></span>
+          <label *ngIf="species.sharkSize && species.ausSize"><br /> - <br /></label>
+          <span [innerHTML]="species.ausSize"></span>
+          <label *ngIf="species.ausSize && species.ausRegSize"><br /> - <br /></label>
+          <span [innerHTML]="species.ausRegSize"></span>
+        </li>
+        <br *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize" />
+        <li *ngIf="species.identification"><b>Identification :</b><br /> {{species.identification}}</li>
+        <br *ngIf="species.identification" />
+        <li *ngIf="species.sexing"><b>Sexing :</b><br /> {{species.sexing}}</li>
+        <br *ngIf="species.sexing" />
+        <li *ngIf="species.distribution || species.sharkDist || species.norDist">
+          <b>Distribution :</b><br />
+          <span [innerHTML]="species.distribution"></span>
+          <label *ngIf="species.distribution && species.sharkDist"><br /> - <br /></label>
+          <span [innerHTML]="species.species"></span>
+          <label *ngIf="species.sharkDist && species.norDist"><br /> - <br /></label>
+          <span [innerHTML]="species.norDist"></span>
+        </li>
+        <br *ngIf="species.distribution || species.sharkDist || species.norDist" />
+        <li *ngIf="species.feeding || species.ausFeed">
+          <b>Feeding :</b><br />
+          <span [innerHTML]="species.feeding"></span>
+          <label *ngIf="species.feeding && species.ausFeed"><br /> - <br /></label>
+          <span [innerHTML]="species.ausFeed"></span>
+        </li>
+        <br *ngIf="species.feeding || species.ausFeed" />
+        <li *ngIf="species.furniture"><b>Recommended Tank Decoration :</b><br /> <span [innerHTML]="species.furniture"></span></li>
+        <br *ngIf="species.furniture" />
+        <li *ngIf="species.compatibility"><b>Compatibility :</b><br /> <span [innerHTML]="species.compatibility"></span></li>
+        <br *ngIf="species.compatibility" />
+        <li *ngIf="species.SFtankMates"><b>Recommended Tank Mates :</b><br /> <span [innerHTML]="species.SFtankMates"></span></li>
+        <br *ngIf="species.SFtankMates" />
+        <li *ngIf="species.repoduction"><b>Breeding :</b><br /> <span [innerHTML]="species.repoduction"></span></li>
+        <br *ngIf="species.repoduction" />
+
+        <li *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc">
+          <b>Species Information :</b><br />
+          <span [innerHTML]="species.SFComments"></span>
+          <label *ngIf="species.SFComments && species.norChar"><br /> - <br /></label>
+          <span [innerHTML]="species.norChar"></span>
+          <label *ngIf="species.norChar && species.comments"><br /> - <br /></label>
+          <span [innerHTML]="species.comments"></span>
+          <label *ngIf="species.comments && species.description"><br /> - <br /></label>
+          <span [innerHTML]="species.description"></span>
+          <label *ngIf="species.description && species.sharkDesc"><br /> - <br /></label>
+          <span [innerHTML]="species.sharkDesc"></span>
+        </li>
+        <br *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc" />
+
+        <li *ngIf="species.speciesVunFloored">
+          <b>Vunerability Status :</b><br />
+          {{speciesVunFloored}}/100
+        </li>
+        <br *ngIf="species.speciesVunFloored"/>
+
+        <li *ngIf="species.dangerous !== 'harmless'">
+          <b>Danger to human status :</b><br />
+          {{species.dangerous}}
+        </li>
+        <br *ngIf="species.dangerous != 'harmless'" />
+
+
+        <li *ngIf="species.depth || species.ausDepth">
+          <b>Depth :</b><br />
+          <span [innerHTML]="species.depth"></span>
+          <label *ngIf="species.depth && species.ausDepth"><br /> - <br /></label>
+          <span [innerHTML]="species.ausDepth"></span>
+        </li>
+        <br *ngIf="species.depth || species.ausDepth" />
+
+        <!-- SHARK INFO -->
+        <li *ngIf="species.sharkBio || species.ausBio"><b>Biology :</b><br />
+          <span [innerHTML]="species.sharkBio"></span>
+          <label *ngIf="species.sharkBio && species.ausBio"><br /> - <br /></label>
+          <span [innerHTML]="species.ausBio"></span>
+        </li>
+        <br *ngIf="species.sharkBio || species.ausBio" />
+
+        <li *ngIf="species.ausFeatures">
+          <b>Features :</b><br />
+          <span [innerHTML]="species.ausFeatures"></span>
+        </li>
+        <br *ngIf="species.ausFeatures" />
+        <li *ngIf="species.ausColour">
+          <b>Colour :</b><br />
+          <span [innerHTML]="species.ausColour"></span>
+        </li>
+        <br *ngIf="species.ausColour" />
+        <li *ngIf="species.ausFisheries">
+          <b>Fisheries :</b><br />
+          <span [innerHTML]="species.ausFisheries"></span>
+          </li>
+        <br *ngIf="species.ausFisheries" />
+        <li *ngIf="species.ausRemarks">
+          <b>Remarks :</b><br />
+          <span [innerHTML]="species.ausRemarks"></span>
+        </li>
+        <br *ngIf="species.ausRemarks" />
+        <li *ngIf="species.ausConserve">
+          <b>Conservation :</b><br />
+          <span [innerHTML]="species.ausConserve"></span>
+        </li>
+        <br *ngIf="species.ausConserve" />
+        <li *ngIf="species.ausSimilar">
+          <b>Similar Species :</b><br />
+          <span [innerHTML]="species.ausSimilar"></span>
+        </li>
+        <br *ngIf="species.ausSimilar" />
+      </ul>
+
+    </ion-card-content>
+  </ion-card>
+
+
+    <!-- <div *ngIf="species">
+      <div class="informationBrick" *ngIf="speciesDataLoaded">
+        <h1>{{species.species}}</h1>
+        <h2 *ngIf="species.name">"{{species.name}}"</h2>
+        <h3>{{species.genus}}</h3>
+
+      </div>
+
+      <div class="informationBrick">
+          <button class="addToTankButton">Add species to Tank</button>
+      </div>
+
+      <div class="informationBrick variationsBrick">
+          <h4>Variations</h4>
+          <h5 (click)="addVariation(species)">Add a variation</h5>
+          <label class="noVariations" *ngIf="variations.length == 0">No variations where found for {{species.species}}</label>
+          <div class="speciesGrid" *ngFor="let variation of variations">
+            <div class="speciesBlock">{{variation.name}}</div>
+          </div>
+      </div>
+
+    </div> -->
+</div>
+
+
+
+
+
+
+
+.topTitle1{
+  font-weight: 800;
+  font-size: 34px !important;
+  z-index: 9000;
+  display: block;
+}
+
+.topTitle2{
+  font-weight: 400;
+  font-size: 24px !important;
+  white-space: nowrap;
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+.greyedLines{
+  color: #8e8e8e;
+  margin-left: 10%;
+  text-overflow: inherit;
+  white-space: normal !important;
+}
+
+.specialInput{
+  input[type="file"] {
+    display: none;
+  }
+
+  color: #7dbbe2 !important;
+}
+
+.starIco{
+  color:	#EEE8AA;
+}
+
+.fishNameText{
+  text-transform: capitalize;
+}
+
+.innerStarIcon{
+  position: absolute;
+  margin-left: 93%;
+  font-size: 18px;
+}
+
+
+.theResults .subtitleTxt{
+  max-width: 75%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inline-block;
+  /* position: absolute; */
+  margin-top: 1%;
+  height: 20px;
+}
+
+.noteTxt{
+  font-weight: 100;
+  font-style: italic;
+  margin-left: 2%;
+  font-size: 14px;
+}
+
+.loadingImgSpinner{
+  width: 100%;
+  display: block;
+  text-align: center;
+  margin-top: -45%;
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+}
+
+.topTitle3{
+  font-weight: 200;
+  font-size: 14px !important;
+  margin-top: 1%;
+  /* margin-left: 5%; */
+  text-align: center;
+  width: 100%;
+  display: block;
+  text-transform: uppercase;
+  color: #8e8e8e;
+}
+
+
+.paddingSpace{
+    padding: 10% !important;
+    background: #FEFFFF;
+    font-family: 'Crimson Text', serif !important;
+}
+
+.profileImg{
+  width: 40%;
+  height: 150px;
+  box-shadow: 0px 10px 10px #e8e8e8;
+  border-radius: 10px;
+  margin-top: 10%;
+  object-fit: cover;
+  z-index: 9000;
+  display: block;
+}
+
+.infoSection{
+  width: 100%;
+  height: 200px;
+  display: inline-flex;
+}
+
+.rightStuff{
+  width: 200px;
+  padding: 2%;
+  padding-top: 10%;
+  margin-left: 5%;
+}
+
+.viewProfBtn{
+  background: #7eb3ff;
+  border: none;
+  padding: 2%;
+  width: 100px;
+  border-radius: 50px;
+  font-size: 10px;
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+  z-index: 9000;
+  position: absolute;
+  white-space: nowrap;
+  display: block;
+  margin-top: 6%;
+
+  margin-left: 9%;
+}
+
+.splittingLine{
+  width: 100%;
+  margin-top: 10%;
+  height: 1px;
+
+  padding: 0% !important;
+  background: #FEFFFF;
+  font-family: 'Crimson Text', serif !important;
+}
+
+.fadedBack{
+  width: 100%;
+  height: 370px;
+  margin-top: -14%;
+  position: absolute;
+  z-index: 100;
+  display: block;
+  box-shadow: inset 0px -20px 20px -2px white;
+  pointer-events: none;
+  //background: rgba(0,0,0,0.5);
+}
+
+.fadedImg{
+  width: 100%;
+  height: 370px;
+  margin-top: -15%;
+  z-index: 0;
+  position: absolute;
+  display: block;
+  object-fit: cover;
+  opacity: 0.1;
+}
+
+.heartBox{
+  width: 55px;
+  height: 75px;
+  background: #FF4B97;
+  box-shadow: 0px 3px 5px 0.1px #FF4B97;
+  border-radius: 10px;
+  margin-top: -8%;
+  display: block;
+  position: absolute;
+}
+
+.plusBox{
+  width: 55px;
+  height: 75px;
+  background: #fff;
+  box-shadow: 0px 3px 5px 0.1px #cae0ff;
+  border-radius: 10px;
+  margin-top: 18%;
+  display: block;
+  position: absolute;
+}
+
+.heartIco{
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  padding-top: 30%;
+  font-size: 24px;
+}
+
+.heartCount{
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  display: block;
+  font-weight: 800;
+
+}
+
+.tagIco{
+  text-align: center;
+  color: #7eb3ff;
+  width: 100%;
+  padding-top: 30%;
+  font-size: 24px;
+}
+
+.plusCount{
+  text-align: center;
+  color: #7eb3ff;
+  width: 100%;
+  display: block;
+  font-weight: 800;
+
+}
+
+.addTankTxt{
+    color: #8e8e8e;
+    margin-top: 10%;
+    font-size: 18px;
+}
+
+.wishlistTxt{
+    color: #adae61;
+    /* margin-top: 10%; */
+    font-size: 14px;
+    float: right;
+    margin-top: -9%;
+    text-transform: uppercase;
+}
+
+.noFishYetTxt{
+  text-align: center;
+  margin-top: 20%;
+  color: #d3d3d3;
+}
+
+.notLoggedIn{
+  text-align: center;
+  margin-top: 20%;
+  color: #d3d3d3;
+  font-size: 14px;
+}
+
+.logoutBtn{
+  margin-top: -10% !important;
+}
+
+.nextSection{
+  width: 100%;
+  height: 200px;
+  padding-top: 15%;
+}
+
+.mySalesCore{
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(6, calc(50% - 40px));
+  grid-template-rows: minmax(150px, 1fr);
+  padding: 10px 10px;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+  margin-left: 20%;
+  margin-top: -10%;
+
+}
+
+.itemSaleBox{
+
+  width: 100px;
+  margin-right: 10%;
+  grid-area: span 1 / span 1;
+  box-shadow: 0px 3px 5px 0.1px #cae0ff;
+
+  padding: 5%;
+
+  img{
+    height: 60px;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  h1{
+    font-size: 14px !important;
+    text-align: center;
+  }
+
+  h2{
+    font-size: 12px !important;
+    margin-right: 5%;
+    margin-left: 5%;
+  }
+
+}
+
+.emptyItemSaleBox{
+  width: 80px;
+  margin-right: 10%;
+  grid-area: span 1 / span 1;
+
+}
+
+.lilSelfBlock{
+  display: inline-flex;
+  margin-top: -10%;
+}
+
+.tankImageBack{
+  width: 100vw;
+  height: 300px;
+  display: block;
+  object-fit: cover;
+
+  position: absolute;
+  z-index: 9000;
+  left: 0;
+  top: 0;
+
+  box-shadow: 0px 0px 10px black;
+}
+
+.textNoneCenter{
+  text-align: center;
+  color: #8e8e8e;
+  font-size: 10px;
+  width: 170px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  position: absolute;
+}
+
+.backArrow{
+  margin-left: 90%;
+  margin-top: 3%;
+  position: absolute;
+  color: #8da9ce;
+  font-size: 32px;
+  display: block;
+  z-index: 9000;
+}
+
+.backArrowBlack{
+  color: black;
+  display: block;
+  z-index: 9000;
+  margin-top: -20%;
+  margin-bottom: 10%;
+  float: right;
+  font-size: 21px;
+}
+
+.topTitle4{
+  font-size: 32px !important;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  margin-left: 5%;
+  display: block;
+  font-family: 'Crimson Text', serif !important;
+}
+
+.coreName{
+  margin-top: 320px !important;
+  margin-left: 5%;
+  text-align: left;
+}
+
+.deleteTitle{
+  font-size: 14px;
+}
+
+.pushTitleLeft{
+  //margin-left: 3%;
+}
+
+.item-options-end ion-item-option{
+    background: #ff7979 !important;
+}
+
+.whiteSpaceWraper *{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.whiteSpaceWraper ion-reorder{
+  font-size: 28px;
+}
+
+
+.whiteSpaceWraper label{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 20px;
+}
+
+
+.splittingLine{
+  .paddingSpace{
+      margin-bottom: 10%;
+  }
+}
+
+.fishMainName *{
+  white-space: nowrap !important;
+}
+
+
+
+
+
+
+
+
+
+
+h1{
+  font-weight: 400;
+  font-size: 34px !important;
+  padding-bottom: 10%;
+  text-align: center;
+  font-family: 'Crimson Text', serif !important;
+}
+
+.paddingSpace{
+    padding: 5% !important;
+    background: #FEFFFF;
+    font-family: 'Crimson Text', serif !important;
+}
+
+.tankSpace{
+  width: 100%;
+  height: 130px;
+  background: linear-gradient(#78CBE5, #ABDEE0);
+  display: block;
+  color: #fff;
+  text-align: left;
+  padding-top: 2%;
+  padding-left: 8%;
+  border-radius: 2px;
+  margin-top: 5%;
+
+  h4{
+    font-size: 14px;
+    margin-top: -3%;
+  }
+
+  h5{
+    font-size: 16px;
+    margin-top: 0%;
+  }
+}
+
+.mySpinner{
+  text-align: center;
+  margin-top: 35%;
+  margin-bottom: 10%;
+
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+}
+
+
+.addTank{
+  padding: 10%;
+}
+
+.centerFishSpinner{
+  text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  margin-top: 0%;
+  margin-bottom: 5%;
+}
+
+.addChemistry{
+  padding: 5%;
+}
+// ion-item-divider ion-reorder{
+//   marg
+// }
+.confirmBtn{
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(#78CBE5, #ABDEE0);
+  color: #fff;
+  margin-top: 10%;
+  font-family: 'Crimson Text', serif !important;
+  text-transform: uppercase;
+}
+
+.lilEdit {
+  padding-left: 1em;
+}
+
+.trashIcons{
+  .icon-inner{
+    fill: #eb4d4b !important;
+  }
+}
+
+.fish-sci-name {
+  font-size: 80%;
+  padding-left: 1em;
+}
+
+.selectPal{
+  color: #fff;
+  font-size: 24px;
+  float: right;
+  margin: 5%;
+}
+
+.tankSizeSelect{
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  position: absolute;
+  top: 0;
+  padding: 5%;
+  padding-bottom: 30%
+}
+
+.specialTopArrow{
+  margin-top: 0%;
+}
+
+.leftSize{
+  z-index: 9000;
+  font-size: 12px;
+  margin-left: 100px;
+  margin-top: 11px;
+  position: absolute;
+}
+
+
+
+// .textNoneCenter{
+//   text-align: center;
+//   width: 50vw;
+//   display: block;
+//   font-size: 10px;
+//   text-align: center;
+//   color: #8e8e8e;
+//   /* background: green; */
+//   margin-right: auto;
+//   left: 0;
+//   right: 0;
+//   margin-left: auto;
+//   position: absolute;
+// }
+.speciesSelectedMode{
+  background: #fefefe;
+  margin-top: 20%;
+  padding: 3%;
+  width: 100%;
+  position: absolute;
+  z-index: 9000;
+
+  .detailSpinner{
+    text-align: center;
+    margin-top: 30%;
+    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+  }
+
+  h1{
+    text-align: center;
+    margin-top: 10%;
+    color: #7dbbe2;
+  }
+}
+
+
+.fishNameText{
+  text-transform: capitalize;
+}
+
+.backArrowSpeciesSelet{
+  margin-left: 7%;
+  font-size: 26px;
+  margin-top: 10%;
+  color: #D1E7F5;
+}
+
+.coreInformation{
+
+    ul{
+      list-style: none;
+      margin-left: -5%;
+      margin-top: -6%;
+      font-size: 12px;
+      padding: 6%;
+    }
+
+    ion-card-title{
+      margin-top: 5%;
+    }
+
+    .addSpeciesClicker{
+      text-transform: uppercase;
+    }
+
+    .hydrated{
+      text-transform: capitalize !important;
+    }
+}
+
+
+
+.wikiDescription{
+  padding: 7%;
+  font-style: italic;
+  text-align: left;
+  color: #8e8e8e;
+  font-size: 12px;
+  //margin-top: -13%;
+
+  display: block;
+
+  transition: 1s all ease;
+  height: inherit;
+  padding-bottom: 10%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 4 !important;
+  /* autoprefixer: off */
+  -webkit-box-orient: vertical !important;
+  /* autoprefixer: on */
+}
+
+.wikiDescriptionSmall{
+  height: 79px;
+  margin-bottom: 10%;
+  display: -webkit-box !important;
+
+}
+
+
+
+.imageBox{
+  width: 100% !important;
+  background: #fff;
+
+  img{
+    display: inline-flex;
+    height: 250px;
+    object-fit: contain;
+    background: #fafafa;;
+    border-radius: 3px
+  }
+
+}
+
+
+.wikiDescriptionSmall{
+  height: 79px;
+  margin-bottom: 10%;
+  display: -webkit-box !important;
+
+}
+
+.speciesName{
+  color: #d3d3d3;
+  text-transform: capitalize;
+}
+
+.centerSeeMore{
+  text-transform: lowercase;
+  text-align: center;
+  font-size: 12px;
+  display: block;
+  width: 100%;
+  margin-bottom: 5%;
+}
+
+
+
+
+.hideContent{
+  visibility: hidden;
+}
+
+.newTopContent{
+  top: 0;
+  position: absolute;
+}
+
+
+.androidHeader{
+  margin-top: 5% !important;
+}
+
+
+
+.theResults{
+  padding: 10%;
+  padding-top: 10%;
+  padding-bottom: 0%;
+}
+
+.theResults:last-child{
+  padding-bottom: 10%;
+}
+
+.desSpeciesTitle{
+  text-transform: uppercase;
+  width: 100%;
+  text-align: center;
+  display: block;
+  color:	#bbb68a;
+  font-size: 18px !important;
+  margin-top: 15%;
+}
+
+
+.backArrowDes{
+  position: absolute;
+  color: #8e8e8e;
+  font-size: 18px;
+  display: block;
+  z-index: 9000;
+}
+
+.wishlistMode{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  top: 0;
+  z-index: 9000;
+  min-height: 110vh;
+  padding-top: 20%;
+
+  ion-card{
+    background: #fff !important;
+    width: 100% !important;
+    margin-top: 15% !important;
+
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    border-bottom-left-radius: 3px !important;
+    border-bottom-right-radius: 3px !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,.14) !important;
+  }
+
+
+  ion-slide{
+    height: 150px !important;
+  }
+
+  ion-card-subtitle b{
+    border-bottom: 1px dotted #8e8e8e;
+  }
+
+  .sc-ion-card-ios-s img {
+      display: block;
+      width: 100%;
+      height: 150px;
+      object-fit: contain;
+      background: black;
+      object-position: center;
+  }
+
+  .maxSizeContent{
+    max-height: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    display: -webkit-box;
+    /* autoprefixer: off */
+    -webkit-box-orient: vertical;
+    /* autoprefixer: on */
+    -webkit-line-clamp: 5;
+    transition: 1s all ease;
+    height: inherit;
+    margin-bottom: 5%;
+    font-size: 12px;
+  }
+
+
+  .rightIconMore{
+    float: right;
+    margin-right: 3%;
+    display: block;
+    font-size: 21px;
+  }
+
+  .starIco{
+    color:	#EEE8AA;
+  }
+}
+
+.homeButn{
+  margin: 10%;
+  position: absolute;
+  font-size: 26px;
+  color: #e3e3e3;
+}
