@@ -54,17 +54,21 @@
         <label>{{speciesVunFloored}}/100</label>
       </div>
 
-      <div class="cube" *ngIf="species.ausConserve">
-        <span>Conservation</span>
-        <label [innerHTML]="species.ausConserve"></label>
+      <div class="cube" *ngIf="species.blackWater">
+        <span>Tea-coloured water!</span>
       </div>
 
-      <div class="cube" *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize">
+      <div class="cube" *ngIf="species.aquaticPlants">
+        <span>Aquatic plants recommended</span>
+      </div>
+
+      <div class="cube" *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize || species.SFFishSize">
         <span>Size</span>
         <label [innerHTML]="species.size"></label>
+        <label [innerHTML]="species.ausRegSize"></label>
         <label [innerHTML]="species.sharkSize"></label>
         <label [innerHTML]="species.ausSize"></label>
-        <label [innerHTML]="species.ausRegSize"></label>
+        <label [innerHTML]="species.SFFishSize"></label>
       </div>
     </div>
 
@@ -75,10 +79,11 @@
     </span>
 
     <!-- Etymology -->
-    <span *ngIf="species.ausEty || species.ausEty">
+    <span *ngIf="species.ausEty || species.ausEty || species.SFEtymology">
       <h3>Etymology</h3>
       <p [innerHTML]="species.etymology"></p>
       <p [innerHTML]="species.ausEty"></p>
+      <p [innerHTML]="species.SFEtymology"></p>
     </span>
 
     <!-- Identification -->
@@ -93,6 +98,12 @@
       <p [innerHTML]="species.sexing"></p>
     </span>
 
+    <!-- Identification -->
+    <span *ngIf="species.recommendedTankSize">
+      <h3>Recommended Tank Size</h3>
+      <p [innerHTML]="species.recommendedTankSize"></p>
+    </span>
+
     <!-- Distribution -->
     <span *ngIf="species.distribution || species.sharkDist || species.norDist">
       <h3>Distribution</h3>
@@ -101,11 +112,43 @@
       <p [innerHTML]="species.norDist"></p>
     </span>
 
+    <!-- Locality -->
+    <span *ngIf="species.locality">
+      <h3>Locality</h3>
+      <p [innerHTML]="species.locality"></p>
+    </span>
+
+    <!-- Australian Laws -->
+    <span *ngIf="species.rules">
+      <h3>Australian Legality</h3>
+      <p *ngFor="let rule of species['rules']">
+        {{rule}} <br />
+      </p>
+    </span>
+
+    <!-- Conservation -->
+    <span *ngIf="species.ausConserve">
+      <h3>Conservation</h3>
+      <p [innerHTML]="species.ausConserve"></p>
+    </span>
+
     <!-- Feeding -->
     <span *ngIf="species.feeding || species.ausFeed">
       <h3>Feeding</h3>
       <p [innerHTML]="species.feeding"></p>
       <p [innerHTML]="species.ausFeed"></p>
+    </span>
+
+    <!-- Diet -->
+    <span *ngIf="species.diet">
+      <h3>Diet</h3>
+      <p [innerHTML]="species.diet"></p>
+    </span>
+
+    <!-- Diet -->
+    <span *ngIf="species.enviroment">
+      <h3>Enviroment</h3>
+      <p [innerHTML]="species.enviroment"></p>
     </span>
 
     <!-- Furniture -->
@@ -121,8 +164,9 @@
     </span>
 
     <!-- Recommended Tank Mates -->
-    <span *ngIf="species.SFtankMates">
+    <span *ngIf="species.tankMates || species.SFtankMates">
       <h3>Recommended Tank Mates</h3>
+      <p [innerHTML]="species.tankMates"></p>
       <p [innerHTML]="species.SFtankMates"></p>
     </span>
 
@@ -219,24 +263,24 @@
     <label class="noTanksYet" *ngIf="tanks.length < 1">You have no tanks yet</label>
 
     <ion-list *ngIf="tanks.length >= 1">
-      <ion-item *ngFor="let tank of tanks">
-        <ion-label (click)="selectTank(tank)">{{tank.name}}</ion-label>
+      <ion-item *ngFor="let tank of tanks" (click)="selectTank(tank)">
+        <ion-label>{{tank.name}}</ion-label>
       </ion-item>
     </ion-list>
   </div>
 
-  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && !currentQuantity">
-    <h1>Select quantity of {{toAddToTankSpecies.name}}'s in {{activeTankSelect.name}}</h1>
+  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity == 0">
+    <h1>Number of {{toAddToTankSpecies.name}} in {{activeTankSelect.name}}</h1>
 
     <ion-input class="centerSelectNumber" pattern="[0-9]*" [(ngModel)]="amountOfSpecies" value="1" type="text" placeholder="1"></ion-input>
 
     <div class="buttonsLive">
       <div class="block" (click)="cancelAddToTank()">CANCEL</div>
-      <div class="block" (click)="setSpeciesTankQuantity()">ADD</div>
+      <div class="block right" (click)="setSpeciesTankQuantity()">ADD</div>
     </div>
   </div>
 
-  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity">
+  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity !== 0">
     <h1>Update quantity of {{toAddToTankSpecies.name}}'s in {{activeTankSelect.name}}</h1>
 
     <ion-input class="centerSelectNumber" [(ngModel)]="amountOfSpecies" value="{{currentQuantity}}" pattern="[0-9]*" type="text" placeholder="1"></ion-input>

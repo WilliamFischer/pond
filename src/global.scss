@@ -34,8 +34,19 @@ button:focus {outline:0 !important;}
     object-fit: cover !important;
 }
 
-.searchbar-input.sc-ion-searchbar-md {
-    border-radius: 5px !important;
+.searchbar-input{
+    font-size: 12px !important;
+}
+
+.searchbar-search-icon.sc-ion-searchbar-ios{
+  width: 16px !important;
+  padding-left: 1% !important;
+}
+
+ion-searchbar{
+  margin-top: 5% !important;
+
+
 }
 
 //SHORT (DWARF) MODE

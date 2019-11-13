@@ -30,63 +30,84 @@ export class LoginPage implements OnInit {
       message: 'Logging you in...'
     });
     await this.loading.present();
+  }
 
-    const { role, data } = await this.loading.onDidDismiss();
-
-    console.log('Loading dismissed!');
+  async dismissLoader() {
+    return await this.loadingController.dismiss().then(() => console.log('dismissed'));
   }
 
   facebookLogin(){
     this.presentLoading();
-    console.log(this.plt);
+    //console.log(this.plt);
 
-    if (!this.plt.is('mobileweb') && (this.plt.is('android') || this.plt.is('ios'))) {
-      this.authService.loginWithFacebook().then(res=>{
-        console.log("SUCCESS");
-        this.loading.dismiss();
-        location.reload();
-      }).catch(err=>{
-        console.log(err)
-        this.loading.dismiss();
-      })
-    }else{
-      this.authService.loginWithLegacyFacebook().then(res=>{
-        console.log("SUCCESS");
-        this.loading.dismiss();
-        location.reload();
-      }).catch(err=>{
-        console.log(err)
-        this.loading.dismiss();
-      })
-    }
+    // LEGACY FACEBOOK LOGIN - NOT COOL
 
+    this.authService.loginWithLegacyFacebook().then(res=>{
+      if(res){ this.successfulLogin(res) }else{ this.loginFailure('No res for user') }
+    }).catch(err=>{
+      this.loginFailure(err)
+    })
 
+    // if (this.plt.url() !== 'http://localhost:8100/login' || this.plt.url() !== 'http://pondtheapp.com/login') {
+    //   this.authService.loginWithFacebook().then(res=>{
+    //     console.log("SUCCESS");
+    //     console.log(res);
+    //   }).catch(err=>{
+    //     this.loginFailure(err)
+    //   })
+    // }else{
+    //   this.authService.loginWithLegacyFacebook().then(res=>{
+    //     if(res){ this.successfulLogin(res) }else{ this.loginFailure('No res for user') }
+    //   }).catch(err=>{
+    //     this.loginFailure(err)
+    //   })
+    // }
   }
 
   googleLogin(){
     this.presentLoading();
-    console.log(this.plt);
+    //console.log(this.plt);
 
-    if (!this.plt.is('mobileweb') && (this.plt.is('android') || this.plt.is('ios'))) {
-      this.authService.loginWithGoogle().then(res=>{
-        console.log("SUCCESS");
-        this.loading.dismiss();
-        location.reload();
+
+    if(this.plt.url() == 'http://localhost:8100/login'){
+      this.authService.loginWithLegacyGoogle().then(res=>{
+        if(res){ this.successfulLogin(res) }else{ this.loginFailure('No res for user') }
       }).catch(err=>{
-        alert(err)
-        this.loading.dismiss();
+        this.loginFailure(err)
+      })
+    }else if(this.plt.url() == 'http://pondtheapp.com/login'){
+      this.authService.loginWithLegacyGoogle().then(res=>{
+        if(res){ this.successfulLogin(res) }else{ this.loginFailure('No res for user') }
+      }).catch(err=>{
+        this.loginFailure(err)
       })
     }else{
-      this.authService.loginWithLegacyGoogle().then(res=>{
-        console.log("SUCCESS");
-        this.loading.dismiss();
-        location.reload();
+      this.authService.loginWithGoogle().then(res=>{
+        if(res){  }else{ this.loginFailure('No res for user') }
       }).catch(err=>{
-        alert(err)
-        this.loading.dismiss();
+        this.loginFailure(err)
       })
     }
 
+  }
+
+
+  successfulLogin(res){
+    console.log(res);
+
+    setTimeout(() => {
+      if(this.loading){ this.dismissLoader() }
+      this.router.navigateByUrl('/tabs');
+    }, 500);
+
+  }
+
+  loginFailure(error){
+    alert(error);
+
+    setTimeout(() => {
+      if(this.loading){ this.dismissLoader() }
+    }, 500);
   }
 
   goToSpecies(){

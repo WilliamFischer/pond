@@ -35,7 +35,7 @@ export class SpeciesPage implements OnInit {
   amountOfSpecies: string;
 
   speciesImgArray: any;
-  tanks: any;
+  tanks: any = [];
   species: any;
 
   visualCollection: any;
@@ -100,12 +100,22 @@ export class SpeciesPage implements OnInit {
 
     this.species = '';
 
-
     if (window.history.length > 1) {
-      this.location.back()
+      console.log('Go Straight back')
+
+      setTimeout(()=>{
+        this.location.back();
+      });
+
     } else {
-      this.router.navigate(['/tabs'])
+      console.log('Go To Tabs')
+
+      setTimeout(()=>{
+        this.router.navigate(['/tabs'])
+      });
+
     }
+
   }
 
   addFishToWishlist(fish){
@@ -147,13 +157,12 @@ export class SpeciesPage implements OnInit {
     });
   }
 
-  addFishToTank(tank){
-    this.doesFishExist(tank);
-  }
-
   selectTank(tank){
     this.activeTankSelect = tank;
-    this.addFishToTank(tank);
+
+    setTimeout(()=>{
+      this.doesFishExist(tank);
+    }, 1000);
   }
 
   cancelAddToTank(){
@@ -169,12 +178,15 @@ export class SpeciesPage implements OnInit {
 
   doesFishExist(tank){
     this.showTankListTick = false;
+    this.currentQuantity = 0;
 
     let exists = false;
 
+    console.log(this.toAddToTankSpecies);
+
     this.checkIfAlreadyInTankCollection = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['name'] + '/species').valueChanges().subscribe(values => {
       values.forEach(species => {
-        if(species['name'] == this.toAddToTankSpecies['name']){
+        if(species['specCode'] == this.toAddToTankSpecies['specCode']){
           this.currentQuantity = species['quantity'];
           this.currentOrder = species['order'];
 
@@ -183,11 +195,13 @@ export class SpeciesPage implements OnInit {
       });
 
       if(exists){
-        console.log('FISH ALREADY EXISTS')
+        console.log('FISH ALREADY EXISTS');
         console.log(this.currentQuantity)
       }else{
         console.log('FISH IS NEW TO TANK ')
       }
+
+      this.checkIfAlreadyInTankCollection.unsubscribe();
 
       this.showTankQuanityList = true;
       this.selectedTempTank = tank;
@@ -197,25 +211,47 @@ export class SpeciesPage implements OnInit {
   }
 
   setSpeciesTankQuantity(){
-    this.checkIfAlreadyInTankCollection.unsubscribe();
-
     this.showTankListLoader = true;
 
-
-    let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.selectedTempTank['name'] + '/species/' + this.toAddToTankSpecies['specCode']);
-
-    tankAddress.set({
+    let setList = {
       dateSet: new Date(),
       name: this.toAddToTankSpecies['name'],
       specCode: this.toAddToTankSpecies['specCode'],
       genus: this.toAddToTankSpecies['genus'],
       order: 0,
       quantity: 1
-    },{
-      merge: true
-    });
+    };
 
-    console.log("Species added to tank!")
+    let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.selectedTempTank['name'] + '/species/' + this.toAddToTankSpecies['specCode']);
+    let scope = this;
+
+    if (setList) {
+      tankAddress.set(setList,{ merge: true }).then(function(ref) {
+        console.log('Confirming Add, adjusting subchildren...');
+
+        scope.checkIfAlreadyInTankCollection.unsubscribe();
+        scope.addSpeciesFinal(tankAddress);
+      }).catch(function(error) {
+        console.log('Failed: ' + error);
+      });
+    }
+
+    // tankAddress.set({
+    //   dateSet: new Date(),
+    //   name: this.toAddToTankSpecies['name'],
+    //   specCode: this.toAddToTankSpecies['specCode'],
+    //   genus: this.toAddToTankSpecies['genus'],
+    //   order: 0,
+    //   quantity: 1
+    // },{
+    //   merge: true
+    // }).then(() => {
+    // }).catch((err) => { alert(err) });
+
+  }
+
+
+  addSpeciesFinal(tankAddress){
 
     let quantity;
 
@@ -234,19 +270,28 @@ export class SpeciesPage implements OnInit {
     setTimeout(()=>{
       this.showTankListLoader = false;
       this.showTankListTick = true;
-      console.log('Show Tick')
+      //console.log('Show Tick')
     }, 500);
 
     setTimeout(()=>{
-      this.activeTankSelect = null;
       this.showTankListLoader = false;
       this.showTankListTick = false;
-      this.showTankQuanityList = false;
-      this.showSelectTank = false;
-      this.selectedTempTank = '';
-      this.amountOfSpecies = '';
-      console.log('Hide Tick - Done')
+      //console.log('Hide Tick - Done')
+
+      console.log("Species added to tank!")
+
+      this.hidePopup();
     }, 1000);
+  }
+
+  hidePopup(){
+    this.showTankListLoader = true;
+
+    this.activeTankSelect = null;
+    this.showTankQuanityList = false;
+    this.showSelectTank = false;
+    this.selectedTempTank = '';
+    this.amountOfSpecies = '';
   }
 
   hideTankMenu(){
@@ -260,6 +305,11 @@ export class SpeciesPage implements OnInit {
 
   seeFullImage(img){
     this.photoViewer.show(img);
+  }
+
+  showGenus(genus){
+    console.log('navigate to search')
+    this.router.navigateByUrl('tabs/species?search_query=' + genus.toLowerCase())
   }
 
 }

@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, Platform, AlertController } from '@ionic/angular';
+import { PlatformLocation } from '@angular/common'
 
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { HTTP } from '@ionic-native/http/ngx';
@@ -35,7 +36,7 @@ export class Tab3Page {
   showTankListLoader: boolean;
   showTankQuanityList: boolean;
   showTankListTick: boolean;
-  saltwater: boolean;
+  saltwater: boolean = false;
   speciesLoaded: boolean;
   speciesDataLoaded: boolean;
   popularMode: boolean;
@@ -49,17 +50,25 @@ export class Tab3Page {
   userOnAndroid: boolean;
   loggedIn: boolean;
   isLNumCatfish: boolean;
+  isInApp: boolean;
+  hideAutoComplete: boolean;
+  showAutoComplete: boolean;
+  updatingSpecies: boolean;
+  refreshRequired: boolean;
 
   showPondSpecies: boolean = true;
   showFishbaseSpecies: boolean = true;
   showFishbaseRelatedSpecies: boolean = true;
 
+  //Current Species Version
+  runningVersion: string = '0.0.3'
 
   searchQuery: string = '';
   searchQueryController: string = '';
   selectedLetter: string = '';
   amountOfSpecies: string = '';
   currentFamily: string = '';
+  urlLetter: string;
 
   minSpeciesReturn: number = 0;
   maxSpeciesReturn: number = 10;
@@ -100,7 +109,6 @@ export class Tab3Page {
   fullImageCollection: any = [];
   tanks: any = [];
   relatedGenus: any = [];
-  toAddToTankSpecies: any;
   coreCollection: any;
   recheckFirebaseDB: any;
   speciesCollection: any;
@@ -109,10 +117,10 @@ export class Tab3Page {
   recheckerCollection: any;
   viewCountSubscribe: any;
   ourFishCollectionImages: any;
+  favouritesCollection: any;
+  localFishAutoCompleteCollection: any;
   genusDescription: any;
-  activeTankSelect: any;
   googleImageArray: any = [];
-  checkIfAlreadyInTankCollection : any;
   detailedFishInformation : any = [];
   planetCatfishInformation: any = [];
   species : any = [{
@@ -121,6 +129,9 @@ export class Tab3Page {
     genus : '',
   }];
   bettaVariations: any = [];
+  allLocalFish: any = [];
+  toAddToTankSpecies: any;
+  sfSpecies: any = [];
 
   constructor(
     private http:HttpClient,
@@ -134,8 +145,15 @@ export class Tab3Page {
     public loadingController: LoadingController,
     public plt: Platform,
     private photoViewer: PhotoViewer,
-    private iab: InAppBrowser
-  ){}
+    private iab: InAppBrowser,
+    public platformLocation: PlatformLocation
+  ){
+
+    this.platformLocation.onPopState(() => {
+      this.unsubscriber();
+    });
+
+  }
 
   ngOnInit() {
     var slides = document.querySelector('ion-slides');
@@ -170,76 +188,99 @@ export class Tab3Page {
     var queryLoc = location.search.split('search_query=')[1]
 
     if(queryLoc){
-      var urlQuery = queryLoc.replace('%20', ' ');
-      console.log(urlQuery);
 
-      if(urlQuery){
-        this.searchQuery = urlQuery;
-        this.searchQueryController = urlQuery;
-        console.log(urlQuery)
-        this.checkAPI(false, urlQuery);
+      if(queryLoc.length >= 1){
+
+        var urlQuery = queryLoc.replace('%20', ' ');
+
+        if(urlQuery.includes('&letter=')){
+          this.urlLetter = urlQuery.split('&letter=').pop();
+          console.log(this.urlLetter);
+
+          this.genusDescription = '';
+          var newUrlQuery = urlQuery.substring(0, urlQuery.indexOf('&'));
+
+          this.searchQuery = newUrlQuery;
+          this.searchQueryController = newUrlQuery;
+          this.checkAPI(false, newUrlQuery);
+
+        }else{
+          this.searchQuery = urlQuery;
+          this.searchQueryController = urlQuery;
+          this.checkAPI(false, urlQuery);
+        }
+
+      }else{
+        console.log('Query found, but empty, clearing...');
+        this.clearUrlQuery();
       }
+
+    }else{
+      console.log('No Query Location, clearing..');
+        this.clearUrlQuery();
     }
 
+    // Check if we are on a device
 
+    console.log(window.location.hostname + ':' + window.location.port);
+    if(window.location.hostname == 'localhost' && window.location.port == '8100'){
+      this.isInApp = false;
+      console.log('ON LOCALHOST TEST ENVIROMENT')
+    }else if(window.location.hostname == 'pondtheapp'){
+      this.isInApp = false;
+      console.log('ON POND WEBSITE')
+    }else{
+      this.isInApp = true;
+      console.log('ON MOBILE DEVICE')
+    }
 
   }
 
-
+  clearUrlQuery(){
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { search_query: null},
+      queryParamsHandling: 'merge'
+    });
+  }
 
   // COMMANDER
   checkAPI($event, autoQuery){
+      var searchQuery;
 
       if(autoQuery.length >= 1){
-        var searchQuery = autoQuery;
+        searchQuery = autoQuery;
       }else{
-        var searchQuery = $event.srcElement.value;
+        if(!searchQuery){
+          searchQuery = this.searchQueryController
+        }else{
+          searchQuery = $event.srcElement.value;
+          this.clearSwitcher();
+        }
       }
 
+      console.log(searchQuery)
+
+
       if(searchQuery.length > 2){
-        this.keyboard.hide();
 
         //console.clear();
         console.log('Searching with POND...');
-
-        this.littleSearchbar = true;
-
         this.doneLoading = false;
-        this.displayFirebase(searchQuery);
 
+        //CLEAR EVERYTHING
+        this.clearSearch();
 
-        this.speciesSelected = false;
-        this.popularMode = false
-        this.randomMode = false;
         this.littleSearchbar = true;
+
+        this.keyboard.hide();
+        this.unsubscriber();
 
         this.searchQuery = searchQuery;
         this.searchQueryController = searchQuery;
-        this.selectedLetter = null;
-        this.loadedLocalSpecies = false;
-        this.fbSpecies = [];
-        this.ourFish = [];
-        this.relatedSpecies = [];
-        this.speciesImgArray = [];
-        this.googleImageArray = [];
-        this.fullImageCollection = [];
-        this.species = [];
-        this.genusDescription = '';
-        this.finalRelatedSearchResults = [];
-        this.relatedSearchResults = [];
-        this.shortRelatedPassage = '';
-        this.currentFamily = '';
-        this.relatedGenus = [];
 
-        //this.clearSwitcher();
-
-        this.router.navigate(
-        [],
-        {
-          relativeTo: this.route,
-          queryParams: { search_query: this.searchQuery },
-          queryParamsHandling: 'merge'
-        });
+        //SHOW LOCAL SPECIES, IF YOU CAN
+        this.displayFirebase(searchQuery);
 
         if(searchQuery.toLowerCase() == 'betta'){
           this.getAllBettaFish();
@@ -282,6 +323,7 @@ export class Tab3Page {
     this.popularMode = false;
     this.randomMode = false;
     this.isLNumCatfish = false;
+    this.showAutoComplete = false;
 
     this.ourFishLength = 0;
     this.fbSpeciesLength = 0;
@@ -291,12 +333,11 @@ export class Tab3Page {
     this.searchQuery = '';
     this.selectedLetter = '';
     this.genusDescription = '';
+    this.allLocalFish = '';
 
-    this.router.navigate(
-    [],
-    {
+    this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { search_query: null },
+      queryParams: { search_query: null, letter: null },
       queryParamsHandling: 'merge'
     });
 
@@ -324,11 +365,10 @@ export class Tab3Page {
     this.checkAPI(false, this.searchQuery);
   }
 
-  // Access detail page and save selected species
-  selectSpecies(fish, inDB){
-
-    console.log('Selecting Species ' + fish['genus'] + ' ' + fish['species']);
-
+  unsubscriber(){
+    if(this.localFishAutoCompleteCollection){
+      this.localFishAutoCompleteCollection.unsubscribe();
+    }
     if(this.coreCollection){
       this.coreCollection.unsubscribe();
     }
@@ -347,11 +387,19 @@ export class Tab3Page {
     if(this.ourFishCollectionImages){
       this.ourFishCollectionImages.unsubscribe();
     }
+  }
 
+  // Access detail page and save selected species
+  selectSpecies(fish, inDB){
+
+    console.log('Selecting Species ' + fish['genus'] + ' ' + fish['species']);
+    //this.allLocalFish = '';
+
+    this.unsubscriber();
 
     this.speciesImgArray = [];
     this.fullImageCollection = [];
-
+    this.showAutoComplete = false;
     if(this.debug){
       if(this.randomSpecies['specCode']){
         console.log(this.randomSpecies)
@@ -374,16 +422,13 @@ export class Tab3Page {
       console.log('########################');
       console.log('Showing existing fish...');
 
-      console.log('PRESENT LOADING')
-      this.presentLoading();
-
       if(this.randomSpecies['specCode']){
         console.log('Showing random Species...')
 
-        let fish = this.randomSpecies;
-        let specCode = this.randomSpecies['specCode'];
+        let newFish = this.randomSpecies;
+        let newSpecCode = this.randomSpecies['specCode'];
 
-        this.packageAndShowFish(fish, specCode);
+        this.packageAndShowFish(newFish, newSpecCode);
       }else{
         this.packageAndShowFish(fish, specCode);
       }
@@ -393,14 +438,32 @@ export class Tab3Page {
 
   packageAndShowFish(fish, specCode){
     this.increaseViewCount(fish, specCode);
-    this.checkFavourites(null)
+    this.checkFishVersionCode(fish);
+    this.checkFavourites(null);
 
-    console.log
     setTimeout(()=>{
-      console.log('package complete')
-      this.dismissLoading();
-      this.router.navigateByUrl('/species/' + specCode);
-    }, 500);
+      this.viewCountSubscribe.unsubscribe();
+
+      if(this.updatingSpecies && fish['viewCount'] >= 1){
+        console.log('update and package complete');
+
+        this.updatingSpecies = false;
+      }else{
+        console.log('package complete');
+        this.dismissUpdating();
+
+        //For next round...
+        this.updatingSpecies = true;
+      }
+
+      console.log(fish['versionCode'] + ' VS ' + this.runningVersion)
+
+      if(fish['versionCode'] == this.runningVersion){
+        console.log('LOAD SPECIES URL ')
+        this.router.navigateByUrl('/species/' + specCode);
+      }
+
+    }, 1000);
   }
 
 
@@ -437,17 +500,30 @@ export class Tab3Page {
   }
 
   increaseViewCount(fish, specCode){
+    console.log('increasing view count..')
+
     let speciesAddress = this.fireStore.doc<any>('Species/' + specCode);
 
     this.viewCountSubscribe = this.fireStore.doc('Species/' + specCode).valueChanges().subscribe(values => {
+      let newSpeciesValue = +values['viewCount'] + +1;
+
       speciesAddress.set({
-        viewCount: +values['viewCount'] + +1
+        viewCount: newSpeciesValue
       },{
         merge: true
+      }).then(() => {
+        if(newSpeciesValue){
+          console.log('species has been viewed ' + newSpeciesValue + ' times');
+        }
+
+        this.viewCountSubscribe.unsubscribe();
       });
 
-      // this.populateSpecies(fish, specCode);
+      this.viewCountSubscribe.unsubscribe();
+
     });
+
+
   }
 
   populateSpecies(fish, specCode){
@@ -494,19 +570,20 @@ export class Tab3Page {
   // }
 
   // Leave detail page and clear selected species
-  unSelectSpecies(){
-    var searchQuery = this.searchQuery;
-    this.clearSearch();
-    this.variations = [];
-    this.checkAPI(null, searchQuery);
-
-    console.clear();
-    this.speciesSelected = false;
-    this.showTankListTick = false;
-    this.googleImageArray = [];
-    this.fullImageCollection = [];
-
-  }
+  // unSelectSpecies(){
+  //   var searchQuery = this.searchQuery;
+  //   this.clearSearch();
+  //   this.variations = [];
+  //   this.checkAPI(null, searchQuery);
+  //
+  //   console.clear();
+  //   this.speciesSelected = false;
+  //   this.showTankListTick = false;
+  //   this.googleImageArray = [];
+  //   this.fullImageCollection = [];
+  //
+  //   location.reload();
+  // }
 
   nextPage(type){
     console.log("SHOWING RESULTS " + this.minSpeciesReturn + " TO " + this.maxSpeciesReturn);
@@ -632,19 +709,28 @@ export class Tab3Page {
       values => {
 
         values.forEach(eachObj => {
-          if(eachObj['name'].includes(lowerQuery) || eachObj['genus'].includes(lowerQuery)  || eachObj['species'].includes(lowerQuery) ){
+          //console.log(eachObj);
+
+          if((eachObj['name'] && eachObj['name'].includes(lowerQuery)) || eachObj['genus'].includes(lowerQuery)  || eachObj['species'].includes(lowerQuery)  || (eachObj['wikiName'] && eachObj['wikiName'].includes(lowerQuery))){
+
             if(!this.saltwater){
+
               if(eachObj['fresh'] == -1){
                 this.ourFish.push(eachObj);
+                console.log('push freshwater')
               }
             }else{
               if(eachObj['fresh'] != -1){
                 this.ourFish.push(eachObj);
+                console.log('push saltwater');
               }
             }
 
           }
+
         });
+
+        //console.log(this.ourFish);
 
         if(this.ourFish.length){
           // this.populateFirebaseImages(searchQuery);
@@ -653,22 +739,20 @@ export class Tab3Page {
 
           this.runFishbaseChecker(searchQuery);
         }else{
-          //console.log('no local species')
+          console.log('Firebase didn\'t find this species...')
           this.runFishbaseChecker(searchQuery);
         }
 
-        // REODER BASED ON SPECIES
-        this.ourFish.sort(function(a, b){
-          if(a.species < b.species) { return -1; }
-          if(a.species > b.species) { return 1; }
-          return 0;
-        });
-
-        this.checkFavourites(this.ourFish);
+        //   // REODER BASED ON SPECIES
+        // this.ourFish.sort(function(a, b){
+        //   if(a.species < b.species) { return -1; }
+        //   if(a.species > b.species) { return 1; }
+        //   return 0;
+        // });
+        //
+        // this.checkFavourites(this.ourFish);
       });
     }
-
-
   }
 
   // populateFirebaseImages(searchQuery){
@@ -693,6 +777,217 @@ export class Tab3Page {
   //   console.log(this.ourFish);
   // }
 
+  triggerAutoComplete(query){
+    let canRun = true;
+    this.allLocalFish = [];
+
+    if(canRun){
+      //console.log(query);
+      let nameCollection = [];
+      let wikiNameCollection = [];
+      let speciesCollection = [];
+      let genusCollection = [];
+      let distributionCollection = [];
+      let wikiDescCollection = [];
+
+      if(query.length >= 3){
+        this.localFishAutoCompleteCollection = this.fireStore.collection('Species').valueChanges().subscribe(
+        values => {
+          let keyword = query.toLowerCase();
+
+          values.filter((object) => {
+            let nameVal;
+            let wikiNameVal;
+            let speciesVal;
+            let genusVal;
+            let destVal;
+            let descVal;
+
+            if(object['name']){
+              nameVal = object['name'].toLowerCase();
+
+              if(nameVal.includes(keyword)){
+                if(!this.saltwater){
+                  if(object['fresh'] == -1){
+                    nameCollection.push(object);
+                  }
+                }else{
+                  if(object['fresh'] != -1){
+                    nameCollection.push(object);
+                  }
+                }
+              }
+            }
+
+            if(object['wikiName']){
+              wikiNameVal = object['wikiName'].toLowerCase();
+
+              if(wikiNameVal.includes(keyword)){
+                if(!this.saltwater){
+                  if(object['fresh'] == -1){
+                    wikiNameCollection.push(object);
+                  }
+                }else{
+                  if(object['fresh'] != -1){
+                    wikiNameCollection.push(object);
+                  }
+                }
+              }
+            }
+
+            if(object['species']){
+              speciesVal = object['species'].toLowerCase();
+
+              if(speciesVal.includes(keyword)){
+                if(!this.saltwater){
+                  if(object['fresh'] == -1){
+                    speciesCollection.push(object);
+                  }
+                }else{
+                  if(object['fresh'] != -1){
+                    speciesCollection.push(object);
+                  }
+                }
+              }
+            }
+
+
+            if(object['genus']){
+              genusVal = object['genus'].toLowerCase();
+
+              if(genusVal.includes(keyword)){
+                if(!this.saltwater){
+                  if(object['fresh'] == -1){
+                    genusCollection.push(object);
+                  }
+                }else{
+                  if(object['fresh'] != -1){
+                    genusCollection.push(object);
+                  }
+                }
+              }
+            }
+
+
+            if(object['distribution']){
+              destVal = object['distribution'].toLowerCase();
+
+              if(destVal.includes(keyword)){
+                if(!this.saltwater){
+                  if(object['fresh'] == -1){
+                    distributionCollection.push(object);
+                  }
+                }else{
+                  if(object['fresh'] != -1){
+                    distributionCollection.push(object);
+                  }
+                }
+              }
+            }
+
+            if(object['wikiDesc']){
+              descVal = object['wikiDesc'].toLowerCase();
+
+              if(descVal.includes(keyword)){
+                if(!this.saltwater){
+                  if(object['fresh'] == -1){
+                    wikiDescCollection.push(object);
+                  }
+                }else{
+                  if(object['fresh'] != -1){
+                    wikiDescCollection.push(object);
+                  }
+                }
+              }
+            }
+
+          });
+        });
+      }else{
+        this.showAutoComplete = false;
+        this.allLocalFish = '';
+      }
+
+      setTimeout(()=>{
+        canRun = false;
+
+
+        //MASTER CONTROLLER
+
+        if(nameCollection.length >= 1){
+          this.allLocalFish.push(nameCollection);
+        }
+
+        if(wikiNameCollection.length >= 1){
+          this.allLocalFish.push(wikiNameCollection);
+        }
+
+        if(speciesCollection.length >= 1){
+          this.allLocalFish.push(speciesCollection);
+        }
+
+        if(genusCollection.length >= 1){
+          this.allLocalFish.push(genusCollection);
+        }
+
+        if(distributionCollection.length >= 1){
+          this.allLocalFish.push(distributionCollection);
+        }
+
+        if(wikiDescCollection.length >= 1){
+          this.allLocalFish.push(wikiDescCollection);
+        }
+
+        if(this.allLocalFish.length >= 1){
+          var merged = [].concat.apply([], this.allLocalFish);
+          var clearOfDups = this.removeDuplicatesBy(x => x.specCode, merged);
+          this.allLocalFish = clearOfDups;
+
+          console.log(this.allLocalFish);
+
+          this.localFishAutoCompleteCollection.unsubscribe();
+          this.showAutoComplete = true;
+        }else{
+          console.log('Nothing found...')
+        }
+
+        if(this.allLocalFish.length >= 1){
+
+          this.allLocalFish = this.allLocalFish;
+
+          if(this.localFishAutoCompleteCollection){
+            this.localFishAutoCompleteCollection.unsubscribe();
+            console.log('Throttle Subscriber!')
+          }
+
+        }
+
+      }, 200);
+
+
+    }else{
+      console.log('Cant run');
+    }
+
+
+
+  }
+
+  clearAutoComplete(){
+    console.log("BLUR");
+    this.showAutoComplete = false;
+  }
+
+  retriggerAutoComplete(){
+    console.log("FOCUS")
+
+    if(this.searchQuery.length <= 3){
+      console.log("SHOW AUTOCOMPLETE")
+      this.showAutoComplete = false
+    }
+
+  }
+
   displayFishbase(result, searchQuery){
     var loopValue = result['data']
     var arrayLength = 0;
@@ -702,6 +997,7 @@ export class Tab3Page {
     if(this.debug){
       console.log(loopValue);
     }
+
 
     loopValue.forEach(eachObj => {
 
@@ -727,7 +1023,6 @@ export class Tab3Page {
         });
       }
     });
-
 
     var clearOfDups = this.removeDuplicatesBy(x => x.SpecCode, speciesArray);
 
@@ -864,14 +1159,14 @@ export class Tab3Page {
 
       });
     }else{
-      console.log("No main species to check related species against.")
+      //console.log("No main species to check related species against.")
 
       let specColl = [];
 
       if(this.ourFish.length >= 1){
         scope.getFullFishResult(subSpecies, key, true);
       }else{
-        console.log("No local species to check related species against.")
+        //console.log("No local species to check related species against.")
 
         this.getFullFishResult(subSpecies, key, false);
       }
@@ -935,6 +1230,20 @@ export class Tab3Page {
   //   this.maybeWikipediaWillSaveUs();
   //
   // }
+
+
+
+  addTankTrigger(fish){
+    this.showSelectTank = true;
+    console.log('Showing tank select...')
+
+    this.toAddToTankSpecies = fish;
+
+    this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
+    values =>{
+      this.tanks = values;
+    });
+  }
 
 
   areYouSureTheseArentInTheDatabase(){
@@ -1147,6 +1456,7 @@ export class Tab3Page {
                   result => {
                     // Found Species based from last word in string
                     this.displayFishbase(result, searchQuery);
+                    console.log('Species found! However genus removed')
                   },
                   error => {
                     // Everything failed.
@@ -1162,9 +1472,10 @@ export class Tab3Page {
 
 
 
-  // ADD SPECIES TO FIREBASE DATABASE FOR LATER
+  // ADD SPECIES TO FIREBASE DATABASE
   addToDatabase(fish){
     console.log("### ADDING SPECIES TO DATABASE ###")
+    console.log(fish);
 
     let speciesAddress = this.fireStore.doc<any>('Species/' + fish.SpecCode);
 
@@ -1209,7 +1520,7 @@ export class Tab3Page {
     speciesAddress.set({
       name: commName.toLowerCase(),
       species: fishSpecies,
-      fishBaseImg: fish.PicPreferredName,
+      fishBaseImg: fishImgName,
       genus: fishGenus,
       comments: proccessedComments,
       dangerous: fish.Dangerous,
@@ -1219,6 +1530,7 @@ export class Tab3Page {
       SpeciesRefNo: fish.SpeciesRefNo,
       vulnerability: fish.Vulnerability,
       viewCount: 0,
+      versionCode: this.runningVersion,
       fresh: fish.Fresh
     });
 
@@ -1241,31 +1553,10 @@ export class Tab3Page {
           Pics:this.googleImageArray
         });
 
-        // this.googleImageArray.forEach(eachObj => {
-        //   //console.log(eachObj);
-        //   var speciesPicArray = this.fireStore.doc<any>('Species/' + fish.SpecCode + "/Pic/" + counter);
-        //   speciesPicArray.set({
-        //     url: eachObj
-        //   })
-        //
-        //   counter++
-        // });
+        this.unsubscriber();
 
-        if(this.coreCollection)
-        this.coreCollection.unsubscribe();
-        if(this.speciesCollection)
-        this.speciesCollection.unsubscribe();
-        if(this.speciesImagesCollection)
-        this.speciesImagesCollection.unsubscribe();
-        if(this.recheckerCollection)
-        this.recheckerCollection.unsubscribe();
-        if(this.recheckFirebaseDB)
-        this.recheckFirebaseDB.unsubscribe();
-        if(this.ourFishCollectionImages)
-        this.ourFishCollectionImages.unsubscribe();
-
-        //console.log(fish)
         this.theInternetIsMyBitchAndShesBeenABadGirl(fish);
+
       }
     }, 500);
   }
@@ -1274,13 +1565,11 @@ export class Tab3Page {
 
   }
 
-
-
   // GENERATE IMAGES FROM GOOGLE FOR CARDS
   getGoogleImages(obj){
     var imageArr = [];
 
-    if (!this.plt.is('mobileweb') && (this.plt.is('ios') || this.plt.is('android'))) {
+    if (this.isInApp) {
       //console.log('### GENERATING GENERAL IMAGES ON IOS / ANDROID ###');
 
       setTimeout(()=>{
@@ -1344,8 +1633,7 @@ export class Tab3Page {
 
     //console.log(fish)
 
-    console.log(this.plt);
-    if (!this.plt.is('mobileweb') && (this.plt.is('android') || this.plt.is('ios'))) {
+    if (this.isInApp) {
       console.log('### GENERATING 10 GOOGLE IMAGES ON IOS/ANROID ###');
       setTimeout(()=>{
         this.nativeHttp.get('https://www.googleapis.com/customsearch/v1?q='+ fish['Genus'] + "%20" + fish['Species'] + '&searchType=image&num=10&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi', {}, {})
@@ -1548,44 +1836,47 @@ export class Tab3Page {
   }
 
   clearSwitcher(){
-
-    this.selectedLetter = '';
-
-    if(this.tempFBSpecies){
-      this.fbSpecies = this.tempFBSpecies;
-      this.tempFBSpecies = '';
-      console.log('1')
-    }
-    if(this.tempOURSpecies){
-      this.ourFish = this.tempOURSpecies;
-      this.tempOURSpecies = '';
-      console.log('2')
-    }
-    if(this.tempRELATEDSpecies){
-      var clearOfDups = this.removeDuplicatesBy(x => x.SpecCode, this.tempRELATEDSpecies);
-      this.relatedSpecies = clearOfDups;
-      this.tempRELATEDSpecies = '';
-      console.log('3')
-    }
-
-    console.log('4')
-
-    if(this.ourFish)
-    this.ourFishLength = this.ourFish.length;
-    if(this.fbSpecies)
-    this.fbSpeciesLength = this.fbSpecies.length;
-    if(this.relatedSpecies)
-    this.relatedSpeciesLength = this.relatedSpecies.length
-
-    console.log('fix navigation')
-    this.router.navigate([],{
-      relativeTo: this.route,
-
-      queryParams: { letter: null },
-      queryParamsHandling: 'merge'
-    });
-
+    console.log("STARTING SWITCH CLEAR...");
+    this.presentLoading();
     this.generateGenusDescription();
+
+    setTimeout(()=>{
+      console.log("CLEARING SWITCH");
+
+      this.selectedLetter = '';
+
+      if(this.tempFBSpecies){
+        this.fbSpecies = this.tempFBSpecies;
+        this.tempFBSpecies = '';
+      }
+      if(this.tempOURSpecies){
+        this.ourFish = this.tempOURSpecies;
+        this.tempOURSpecies = '';
+      }
+      if(this.tempRELATEDSpecies){
+        var clearOfDups = this.removeDuplicatesBy(x => x.SpecCode, this.tempRELATEDSpecies);
+        this.relatedSpecies = clearOfDups;
+        this.tempRELATEDSpecies = '';
+      }
+
+      if(this.ourFish)
+      this.ourFishLength = this.ourFish.length;
+      if(this.fbSpecies)
+      this.fbSpeciesLength = this.fbSpecies.length;
+      if(this.relatedSpecies)
+      this.relatedSpeciesLength = this.relatedSpecies.length
+
+      console.log('fix navigation');
+      this.router.navigate([],{
+        relativeTo: this.route,
+        queryParams: { letter: null },
+        queryParamsHandling: 'merge'
+      });
+
+      this.dismissLoading();
+    }, 1000);
+
+
 
 
   }
@@ -1619,13 +1910,13 @@ export class Tab3Page {
 
   }
 
-  swipeEvent(e) {
-      if (e.direction == 2) {
-        if(this.speciesSelected){
-          this.unSelectSpecies();
-        }
-      }
-  }
+  // swipeEvent(e) {
+  //     if (e.direction == 2) {
+  //       if(this.speciesSelected){
+  //         this.unSelectSpecies();
+  //       }
+  //     }
+  // }
 
 
   // selectLetter(letter){
@@ -1707,165 +1998,239 @@ export class Tab3Page {
 
   theInternetIsMyBitchAndShesBeenABadGirl(species){
     console.log('### RUNNING SERIOUSLY FISH WEB SCRAPER ###');
-    //console.log(species)
+    this.sfSpecies = species;
 
-    if(species['species']){
-      var searchParam = species['genus'] + '-' + species['species'];
-      //console.log('Searching for ' + searchParam);
+    // Check double species url type
+    if(this.sfSpecies['species']){
+      var searchParam = this.sfSpecies['genus'] + '-' + this.sfSpecies['species'] + '-' + this.sfSpecies['species'];
     }else if(species['Species']){
-      var searchParam = species['Genus'] + '-' + species['Species'];
-      //console.log('Searching for ' + searchParam);
-    }else{
-      //console.log('Scraper failed to load species...')
+      var searchParam = this.sfSpecies['Genus'] + '-' + this.sfSpecies['Species'] + '-' + this.sfSpecies['Species'];
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=https://www.seriouslyfish.com/species/'+searchParam+'/&xpath=p');
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=https://www.seriouslyfish.com/species/'+searchParam+'/&xpath=p');
     if(this.debug){
       console.log('running on ' + scraperURL)
     }
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
+        console.log(result);
 
         var res = [];
         for (var x in result){
            result.hasOwnProperty(x) && res.push(result[x])
         }
 
-        var detailedFishInformation = []
-
-        if(this.debug){
-          console.log('### OUTPUT ###')
-          console.log(res);
-        }
-
+        var speciesIsInDouble = true;
 
         res.forEach(function(value, key) {
-
           if(value['text'].includes('Sorry, we couldn\'t find the page you were looking for.')){
-            console.log('SERIOUSLY FISH CANNOT FIND THIS SPECIES');
-          }else{
-            //console.log('FISH FOUND');
-
-
-            if(value['text'].includes('Temperature')){
-              // console.log('--- Temperature of species: ---');
-              // console.log(value['text']);
-              var temp = value['text'].replace('Temperature:','').replace('C','').replace('&deg;','').replace('&deg;','').replace('&#8211;','-');
-              detailedFishInformation['temperature'] = temp;
-            }
-
-            if(value['text'].includes('pH:')){
-              // console.log('--- PH of species: ---');
-              // console.log(value['text']);
-              var ph = value['text'].replace('pH:','').replace('&deg;','').replace('&#8211;','-');
-              detailedFishInformation['ph'] = ph;
-            }
-
-            if(value['text'].includes('Hardness:')){
-              // console.log('--- Hardness of species: ---');
-              // console.log(value['text']);
-              var hard = value['text'].replace('Hardness:','').replace('&deg;','').replace('ppm','').replace('&#8211;','-').replace(/\s/g,'');
-              detailedFishInformation['hardness'] = hard;
-            }
-
-            if(value['text'].includes('Size:') || value['text'].includes('body length')){
-              // console.log('--- Size of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['size'] = value['text'];
-            }
-
-            if(value['text'].includes('base dimensions') || value['text'].includes('An aquarium measuring') || value['text'].includes('An aquarium with a base measuring') || value['text'].includes('can be kept in a tank')){
-              // console.log('--- Recommended Tank Size of species: ---');
-              // console.log(value['text']);
-              var tankSize = value['text'].replace('#8243;','\"').replace('#8211;','-').replace('&Lowast;','*').trim();
-              detailedFishInformation['tankSize'] = tankSize;
-            }
-
-            if(value['text'].includes('Nigeria') || value['text'].includes('Guinea') || value['text'].includes('Brazil') ){
-              // console.log('--- Recommended Tank Size of species: ---');
-              // console.log(value['text']);
-              var loc = value['text'].replace('&#Xe9;','é')
-              detailedFishInformation['locality'] = loc;
-            }
-
-            if(value['text'].includes('best kept with')){
-              // console.log('--- Recommended Tank Size of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['tankMates'] = value['text'];
-            }
-
-            if(value['text'].includes('Has been bred in aquaria') || value['text'].includes('spawning') || value['text'].includes('spawn')){
-              // console.log('--- Recommended Tank Size of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['repoduction'] = value['text'];
-            }
-
-            if(value['text'].includes('Other decor can include') || value['text'].includes('Well planted with')){
-              // console.log('--- Recommended Tank Size of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['enviroment'] = value['text'];
-            }
-
-            if(value['text'].includes('Also known as')){
-              // console.log('--- Recommended Tank Size of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['SFComments'] = value['text'];
-            }
-
-
-
-            // if(value['text'].includes('substrate')){
-            //   // console.log('--- Recommended Substrate of species: ---');
-            //   // console.log(value['text']);
-            //   detailedFishInformation['substrate'] = value['text'];
-            // }
-
-            if(value['text'].includes('Sexually') || value['text'].includes('Quite difficult to sex')){
-              // console.log('--- Sexual Identification of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['sexIdentification'] = value['text'];
-            }
-
-            if(value['text'].includes('inhabits') || value['text'].includes('Exclusively found')){
-              // console.log('--- Habitat of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['habitat'] = value['text'];
-            }
-
-            if(value['text'].includes('Omnivorous')){
-              // console.log('--- Habitat of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['diet'] = value['text'];
-            }
-
-            if(value['text'].includes('stained brownish')){
-              // console.log('--- Habitat of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['blackWater'] = true;
-            }
-
-            if(value['text'].includes('aquatic plants may also be present') || value['text'].includes('Well planted')){
-              // console.log('--- Habitat of species: ---');
-              // console.log(value['text']);
-              detailedFishInformation['aquaticPlants'] = true;
-            }
+            speciesIsInDouble = false;
           }
         });
 
-        if(detailedFishInformation['temperature']){
-          if(this.debug){
-            console.log(detailedFishInformation);
-          }
-          console.log('SERIOUSLY FISH FOUND SPECIES');
-          this.detailedFishInformation = detailedFishInformation
-          this.populateDetailedInformation(species);
+        if(speciesIsInDouble){
+          console.log('url had double dash')
+          this.addSeriousFish(result);
+        }else{
+          console.log('url was singlular')
+          this.runSingleSeriosulyFishUrlType()
+        }
+    }, error => {
+      console.log(error);
+    });
+
+  }
+
+  runSingleSeriosulyFishUrlType(){
+    // Check single species url type
+    if(this.sfSpecies['species']){
+      var searchParam = this.sfSpecies['genus'] + '-' + this.sfSpecies['species'];
+    }else if(this.sfSpecies['Species']){
+      var searchParam = this.sfSpecies['Genus'] + '-' + this.sfSpecies['Species'];
+    }
+
+    var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=https://www.seriouslyfish.com/species/'+searchParam+'/&xpath=p');
+    if(this.debug){
+      console.log('running on ' + scraperURL)
+    }
+
+    this.http.get(corsFix + scraperURL).subscribe( result => {
+        this.addSeriousFish(result);
+    });
+
+  }
+
+  addSeriousFish(result){
+    var res = [];
+    for (var x in result){
+       result.hasOwnProperty(x) && res.push(result[x])
+    }
+
+    var detailedFishInformation = []
+
+    if(this.debug){
+      console.log('### OUTPUT ###')
+      console.log(res);
+    }
+
+    res.forEach(function(value, key) {
+
+      let sfTxt = value['text'].toLowerCase();
+
+      if(sfTxt.includes('sorry, we couldn\'t find the page you were looking for.')){
+        console.log('SERIOUSLY FISH CANNOT FIND THIS SPECIES');
+      }else{
+        //console.log('FISH FOUND');
+
+        if(sfTxt.includes('from the ancient') || sfTxt.includes('from the latin') || sfTxt.includes('originally named') || sfTxt.includes('named for')){
+          // console.log('--- Etymology ---');
+          var ety = value['text']
+          detailedFishInformation['SFEtymology'] = ety;
         }
 
-        this.maybePlanetCatfish(species);
+        if(sfTxt.includes('temperature:')){
+          // console.log('--- Temperature of species: ---');
+          var temp = value['text'].replace('Temperature:','').replace('C','');
+          detailedFishInformation['temperature'] = temp;
+        }
 
-      });
+        if(sfTxt.includes('ph:')){
+          // console.log('--- PH of species: ---');
+          var ph = value['text'].replace('pH:','');
+          detailedFishInformation['ph'] = ph;
+        }
+
+        if(sfTxt.includes('hardness:')){
+          // console.log('--- Hardness of species: ---');
+          var hard = value['text'].replace('Hardness:','').replace('ppm','');
+          detailedFishInformation['hardness'] = hard;
+        }
+
+        if(sfTxt.includes('size:') || sfTxt.includes('body length') || sfTxt.includes('mm.') || sfTxt.includes('males to') ){
+          // console.log('--- Size of species: ---');
+          //
+
+          if(detailedFishInformation['size']){
+            detailedFishInformation['size'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['size'] = value['text'];
+          }
+
+        }
+
+        if(sfTxt.includes('base dimensions') || sfTxt.includes('an aquarium measuring') || sfTxt.includes('an aquarium with a base measuring') || sfTxt.includes('can be kept in a tank')){
+          // console.log('--- Recommended Tank Size of species: ---');
+
+          if(detailedFishInformation['tankSize']){
+            detailedFishInformation['tankSize'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['tankSize'] = value['text'];
+          }
+        }
+
+        if(sfTxt.includes('nigeria') || sfTxt.includes('guinea') || sfTxt.includes('brazil') || sfTxt.includes('river system') || sfTxt.includes('venezuela') || sfTxt.includes('specimens collected') || sfTxt.includes('wild fish') || sfTxt.includes('africa') ){
+          // console.log('--- Recommended Tank Size of species: ---');
+          if(detailedFishInformation['locality']){
+            detailedFishInformation['locality'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['locality'] = value['text'];
+          }
+        }
+
+        if(sfTxt.includes('best kept with') || sfTxt.includes('group of') || sfTxt.includes('general community') || sfTxt.includes('aggressive towards') || sfTxt.includes('ideally stock') || sfTxt.includes('very peaceful') || sfTxt.includes('preferably more') || sfTxt.includes('ideal tankmates') || sfTxt.includes('kept in groups or pairs')){
+          // console.log('--- Behaviour/Compatibility of species: ---');
+          if(detailedFishInformation['tankMates']){
+            detailedFishInformation['tankMates'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['tankMates'] = value['text'];
+          }
+        }
+
+        if(sfTxt.includes('has been bred in aquaria') || sfTxt.includes('spawning') || sfTxt.includes('spawn') ||  sfTxt.includes('eggs') ||  sfTxt.includes('the fry')  ||  sfTxt.includes('drying') || sfTxt.includes('breed')){
+          // console.log('--- Reproduction of species: ---');
+          if(detailedFishInformation['repoduction']){
+            detailedFishInformation['repoduction'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['repoduction'] = value['text'];
+          }
+        }
+
+        if(sfTxt.includes('other decor can include') || sfTxt.includes('well planted with') || sfTxt.includes('use a substrate') || sfTxt.includes('some cover') || sfTxt.includes('over the aquarium') || sfTxt.includes('lighting') || sfTxt.includes('provide areas of')){
+          // console.log('--- Recommended Tank Size of species: ---');
+          if(detailedFishInformation['enviroment']){
+            detailedFishInformation['enviroment'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['enviroment'] = value['text'];
+          }
+        }
+
+        if(sfTxt.includes('also known as')){
+          // console.log('--- Recommended Tank Size of species: ---');
+          if(detailedFishInformation['SFComments']){
+            detailedFishInformation['SFComments'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['SFComments'] = value['text'];
+          }
+        }
+
+        // if(value['text'].includes('substrate')){
+        //   // console.log('--- Recommended Substrate of species: ---');
+        //   detailedFishInformation['substrate'] = value['text'];
+        // }
+
+        if(sfTxt.includes('sexually') || sfTxt.includes('quite difficult to sex')){
+          // console.log('--- Sexual Identification of species: ---');
+          if(detailedFishInformation['sexIdentification']){
+            detailedFishInformation['sexIdentification'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['sexIdentification'] = value['text'];
+          }
+        }
+
+        if(sfTxt.includes('inhabits') || sfTxt.includes('exclusively found') || sfTxt.includes('rainforest') || sfTxt.includes('habitat') || sfTxt.includes('habitats') || sfTxt.includes('fish are also found') || sfTxt.includes('natural range')){
+          // console.log('--- Habitat of species: ---');
+          if(detailedFishInformation['habitat']){
+            detailedFishInformation['habitat'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['habitat'] = value['text'];
+          }
+        }
+
+        if(sfTxt.includes('omnivorous') || sfTxt.includes('omnivores') || sfTxt.includes('dried foods') || sfTxt.includes('micropredator') || sfTxt.includes('bloodworm')){
+          // console.log('--- Diet of species: ---');
+          if(detailedFishInformation['diet']){
+            detailedFishInformation['diet'] += '<br /><br />' + value['text'];
+          }else{
+            detailedFishInformation['diet'] = value['text'];
+          }
+        }
+
+        if(sfTxt.includes('stained brownish')){
+          // console.log('--- Blackwater: ---');
+          detailedFishInformation['blackWater'] = true;
+        }
+
+        if(sfTxt.includes('aquatic plants may also be present') || sfTxt.includes('well planted') || sfTxt.includes('<b>aquatic</b> plants')){
+          // console.log('--- Aquatic plants: ---');
+          detailedFishInformation['aquaticPlants'] = true;
+        }
+      }
+    });
+
+    if(detailedFishInformation['temperature']){
+      if(this.debug){
+        console.log(detailedFishInformation);
+      }
+      console.log('SERIOUSLY FISH FOUND SPECIES');
+      this.detailedFishInformation = detailedFishInformation
+      this.populateDetailedInformation(this.sfSpecies);
+    }
+
+    this.maybePlanetCatfish(this.sfSpecies);
+
   }
 
   populateDetailedInformation(species){
@@ -1876,6 +2241,15 @@ export class Tab3Page {
       speciesAddress = this.fireStore.doc<any>('Species/' + species['specCode']);
     }else{
       speciesAddress = this.fireStore.doc<any>('Species/' + species['SpecCode']);
+    }
+
+
+    if(this.detailedFishInformation['SFEtymology']){
+      speciesAddress.set({
+        SFEtymology:this.detailedFishInformation['SFEtymology']
+      },{
+        merge: true
+      });
     }
 
     if(this.detailedFishInformation['temperature']){
@@ -2034,7 +2408,7 @@ export class Tab3Page {
       if(this.debug){
         console.log(error.error['text']);
       }
-      var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=' + error.error['text'] +'/&xpath=tr');
+      var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=' + error.error['text'] +'/&xpath=tr');
 
       if(this.debug){
         console.log('running on ' + scraperURL)
@@ -2296,10 +2670,17 @@ export class Tab3Page {
         //console.log(result[i])
         let taxon = result[i].Taxon.toLowerCase();
         //let commonName = result[i]["Common Name "].toLowerCase();
-        var genus = species['Genus'].toLowerCase();
+
+        let genus;
+
+        if(species['Genus']){
+          genus = species['Genus'].toLowerCase();
+        }else{
+          genus = species['genus'].toLowerCase();
+        }
 
         if(taxon.includes(genus)){
-          taxon.replace('Spp.', 'All species of' + species.genus)
+          taxon.replace('Spp.', 'All species of' + genus)
 
           rules.push(taxon)
         }
@@ -2320,21 +2701,24 @@ export class Tab3Page {
   }
 
   fuckItCheckNorway(species){
-    var searchQuery = species['Species'].toLowerCase();
+
     console.log("### GETTING NORWEGIAN SEA WATER RESULTS ###")
 
     let speciesAddress;
+    let searchQuery;
 
     if(species['specCode']){
       speciesAddress = this.fireStore.doc<any>('Species/' + species['specCode']);
+      searchQuery = species['species'].toLowerCase();
     }else{
       speciesAddress = this.fireStore.doc<any>('Species/' + species['SpecCode']);
+      searchQuery = species['Species'].toLowerCase();
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var userURL = 'https://jsonp.afeld.me/?callback=?&url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[1]#vws';
-    var userURL1 = 'https://jsonp.afeld.me/?callback=?&url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[2]#vws';
-    var userURL2 = 'https://jsonp.afeld.me/?callback=?&url=?url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[3]#vws';
+    var userURL = 'http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[1]#vws';
+    var userURL1 = 'http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[2]#vws';
+    var userURL2 = 'http://motyar.info/webscrapemaster/api/?key=williamfische20&url=?url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[3]#vws';
     var scraperURL = encodeURIComponent(userURL);
     var scraperURL1 = encodeURIComponent(userURL1);
     var scraperURL2 = encodeURIComponent(userURL2);
@@ -2423,7 +2807,7 @@ export class Tab3Page {
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var userURL = 'https://jsonp.afeld.me/?callback=?&url=https://shark-references.com/species/view/'+ searchQuery +'&xpath=//div[@id=content]/div/div#vws';
+    var userURL = 'http://motyar.info/webscrapemaster/api/?key=williamfische20&url=https://shark-references.com/species/view/'+ searchQuery +'&xpath=//div[@id=content]/div/div#vws';
     var scraperURL = encodeURIComponent(userURL);
 
     if(this.debug){
@@ -2514,19 +2898,9 @@ export class Tab3Page {
   }
 
   newSpeciesDonePopulating(fish){
-    console.log("DONE - WRAPPING UP & SHOWING NEW SPECIES...")
+    console.log("DONE - WRAPPING UP & SHOWING NEW SPECIES...");
 
-
-    if(this.coreCollection)
-    this.coreCollection.unsubscribe();
-    if(this.speciesCollection)
-    this.speciesCollection.unsubscribe();
-    if(this.speciesImagesCollection)
-    this.speciesImagesCollection.unsubscribe();
-    if(this.recheckerCollection)
-    this.recheckerCollection.unsubscribe();
-    if(this.recheckFirebaseDB)
-    this.recheckFirebaseDB.unsubscribe();
+    this.unsubscriber();
 
     setTimeout(()=>{
       this.speciesLoaded = true;
@@ -2686,21 +3060,7 @@ export class Tab3Page {
 
   everythingsTruelyDone(){
     setTimeout(()=>{
-      if(this.coreCollection)
-      this.coreCollection.unsubscribe();
-      if(this.speciesCollection)
-      this.speciesCollection.unsubscribe();
-      if(this.recheckerCollection)
-      this.recheckerCollection.unsubscribe();
-      if(this.speciesImagesCollection)
-      this.speciesImagesCollection.unsubscribe()
-      if(this.recheckFirebaseDB)
-      this.recheckFirebaseDB.unsubscribe();
-
-      // this.fbSpecies = this.fbSpecies;
-      // this.relatedSpecies = this.relatedSpecies;
-      // this.ourFish = this.ourFish;
-
+      this.unsubscriber();
 
       console.log('everythings done...')
 
@@ -2724,6 +3084,18 @@ export class Tab3Page {
       if(this.relatedSpecies.length !== 0)
       this.relatedSpeciesLength = this.relatedSpecies.length;
 
+      if(this.urlLetter){
+        this.newLetterSwitcher(this.urlLetter)
+      }
+
+      this.router.navigate(
+      [],
+      {
+        relativeTo: this.route,
+        queryParams: { search_query: this.searchQuery.toLowerCase() },
+        queryParamsHandling: 'merge'
+      });
+
     });
   }
 
@@ -2745,7 +3117,7 @@ export class Tab3Page {
     let species = fish['Species'].charAt(0).toUpperCase() + fish['Species'].slice(1);
 
     return await this.loadingController.create({
-      message: genus + ' ' + species + ' is new to Pond! Adding to system...'
+      message: genus + ' ' + species + ' is new to Pond! Adding to system, this may take a while...'
     }).then(a => {
       a.present().then(() => {
         //console.log('presented');
@@ -2773,6 +3145,20 @@ export class Tab3Page {
   }
 
   async dismissLoading() {
+    return await this.loadingController.dismiss();
+  }
+
+  async presentUpdating() {
+    return await this.loadingController.create({
+      message: 'Updating...'
+    }).then(a => {
+      a.present().then(() => {
+        //console.log('loading presented');
+      });
+    });
+  }
+
+  async dismissUpdating() {
     return await this.loadingController.dismiss();
   }
 
@@ -2936,34 +3322,38 @@ export class Tab3Page {
 
     this.http.get('https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&prop=revisions&rvprop=content&rvsection=0&titles=' + family).subscribe(
       result => {
-        var wikiLink = result['query'].pages;
-        console.log(result)
+        if(result['query']){
+          var wikiLink = result['query'].pages;
+          console.log(result)
 
-        for (var i in wikiLink) {
-          if(wikiLink[i].revisions){
-            var extract = wikiLink[i].revisions[0]['*'];
-            console.log(extract);
+          for (var i in wikiLink) {
+            if(wikiLink[i].revisions){
+              var extract = wikiLink[i].revisions[0]['*'];
+              console.log(extract);
 
-            var curlysonly = /\{{[^)]*\}}/g;
-            var noCurls = extract.match(curlysonly);
+              var curlysonly = /\{{[^)]*\}}/g;
+              var noCurls = extract.match(curlysonly);
 
-            var regExp = /\[(.*?)\]/g;
-            var matches = noCurls[0].match(regExp);
+              var regExp = /\[(.*?)\]/g;
+              var matches = noCurls[0].match(regExp);
 
-            matches.forEach(function(match, i){
-              matches[i] = match.replace('[[', '').replace(']]', '').replace(']', '');
-            });
+              matches.forEach(function(match, i){
+                matches[i] = match.replace('[[', '').replace(']]', '').replace(']', '');
+              });
 
-            matches.splice(0, 2);
+              matches.splice(0, 2);
 
-            this.relatedGenus = matches;
+              this.relatedGenus = matches;
 
-            if(this.debug){
-              console.log(this.relatedGenus)
+              if(this.debug){
+                console.log(this.relatedGenus)
+              }
+            }else{
+              console.log('No Wikilink revision found.')
             }
-          }else{
-            console.log('No Wikilink revision found.')
-          }
+        }
+        }else{
+          console.log('### ERROR GETTING FAMILY INFORMATION ####')
         }
     }, error => {
       console.log('### ERROR GETTING FAMILY INFORMATION ####')
@@ -2975,16 +3365,39 @@ export class Tab3Page {
 
     console.log("### GETTING FISHES OF AUSTRALIA RESULTS ###")
 
+    let theGenus;
+    let theSpecies;
+    let theAuthor;
+
+    if(species['Genus']){
+
+      theGenus = species['Genus'];
+      theSpecies = species['Species'];
+      theAuthor = species['Author'];
+
+    }else if (species['genus']){
+
+      theGenus = species['genus'];
+      theSpecies = species['species'];
+      if(species['author']){
+        theAuthor = species['author'];
+      }else{
+        theAuthor = '';
+      }
+
+    }
+
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var userURL = 'https://jsonp.afeld.me/?callback=?&url=http://fishesofaustralia.net.au/search?size=50%26q=' + species['Genus'] + '&xpath=//div[@id=content]/div[3]/div/div/ul/a#vws';
+    var userURL = 'http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://fishesofaustralia.net.au/search?size=50%26q=' + theGenus + '&xpath=//div[@id=content]/div[3]/div/div/ul/a#vws';
     var scraperURL = encodeURIComponent(userURL);
-    var currentSpecies = '<i>' + species['Genus'] + ' ' + species['Species'] + '</i>';
-    var currentAuthor = '<span>' + species['Author'].replace(/,/g, '').replace('&', '&amp;') + '</span>';
+    var currentSpecies = '<i>' + theGenus + ' ' + theSpecies + '</i>';
+    var currentAuthor = '<span>' + theAuthor.replace(/,/g, '').replace('&', '&amp;') + '</span>';
 
     if(this.debug){
       console.log(userURL)
-      console.log('ON ADDRESS http://fishesofaustralia.net.au/search?q=' + species['Genus'])
+      console.log('ON ADDRESS http://fishesofaustralia.net.au/search?q=' + theGenus)
     }
+
 
     this.http.get(corsFix + scraperURL).subscribe(
     result => {
@@ -3042,7 +3455,7 @@ export class Tab3Page {
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=?http://fishesofaustralia.net.au' + href + '&xpath=//div[@id=content]/div[3]/div[1]/div/div#vws');
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=?http://fishesofaustralia.net.au' + href + '&xpath=//div[@id=content]/div[3]/div[1]/div/div#vws');
 
     if(this.debug){
       console.log('ON ADDRESS http://fishesofaustralia.net.au' + href)
@@ -3131,7 +3544,7 @@ export class Tab3Page {
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=http://fishesofaustralia.net.au' + href +'&xpath=//div[@id=content]/div[2]/div/div/div/div/div[2]/table/tbody/tr#vws');
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://fishesofaustralia.net.au' + href +'&xpath=//div[@id=content]/div[2]/div/div/div/div/div[2]/table/tbody/tr#vws');
 
     if(this.debug){
       console.log('ON ADDRESS http://fishesofaustralia.net.au' + href + '#moreinfo')
@@ -3290,7 +3703,7 @@ export class Tab3Page {
     console.log("### GETTING REEF LIFE SURVEY DESCRIPTION RESULTS ###")
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[2]/div[2]#vws');
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[2]/div[2]#vws');
 
     if(this.debug){
       console.log('ON ADDRESS https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'])
@@ -3348,7 +3761,7 @@ export class Tab3Page {
   generateReefSurveyMaxSize(species){
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[1]#vws');
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[1]#vws');
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -3379,7 +3792,7 @@ export class Tab3Page {
 
   generateReefSurveyHabitat(species){
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[3]#vws');
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[3]#vws');
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -3410,7 +3823,7 @@ export class Tab3Page {
 
   generateReefSurveyDepth(species){
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[2]#vws');
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[2]#vws');
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -3535,7 +3948,7 @@ export class Tab3Page {
 
   checkFavourites(array){
 
-    this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/wishlist').valueChanges().subscribe(values => {
+    this.favouritesCollection = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/wishlist').valueChanges().subscribe(values => {
 
       if(this.speciesSelected){
         values.forEach(eachWishlistSpecies => {
@@ -3545,7 +3958,7 @@ export class Tab3Page {
         });
 
         console.log(this.species)
-
+        this.favouritesCollection.unsubscribe();
       }else if(this.randomSpecies.length >= 1){
         values.forEach(eachWishlistSpecies => {
           if(this.randomSpecies['specCode'] == eachWishlistSpecies['specCode']){
@@ -3563,8 +3976,10 @@ export class Tab3Page {
           });
 
           console.log(array)
+          this.favouritesCollection.unsubscribe();
         }else{
           console.log('error with array collection');
+          this.favouritesCollection.unsubscribe();
         }
 
 
@@ -3618,7 +4033,7 @@ export class Tab3Page {
     this.bettaVariations = [];
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent('https://jsonp.afeld.me/?callback=?&url=https://www.itsafishthing.com/types-of-betta-fish&xpath=//article[@id=post-2086]/div/div/h3#vws');
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=https://www.itsafishthing.com/types-of-betta-fish&xpath=//article[@id=post-2086]/div/div/h3#vws');
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -3656,4 +4071,112 @@ export class Tab3Page {
   showLNumGuide(){
     this.iab.create('https://www.planetcatfish.com/catelog/numbers.php?mode=l&thumbs=600&offset=0&genus_id=0');
   }
+
+  imgError(img, id) {
+    console.log(id);
+
+    img.style.display == 'none';
+
+    if(id == '0'){
+      console.log(id + " not loaded, loading 1 instead")
+    }else if(id == '1'){
+      console.log(id + " not loaded, loading 1 instead")
+    }
+
+  }
+
+  checkFishVersionCode(fish){
+    console.log(fish);
+
+    if(fish['versionCode']){
+
+      if(this.debug){
+        console.log('Species is v' + fish['versionCode'] + ' runnning version is v' + this.runningVersion);
+      }
+
+      if(fish['versionCode'] !== this.runningVersion && fish['temperature']){
+        console.log('Seriosuly Fish update required.... updating to ' + this.runningVersion);
+
+        this.updatingSpecies = true;
+        this.refreshRequired = true;
+
+        this.presentUpdating();
+
+        this.updateSpeciesVCode(fish, this.runningVersion);
+        this.clearSpeciesCount(fish);
+
+        this.theInternetIsMyBitchAndShesBeenABadGirl(fish);
+      }else if(fish['versionCode'] !== this.runningVersion && fish['viewCount'] >= 19){
+        console.log('Version and viewcount update required...');
+
+        this.updatingSpecies = true;
+        this.refreshRequired = false;
+
+        this.presentUpdating();
+
+        this.updateSpeciesVCode(fish, this.runningVersion);
+        this.clearSpeciesCount(fish);
+      }else if(fish['versionCode'] !== this.runningVersion){
+        console.log('Version update required...');
+
+        this.updatingSpecies = true;
+        this.refreshRequired = false;
+
+        this.presentUpdating();
+
+        this.updateSpeciesVCode(fish, this.runningVersion);
+      }else{
+        console.log('Species up to date!');
+      }
+
+    }else if (fish['Modified']){
+      console.log('Fish is new perhaps, leaving as is..')
+    }else{
+      console.log('Fish lacks version code');
+      this.setSpeciesVCode(fish);``
+    }
+
+  }
+
+  setSpeciesVCode(fish){
+    let speciesAddress = this.fireStore.doc<any>('Species/' + fish['specCode'])
+
+    speciesAddress.set({
+      versionCode:'0.0.1'
+    },{
+      merge: true
+    }).then(() => {
+      fish['versionCode'] = '0.0.1';
+      this.checkFishVersionCode(fish);
+    });
+
+    console.log('Version set to v0.0.1')
+  }
+
+  updateSpeciesVCode(fish, version){
+    let speciesAddress = this.fireStore.doc<any>('Species/' + fish['specCode'])
+
+    speciesAddress.set({
+      versionCode: version
+    },{
+      merge: true
+    }).then(() => {
+      fish['versionCode'] = version;
+    });
+
+    console.log('Version set to v' + version);
+  }
+
+  clearSpeciesCount(fish){
+    let speciesAddress = this.fireStore.doc<any>('Species/' + fish['specCode'])
+
+    speciesAddress.set({
+      viewCount: 1
+    },{
+      merge: true
+    }).then(() => {
+      console.log('Species view count reset.')
+    });
+  }
+
 }

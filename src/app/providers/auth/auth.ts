@@ -5,7 +5,7 @@ import * as firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 
 // Native
-import { Facebook } from '@ionic-native/facebook/ngx';
+import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook/ngx';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 
 
@@ -20,23 +20,18 @@ export class AuthProvider {
 
   // FACEBOOK HANDLER
   loginWithFacebook(){
-    console.log("LOGIN WITH FACEBOOK ON IOS")
     return this.fb.login(['email','public_profile'])
     .then( response => {
       const facebookCredential = firebase.auth.FacebookAuthProvider
         .credential(response.authResponse.accessToken);
 
-          console.log("LOGIN SUCCESS")
-          console.log(facebookCredential)
-
       return firebase.auth().signInAndRetrieveDataWithCredential(facebookCredential)
-   }, error => {
-     console.log(error);
    })
   }
 
   loginWithLegacyFacebook(){
-    console.log("LOGIN WITH FACEBOOK ON BROWSER")
+    console.log("LOGIN WITH FACEBOOK ON BROWSER");
+
     var provider = new firebase.auth.FacebookAuthProvider();
     return this.afAuth.auth.signInWithPopup(provider);
   }
@@ -44,7 +39,7 @@ export class AuthProvider {
 
   // GOOGLE HANDLER
   loginWithGoogle(){
-    console.log("LOGIN WITH GOOGLE ON IOS")
+    console.log("LOGIN WITH GOOGLE ON IOS");
 
     return this.googlePlus.login({})
     .then( response => {
@@ -55,6 +50,8 @@ export class AuthProvider {
       .credential(credientials);
 
       return firebase.auth().signInAndRetrieveDataWithCredential(googleCredential)
+   }, error => {
+     console.log(error);
    })
   }
 

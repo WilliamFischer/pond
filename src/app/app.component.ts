@@ -46,11 +46,11 @@ export class AppComponent {
         this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
       }
 
-      var currentUser = localStorage.getItem('auth');
-      if(!currentUser){
-        console.log('setting to localStorage')
-        localStorage.setItem('auth', this.afAuth.auth.currentUser.uid);
-      }
+      // var currentUser = localStorage.getItem('auth');
+      // if(!currentUser){
+      //   console.log('setting to localStorage')
+      //   localStorage.setItem('auth', this.afAuth.auth.currentUser.uid);
+      // }
 
       if(window.location.pathname == '/' || window.location.pathname == '/species/undefined' ){
         this.router.navigateByUrl('/tabs');

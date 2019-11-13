@@ -6,6 +6,8 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
 
+import { LoadingController } from '@ionic/angular';
+
 import { finalize } from 'rxjs/operators';
 
 import { SelectTankSubstratePage } from '../modal/select-tank-substrate/select-tank-substrate.page';
@@ -102,6 +104,7 @@ export class Tab5Page {
     private storage: AngularFireStorage,
     private router: Router,
     public plt: Platform,
+    public loadingController: LoadingController,
     public alertController: AlertController
   ) { }
 
@@ -117,7 +120,7 @@ export class Tab5Page {
       this.afAuth.authState.subscribe(auth=>{
         console.log(auth);
 
-        if(this.afAuth.auth.currentUser.uid){
+        if(auth){
           this.userTankChanges = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid).valueChanges().subscribe(values =>{
             //console.log(values)
 
@@ -130,8 +133,8 @@ export class Tab5Page {
           });
 
         }else{
-          console.log('Error logging user in');
-          this.logout();
+          console.log('User not logged in');
+          //this.logout();
         }
 
       });
@@ -280,24 +283,23 @@ export class Tab5Page {
               fishCount = 0
             }
 
-            if(this.debug){
-              console.log('User has ' + fishCount + ' fish')
-            }
-
-            this.repeatArrayTank.unsubscribe();
-
             this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid)
             .set({
               fishCount: fishCount
             },{
               merge: true
+            }).then(() => {
+              if(this.debug){
+                console.log('User has ' + fishCount + ' fish')
+              }
+              this.repeatArrayTank.unsubscribe();
+
+              this.populateWishlist();
             });
-
-
           }, 2000);
 
 
-          this.populateWishlist();
+
         });
 
         // setTimeout(()=>{
@@ -357,10 +359,11 @@ export class Tab5Page {
         uid: this.afAuth.auth.currentUser.uid
       },{
         merge: true
+      }).then(() => {
+        console.log('User Added!')
+        this.populateUser(auth);
       });
 
-      console.log('User Added!')
-      this.populateUser(auth);
     }
 
     doReorder(ev: any) {
@@ -615,6 +618,7 @@ export class Tab5Page {
           // this.calculateAveragePH();
 
           this.content.scrollToTop(400);
+          this.tankDetailChanges.unsubscribe();
 
         } else {
           console.log("Cannot find tank data");
@@ -672,11 +676,7 @@ export class Tab5Page {
       });
     }
 
-    addDivider(){
-      this.presentAlertPrompt();
-    }
-
-    async presentAlertPrompt() {
+    async addDivider() {
     const alert = await this.alertController.create({
       header: 'Add a new divider',
       inputs: [
@@ -697,7 +697,7 @@ export class Tab5Page {
         }, {
           text: 'Ok',
           handler: (data) => {
-            this.fishLoaded = false;
+            this.presentLoading();
 
             let count = Math.floor(Math.random() * 1000);
 
@@ -711,11 +711,17 @@ export class Tab5Page {
               id: count
             },{
               merge: true
+            }).then(() => {
+              console.log("Divider added to tank!");
+
+              this.getDividers();
+              this.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
+
+              this.dismissLoading();
             });
 
-            console.log("Divider added to tank!")
 
-            this.restartTank();
+            //this.restartTank();
             //this.closeTank();
           }
         }
@@ -734,74 +740,46 @@ export class Tab5Page {
       this.addChemistryMode = false;
     }
 
-    deleteFishFromTank(fish){
-      this.fishLoaded = false;
+    async deleteFishFromTank(fish){
 
-      this.tankFishQuantity = 0;
+      const alert = await this.alertController.create({
+        header: 'Are you sure you want to remove this ' + fish['genus'].charAt(0).toUpperCase() + ' species?',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+              if(this.debug)
+              console.log('Confirm Cancel');
+            }
+          }, {
+            text: 'Remove',
+            cssClass: 'warning',
+            handler: (data) => {
+              this.presentLoading();
 
-      let fishAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + "/species/" + fish['spec_code']);
-      let scope = this;
-      //this.fish_in_tank = [];
+              this.tankFishQuantity = 0;
 
-      fishAddress.delete()
-      .then(function() {
-        scope.restartTank();
+              let fishAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + "/species/" + fish['spec_code']);
+              let scope = this;
+              //this.fish_in_tank = [];
 
-        //scope.getDividers();
+              fishAddress.delete()
+              .then(function() {
 
-        // scope.deleteCollection = scope.fireStore.collection('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + scope.activeTankData["name"] + "/species").valueChanges().subscribe(
-        // values =>{
-        //   console.log(values);
-        //
-        //   values.forEach(fish => {
-        //       let comm_name;
-        //       let comment;
-        //
-        //       if(fish['species'] && !fish['name']){
-        //        comm_name = fish['species'] + fish['genus'];
-        //       }else if(fish['species'] && fish['name']){
-        //         comm_name = fish['name'];
-        //       }
-        //
-        //       let quantity = fish['quantity'];
-        //       let specCode = fish['specCode'];
-        //       let genus = fish['genus'];
-        //       let order = fish['order'];
-        //
-        //       if(fish['comment']){
-        //         comment = fish['comment'];
-        //       }else{
-        //         comment = ''
-        //       }
-        //
-        //       let fishObj = {
-        //         'comm_name': comm_name,
-        //         'genus': genus,
-        //         'spec_code': specCode,
-        //         'quantity': quantity,
-        //         'type': 'fish',
-        //         'order': order,
-        //         'comment': comment
-        //       }
-        //
-        //       scope.tankFishQuantity = +scope.tankFishQuantity + +quantity;
-        //
-        //       if(fishObj['comm_name'])
-        //       scope.fish_in_tank.push(fishObj);
-        //     });
+                scope.getFish();
+                scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
+                scope.dismissLoading();
 
+              });
 
-
-
-        // setTimeout(()=>{
-        //   if(scope.deleteCollection){
-        //     console.log('done deleting species')
-        //     scope.deleteCollection.unsubscribe();
-        //   }
-        // }, 1000);
-
+            }
+          }
+        ]
       });
 
+      await alert.present();
 
     }
 
@@ -931,15 +909,19 @@ export class Tab5Page {
 
 
     deleteDivider(divider){
-      this.fishLoaded = false;
+      this.presentLoading();
       console.log('deleteing divider...')
+
       let dividerAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + "/dividers/" + divider['id']);
       let scope = this;
-      this.fish_in_tank = []
+      //this.fish_in_tank = []
 
       dividerAddress.delete()
       .then(function() {
-        scope.restartTank();
+        scope.getDividers();
+        scope.getFish();
+        scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
+        scope.dismissLoading();
       });
 
     }
@@ -1056,8 +1038,10 @@ export class Tab5Page {
         placeholderValue = ''
       }
 
+    let commName = fish['comm_name'].charAt(0).toUpperCase() + fish['comm_name'].slice(1);
+      
     const alert = await this.alertController.create({
-      header: fish['comm_name'] + "\'s Nickname",
+      header: commName + "\'s Nickname",
       inputs: [
         {
           name: 'fishNickname',
@@ -1107,8 +1091,9 @@ export class Tab5Page {
           temp: value
         },{
           merge: true
+        }).then(() => {
+          this.populateTanks();
         });
-        this.populateTanks();
       } else {
         if(this.debug)
         console.log("tank temp cannot be 0 or null ! Try again dweeb :)");
@@ -1123,8 +1108,9 @@ export class Tab5Page {
           size: value
         },{
           merge: true
+        }).then(() => {
+          this.populateTanks();
         });
-        this.populateTanks();
       } else {
         if(this.debug)
         console.log("tank size cannot be 0 or null ! Try again dweeb :)");
@@ -1139,8 +1125,9 @@ export class Tab5Page {
           substrate: value
         },{
           merge: true
+        }).then(() => {
+          this.populateTanks();
         });
-        this.populateTanks();
       } else {
         if(this.debug)
         console.log("tank substrate cannot be 0 or null ! Try again dweeb :)");
@@ -1316,15 +1303,13 @@ export class Tab5Page {
                nickname: String(newTankName)
              },{
                merge: true
+             }).then(() => {
+               this.activeTankData['name'] = String(newTankName);
+
+               console.log("Tank name changed to " + String(newTankName))
+               this.populateTanks();
              });
 
-             this.activeTankData['name'] = String(newTankName);
-
-             console.log("Tank name changed to " + String(newTankName))
-             this.populateTanks();
-             //
-             // this.restartTank();
-             //this.closeTank();
            }
          }
        ]
@@ -1377,10 +1362,6 @@ export class Tab5Page {
 
   // Submit tank to database
   confirmForm(){
-    this.addTankMode = false;
-    this.defaultMode = true;
-    console.log(this.tank);
-
     let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name);
 
     console.log('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name);
@@ -1395,6 +1376,10 @@ export class Tab5Page {
       colourNumber: 1
     },{
       merge: true
+    }).then(() => {
+      this.addTankMode = false;
+      this.defaultMode = true;
+      console.log(this.tank);
     });
 
   }
@@ -1489,11 +1474,12 @@ export class Tab5Page {
             colourNumber: counterNumber
           },{
             merge: true
-          })
+          }).then(() => {
+              this.canLoadTank = false;
+              this.colourFound = true;
+              this.colourDoc.unsubscribe();
+          });
 
-          this.canLoadTank = false;
-          this.colourFound = true;
-          this.colourDoc.unsubscribe();
         }
 
       });
@@ -1512,6 +1498,20 @@ export class Tab5Page {
 
   closeTankSizeTrigger(){
     this.tankSizeImages = false;
+  }
+
+  async presentLoading() {
+    return await this.loadingController.create({
+      message: 'Loading...'
+    }).then(a => {
+      a.present().then(() => {
+        //console.log('loading presented');
+      });
+    });
+  }
+
+  async dismissLoading() {
+    return await this.loadingController.dismiss();
   }
 
 }
