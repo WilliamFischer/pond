@@ -1,0 +1,61 @@
+<ion-content>
+
+  <div class="fadedBack"></div>
+  <img class="fadedImg" [src]="user.pic" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+
+  <img class="fadedImg" [src]="user.pic" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+
+  <div class="paddingSpace">
+    <ion-icon name="arrow-back" class="backArrow" (click)="goHome()"></ion-icon>
+
+    <div class="infoSection">
+      <img class="profileImg" [src]="user.pic" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+      <div class="rightStuff">
+
+        <label class="topTitle2">{{user.name}}</label>
+        <label class="topTitle3">
+          <b>Keeps {{user.fishCount}} Species</b> <br />
+          <i>
+            <label *ngIf="user.followers">{{user.followers}} Followers </label> <br />
+            <label *ngIf="user.followers">{{user.following}} Following </label> <br />
+          </i>
+        </label>
+
+        <button class="viewProfBtn" *ngIf="user.name" (click)="followUser()">Follow</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="splittingLine">
+    <div class="somePadding">
+
+      <!-- Section 1: ALL TANKS -->
+      <div *ngIf="tanks && tanks.length >= 1">
+
+        <div *ngIf="tanks">
+          <div *ngFor="let tank of tanks; let i = index">
+
+            <div class="tankSpace" [ngStyle]="{'background' : tank.fullColour}">
+
+              <h3 *ngIf="!tank.nickname"  (click)="initTankDetail(tank.name)">{{tank.name}}</h3>
+              <h3 *ngIf="tank.nickname"  (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
+
+              <h4 (click)="initTankDetail(tank.name)">
+                <label *ngIf="tank.temp">{{tank.temp}}deg</label>
+                <label *ngIf="tank.ph"> &bull; PH{{tank.ph}}</label>
+                <label *ngIf="tank.size"> &bull; {{tank.size}}L </label>
+              </h4>
+
+              <h5 *ngIf="tank.substrate" (click)="initTankDetail(tank.name)">With a {{tank.substrate}} Substrate</h5>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</ion-content>

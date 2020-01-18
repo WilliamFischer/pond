@@ -5,7 +5,7 @@
     </ion-item>
 
     <form action="." (ngSubmit)="checkAPI($event, false)">
-      <ion-searchbar [ngClass]="{'littleSearcher' : littleSearchbar, 'littleRightSearcher' : speciesSelected, 'tinySearcher' : littleSearchbar && speciesSelected }" (ionChange)='triggerAutoComplete($event.target.value)' placeholder="Search Common or Scientific Name..." value="{{searchQuery}}" type="search" (ionClear)="clearSearch()" [(ngModel)]="searchQueryController" [ngModelOptions]="{standalone: true}" (click)="retriggerAutoComplete()" showSearchButton></ion-searchbar>
+      <ion-searchbar [ngClass]="{'littleSearcher' : littleSearchbar, 'littleRightSearcher' : speciesSelected, 'tinySearcher' : littleSearchbar && speciesSelected }" (ionChange)='triggerAutoComplete($event.target.value)' placeholder="Search for a user or {{typeofTrigger}} fish..." value="{{searchQuery}}" type="search" (ionClear)="clearSearch()" [(ngModel)]="searchQueryController" [ngModelOptions]="{standalone: true}" (click)="retriggerAutoComplete()" showSearchButton></ion-searchbar>
     </form>
 
     <ion-item class="toggle littleSwitch animated fadeIn" *ngIf="littleSearchbar">
@@ -75,15 +75,24 @@
     </ion-item>
   </ion-toolbar>
 
+  <!-- PREVIOUSLY SEARCHED RESULTS -->
+  <ion-list class="autocompleteResults previousResults" *ngIf="showPreviousResults && previousResults.length >= 1" [ngClass]="{'littleAutoComplete' : littleSearchbar}">
+    <div class="fixedWhitespace">
+      <ion-item *ngFor="let fish of previousResults" (click)="selectSpecies(fish, true)">
+        <i>{{fish.name}}</i>
+      </ion-item>
+    </div>
+  </ion-list>
+
   <!-- AUTOCOMPLETE RESULTS -->
-  <ion-list class="autocompleteResults" *ngIf="showAutoComplete && allLocalFish.length >= 1">
+  <ion-list class="autocompleteResults" *ngIf="showAutoComplete && allLocalFish.length >= 1" [ngClass]="{'littleAutoComplete' : littleSearchbar}">
     <h1>{{allLocalFish.length}} Potentially Related Results</h1>
     <ion-item *ngFor="let fish of allLocalFish" (click)="selectSpecies(fish, true)">
 
       <span class="overhauler">
-        <img [src]="fish.Pics[0]" *ngIf="fish.Pics[0]"  src="../assets/noImg.png" onerror="this.style.display = 'none';" class="leftImage" />
-        <img [src]="fish.Pics[1]" *ngIf="fish.Pics[1]"  src="../assets/noImg.png" onerror="this.style.display = 'none';" class="leftImage" />
-        <img [src]="fish.Pics[2]" *ngIf="fish.Pics[2]"  src="../assets/noImg.png" onerror="this.style.display = 'none';" class="leftImage" />
+        <img [src]="fish.Pics[0]" *ngIf="fish.Pics[0]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
+        <img [src]="fish.Pics[1]" *ngIf="fish.Pics[1]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
+        <img [src]="fish.Pics[2]" *ngIf="fish.Pics[2]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
       </span>
 
       <div class="smallSpace">
@@ -97,7 +106,7 @@
 </ion-header>
 
 <!-- Autocomplete Dimmer -->
-<div class="autocompleteDimmer" *ngIf="showAutoComplete" (click)="clearAutoComplete()"></div>
+<div class="autocompleteDimmer" *ngIf="showAutoComplete || (showPreviousResults && previousResults.length >= 1)" (click)="clearMoreResults()"></div>
 
 <ion-content *ngIf="!speciesSelected" class="blueBack" id="coreScroll" [ngClass]="{'greyBack': searchQuery.length >= 2}">
 
@@ -112,7 +121,7 @@
     </div>
 
     <!-- NOTHING FOUND TEXT  -->
-    <label class="nothingFoundTxt" [ngClass]="{'pushNothingUp' : shortRelatedPassage.length >= 1}" *ngIf="searchQuery.length > 2 && doneLoading && this.ourFish.length == 0 && this.fbSpecies.length == 0 && this.relatedSpecies.length == 0">
+    <label class="nothingFoundTxt" [ngClass]="{'pushNothingUp' : shortRelatedPassage.length >= 1}" *ngIf="searchQuery.length > 2 && doneLoading && (!isLNumCatfish || !possibleLNum) && usersFound.length == 0 && ourFish.length == 0 && fbSpecies.length == 0 && relatedSpecies.length == 0">
       <b>No results returned.</b>
       <br  /><br />
       Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.
@@ -161,10 +170,46 @@
       </ul>
     </span>
 
-    <!-- L NUMBER GUIDE -->
+    <!-- L NUMBER LIST -->
     <span *ngIf="doneLoading && isLNumCatfish">
-      <button class="lNumButton" (click)="showLNumGuide()">View L Number Species Guide</button>
+      <button class="lNumButton" (click)="showLNumGuide()">View All L Number Species on planetcatfish.com</button>
+
+      <div  class="loadingSpinner" *ngIf="!possibleLNum && !doneLoading">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <h2 *ngIf="possibleLNum" class="lNumTxt">{{searchQuery}}? Could that be a species of <a (click)="checkAPI(false, possibleLNum)">{{ possibleLNum }}</a>?</h2>
+
     </span>
+
+    <!-- USERS -->
+    <div *ngIf="doneLoading && usersFound.length != 0" class="theResults">
+
+      <div  class="loadingSpinner" *ngIf="!usersFound">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <div class="topTitle" *ngIf="usersFound.length != 0">{{ usersFound.length }} User<label *ngIf="ourFish.length >= 1">s</label> Found</div>
+
+      <ion-card class="animated fadeIn" *ngFor="let user of usersFound">
+        <ion-card-header>
+          <ion-card-subtitle>
+
+            <div class="subtitleTxt">
+              <b (click)="showUser(user)">{{user.fishCount}} Fish</b> &bull;
+              <i> {{user.email}}</i>
+            </div>
+
+          </ion-card-subtitle>
+          <ion-card-title (click)="showUser(user)" class="fishNameText">{{user.name}}</ion-card-title>
+        </ion-card-header>
+
+
+        <img [src]="user.pic" (click)="showUser(user)" onerror="this.src='../assets/noImg.png'" />
+
+      </ion-card>
+
+    </div>
 
     <!-- POPULAR SPECIES -->
     <div *ngIf="popularMode" class="theResults">
@@ -326,9 +371,6 @@
               <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
                 <img [src]="fish.Pic[1]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
               </ion-slide>
-             <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
-               <img [src]="fish.Pic[2]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
-             </ion-slide>
             </ion-slides>
           </ion-card>
         </div>
@@ -375,9 +417,6 @@
              <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
                <img [src]="fish.Pic[1]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
              </ion-slide>
-            <ion-slide class="imageBox" *ngIf="fish.Pic[2]">
-              <img [src]="fish.Pic[2]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
-            </ion-slide>
             </ion-slides>
           </ion-card>
         </div>

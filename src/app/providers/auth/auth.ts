@@ -20,6 +20,8 @@ export class AuthProvider {
 
   // FACEBOOK HANDLER
   loginWithFacebook(){
+    console.log("LOGIN WITH FACEBOOK ON DEVICE");
+
     return this.fb.login(['email','public_profile'])
     .then( response => {
       const facebookCredential = firebase.auth.FacebookAuthProvider
@@ -33,13 +35,13 @@ export class AuthProvider {
     console.log("LOGIN WITH FACEBOOK ON BROWSER");
 
     var provider = new firebase.auth.FacebookAuthProvider();
-    return this.afAuth.auth.signInWithPopup(provider);
+    return this.afAuth.auth.signInWithRedirect(provider);
   }
 
 
   // GOOGLE HANDLER
   loginWithGoogle(){
-    console.log("LOGIN WITH GOOGLE ON IOS");
+    console.log("LOGIN WITH GOOGLE ON DEVICE");
 
     return this.googlePlus.login({})
     .then( response => {
@@ -58,7 +60,7 @@ export class AuthProvider {
   loginWithLegacyGoogle(){
     console.log("LOGIN WITH GOOGLE ON BROWSER")
     var provider = new firebase.auth.GoogleAuthProvider();
-    return this.afAuth.auth.signInWithPopup(provider);
+    return this.afAuth.auth.signInWithRedirect(provider);
   }
 
 }

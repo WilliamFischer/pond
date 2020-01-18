@@ -38,52 +38,38 @@ export class LoginPage implements OnInit {
 
   facebookLogin(){
     this.presentLoading();
-    //console.log(this.plt);
 
-    // LEGACY FACEBOOK LOGIN - NOT COOL
+    console.log(this.plt.url());
 
-    this.authService.loginWithLegacyFacebook().then(res=>{
-      if(res){ this.successfulLogin(res) }else{ this.loginFailure('No res for user') }
-    }).catch(err=>{
-      this.loginFailure(err)
-    })
-
-    // if (this.plt.url() !== 'http://localhost:8100/login' || this.plt.url() !== 'http://pondtheapp.com/login') {
-    //   this.authService.loginWithFacebook().then(res=>{
-    //     console.log("SUCCESS");
-    //     console.log(res);
-    //   }).catch(err=>{
-    //     this.loginFailure(err)
-    //   })
-    // }else{
-    //   this.authService.loginWithLegacyFacebook().then(res=>{
-    //     if(res){ this.successfulLogin(res) }else{ this.loginFailure('No res for user') }
-    //   }).catch(err=>{
-    //     this.loginFailure(err)
-    //   })
-    // }
+    if (this.plt.url().includes('pondtheapp.com')  || this.plt.url().includes('localhost:8100')) {
+      this.authService.loginWithLegacyFacebook().then(res=>{
+        this.successfulLogin(res)
+      }).catch(err=>{
+        this.loginFailure(err)
+      })
+    }else{
+      this.authService.loginWithFacebook().then(res=>{
+        console.log("SUCCESS");
+        console.log(res);
+      }).catch(err=>{
+        this.loginFailure(err)
+      })
+    }
   }
 
   googleLogin(){
     this.presentLoading();
     //console.log(this.plt);
-
-
-    if(this.plt.url() == 'http://localhost:8100/login'){
+    
+    if(this.plt.url().includes('pondtheapp.com') || this.plt.url().includes('localhost:8100')){
       this.authService.loginWithLegacyGoogle().then(res=>{
-        if(res){ this.successfulLogin(res) }else{ this.loginFailure('No res for user') }
-      }).catch(err=>{
-        this.loginFailure(err)
-      })
-    }else if(this.plt.url() == 'http://pondtheapp.com/login'){
-      this.authService.loginWithLegacyGoogle().then(res=>{
-        if(res){ this.successfulLogin(res) }else{ this.loginFailure('No res for user') }
+        this.successfulLogin(res);
       }).catch(err=>{
         this.loginFailure(err)
       })
     }else{
       this.authService.loginWithGoogle().then(res=>{
-        if(res){  }else{ this.loginFailure('No res for user') }
+        this.successfulLogin(res);
       }).catch(err=>{
         this.loginFailure(err)
       })
@@ -111,7 +97,10 @@ export class LoginPage implements OnInit {
   }
 
   goToSpecies(){
-    this.location.back();
+    setTimeout(() => {
+      if(this.loading){ this.dismissLoader() }
+      this.router.navigateByUrl('/tabs');
+    }, 500);
   }
 
   // Temp solution - route user in without authentication.

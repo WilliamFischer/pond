@@ -134,7 +134,8 @@
     <plugin name="cordova-plugin-advanced-http" spec="^2.1.1" />
     <plugin name="cordova-plugin-navigationbar" spec="^1.0.31" />
     <plugin name="cordova-plugin-googleplus" spec="^8.0.0">
-        <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.761650598572-bmkjglbi4m284b2snbf1469uharhh2l7" />
+        <variable name="WEB_APPLICATION_CLIENT_ID" value="761650598572-ivsev55n5q3h78pr6ragicem5rp1shn7.apps.googleusercontent.com" />
+        <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.761650598572-ivsev55n5q3h78pr6ragicem5rp1shn7" />
     </plugin>
     <plugin name="cordova-plugin-screen-orientation" spec="^3.0.2" />
     <plugin name="cordova-plugin-actionsheet" spec="^2.3.3" />

@@ -56,7 +56,7 @@ export class AppComponent {
         this.router.navigateByUrl('/tabs');
       }
       console.clear();
-      console.log('%c POND v1.0.0 by William Fischer', 'color: #add8e6')
+      console.log('%c POND v1.0.0 by William Fischer. For Chestnut.', 'color: #add8e6')
 
     });
   }

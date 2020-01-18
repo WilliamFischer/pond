@@ -31,7 +31,7 @@ var AppModule = /** @class */ (function () {
                 IonicModule.forRoot(),
                 AppRoutingModule,
                 AngularFireModule.initializeApp({
-                    apiKey: "AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ",
+                    apiKey: "AIzaSyAPvDEdOoGeldbbmVWShXguFmWFaX79DI8",
                     authDomain: "pond-b8861.firebaseapp.com",
                     databaseURL: "https://pond-b8861.firebaseio.com",
                     projectId: "pond-b8861",

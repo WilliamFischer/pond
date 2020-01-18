@@ -45,24 +45,30 @@ button:focus {outline:0 !important;}
 
 ion-searchbar{
   margin-top: 5% !important;
-
-
 }
 
-//SHORT (DWARF) MODE
-// @media (min-height: 735px) and (max-width: 1024px)  {
-//   ion-router-outlet{
-//     width: 380px !important;
-//     height: 1200px !important;
-//     margin-bottom: 3% !important;
-//   }
+
+
+.rightStuff{
+  width: 200px;
+  height: 180px;
+  padding: 5%;
+  /* padding-top: 0%; */
+  /* height: 80%; */
+  margin-top: -5%;
+  margin-left: 5%;
+  background: #f8f8f8;
+}
+
+.refresher-pulling-icon{
+  color: #78CBE5 !important;
+}
+
+// .spinner-bubbles{
+//   color: #78CBE5 !important;
+//   fill: #78CBE5 !important;
+//   stroke: #78CBE5 !important;
 // }
-//
-
-@media (pointer:none), (pointer:coarse) {
-
-}
-
 
 //BROWSER MODE
 @media (min-width: 500px) {
@@ -176,8 +182,15 @@ ion-searchbar{
       margin-top: 15% !important;
     }
   }
+
+
 }
 
+// SMALL MODE
+@media (max-height: 480px){
+
+
+}
 
 //GIGANTIC MODE
 @media (min-width: 1920px) {

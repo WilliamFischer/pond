@@ -1018,8 +1018,7 @@ ion-toolbar{
   -webkit-overflow-scrolling: touch;
   max-height: 300px;
   box-shadow: 0px 0px 10px #bcbcbc;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border-radius: 5px;
 
   *{
     --inner-border-width: 0px 0px 0px 0px !important;
@@ -1039,6 +1038,22 @@ ion-toolbar{
     }
   }
 
+  .fixedWhitespace{
+    white-space: nowrap;
+    width: 100% !important;
+    padding: 5% !important;
+    padding-bottom: 10% !important;
+    padding-top: 0% !important;
+  }
+
+  .aLittleBitOfDistance{
+    margin-top: 0%;
+  }
+
+  .item:first-child .aLittleBitOfDistance{
+    margin-top: 15%;
+  }
+
   .leftImage{
     width: 100%;
     max-height: 150px;
@@ -1054,8 +1069,34 @@ ion-toolbar{
     color: #8e8e8e;
     font-family: 'Crimson Text', serif !important;
   }
+}
 
+.previousResults{
+  padding-top: 7%;
 
+  *{
+    margin-top: -4%;
+  }
+
+  .fixedWhitespace{
+    padding: 2% !important;
+  }
+}
+
+.littleAutoComplete{
+  width: 75%;
+  position: absolute;
+  z-index: 9000;
+  left: 0;
+  right: 14%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: -15.5%;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  max-height: 300px;
+  box-shadow: 0px 0px 10px #bcbcbc;
+  border-radius: 5px;
 }
 
 .overhauler{
@@ -1065,6 +1106,12 @@ ion-toolbar{
   overflow: hidden;
   margin: 5%;
   margin-left: 0%;
+}
+
+.lNumTxt{
+  font-size: 12px;
+  text-align: center;
+  margin-top: 60%;
 }
 
 .autocompleteDimmer{

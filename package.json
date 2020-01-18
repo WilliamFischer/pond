@@ -115,8 +115,8 @@
       "cordova-plugin-navigationbar": {},
       "cordova-plugin-advanced-http": {},
       "cordova-plugin-googleplus": {
-        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.761650598572-bmkjglbi4m284b2snbf1469uharhh2l7",
-        "WEB_APPLICATION_CLIENT_ID": "761650598572-91vcmupid0bp6bmjd0slu2vfa539tft7.apps.googleusercontent.com"
+        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.761650598572-ivsev55n5q3h78pr6ragicem5rp1shn7",
+        "WEB_APPLICATION_CLIENT_ID": "761650598572-ivsev55n5q3h78pr6ragicem5rp1shn7.apps.googleusercontent.com"
       },
       "cordova-plugin-screen-orientation": {},
       "cordova-plugin-actionsheet": {},

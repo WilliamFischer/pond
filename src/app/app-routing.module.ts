@@ -12,6 +12,8 @@ const routes: Routes = [
   { path: 'add-variation-model', loadChildren: './add-variation-model/add-variation-model.module#AddVariationModelPageModule' },
   // { path: 'fish-detail-modal/:id', loadChildren: './modal/fish-detail/fish-detail.module#FishDetailPageModule' },
   { path: 'species/:id', loadChildren: './species/species.module#SpeciesPageModule' },
+  { path: 'users/:id', loadChildren: './user/user.module#UserPageModule' },
+  { path: 'tanks/:id/:id', loadChildren: './tank/tank.module#TankPageModule' },
   // { path: 'mainfishdetail', loadChildren: './mainfishdetail/mainfishdetail.module#MainfishdetailPageModule' }
 ];
 @NgModule({

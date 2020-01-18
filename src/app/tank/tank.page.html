@@ -1,0 +1,171 @@
+<ion-content>
+  <ion-spinner name="crescent" color="primary" *ngIf="loadingImageUpload" class="animated fadeIn loadingImgSpinner"></ion-spinner>
+
+  <div *ngIf="tankDetailMode && activeTankData && !loadingImageUpload">
+    <img class="animated fadeIn tankImageBack" *ngIf="!activeTankData.photoURL" src="https://www.petbarn.com.au/petspot/app/uploads/2011/09/800x533_v1.jpg" />
+    <img class="animated fadeIn tankImageBack" *ngIf="activeTankData.photoURL" [src]="activeTankData.photoURL" />
+  </div>
+
+  <div class="tankWrapper animated fadeIn" *ngIf="tankDetailMode && activeTankData">
+
+    <div class="listSpace">
+
+      <ion-icon name="close" (click)="closeTank()" class="backArrow"></ion-icon>
+
+      <h1 class="coreName" *ngIf="activeTankData">
+        <label *ngIf="!activeTankData.nickname">{{activeTankData.name}}</label>
+        <label *ngIf="activeTankData.nickname">{{activeTankData.nickname}}</label>
+        
+        <a (click)="renameTank()" class="deleteTitle">Rename Tank &bull; </a>
+        <a (click)="deleteTank()" class="deleteTitle">Delete Tank &bull; </a>
+        <a class="deleteTitle specialInput">
+          <input type="file" (change)="uploadTankImg($event)" />
+          Upload Tank image
+        </a>
+      </h1>
+
+      <div class="loadingSpinner centerFishSpinner" *ngIf="!fishLoaded">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <ion-list class="speciesList animated fadeIn" *ngIf="fishLoaded">
+        <ion-list-header *ngIf="fish_in_tank != null">
+          <ion-label>
+            <label *ngIf="fish_in_tank.length >= 1">Contains {{ tankFishQuantity }} fish</label>
+            <label class="textNoneCenter" *ngIf="fish_in_tank.length < 1">Add fish to this tank via the search tab</label>
+            <br /><br />
+            <label *ngIf="!trashMode && !reorderMode && !commenting && fish_in_tank.length >= 1">
+              <!-- <a (click)="triggerReorder()" *ngIf="fish_in_tank.length > 1">REORDER &bull; </a> -->
+              <a (click)="triggerTrash()">EDIT &bull; </a>
+              <a (click)="commentMode()">COMMENTS &bull;</a>
+              <a (click)="addDivider()">NEW DIVIDER</a>
+            </label>
+
+            <label *ngIf="trashMode || reorderMode || commenting">
+              <a (click)="unTriggerTrash()">DONE</a>
+            </label>
+
+             <br /><br />
+
+          </ion-label>
+        </ion-list-header>
+        <ion-list-header *ngIf="fish_in_tank == null">
+          <ion-label>No Fish Yet<a (click)="openSpeciesSearch()" class="lilEdit">+ add your first fish</a></ion-label>
+        </ion-list-header>
+
+          <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
+            <!-- <div *ngIf="type">
+              <ion-item-divider *ngIf="divider.name">
+                <ion-label>
+                  {{divider.name | titlecase}}
+                </ion-label>
+              </ion-item-divider>
+
+              <ion-reorder slot="end" *ngIf="!trashMode">
+                <ion-icon name="menu"></ion-icon>
+              </ion-reorder>
+
+              <ion-icon class="trashIcons" *ngIf="trashMode" (click)="deleteFishFromTank(fish)" slot="end" name="trash"></ion-icon>
+            </div> -->
+
+            <div *ngFor="let fish of fish_in_tank" >
+
+              <ion-item-divider *ngIf="fish.type == 'divider'">
+                <ion-label>
+                  {{fish.name | titlecase}}
+                </ion-label>
+
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="editDivider(fish)" slot="end" name="brush"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="deleteDivider(fish)" slot="end" name="trash"></ion-icon>
+
+                <ion-reorder slot="end" *ngIf="trashMode && fish_in_tank.length > 1">
+                  <ion-icon name="menu"></ion-icon>
+                </ion-reorder>
+
+              </ion-item-divider>
+
+              <ion-item lines="none" class="whiteSpaceWraper" *ngIf="fish.type == 'fish'">
+                <ion-note *ngIf="fish['quantity']" slot="start">{{fish['quantity']}}x</ion-note>
+                <b (click)="openFishDetailModal(fish)" *ngIf="!fish.nickname">{{fish.comm_name | titlecase}}</b>
+                <b (click)="openFishDetailModal(fish)" *ngIf="fish.nickname">
+                  {{fish.nickname | titlecase}}
+                  <ion-note slot="end" class="noteTxt">({{fish.comm_name | titlecase}})</ion-note>
+                </b>
+
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="adjustQuantity(fish)" slot="end" name="apps"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="editFishNickname(fish)" slot="end" name="brush"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="deleteFishFromTank(fish)" slot="end" name="trash"></ion-icon>
+
+                <ion-icon class="trashIcons" *ngIf="commenting && !fish.comment" (click)="addFishComment(fish)" slot="end" name="add"></ion-icon>
+
+                <ion-reorder slot="end" *ngIf="trashMode && fish_in_tank.length > 1">
+                  <ion-icon name="menu"></ion-icon>
+                </ion-reorder>
+
+              </ion-item>
+
+              <ion-item lines="none" *ngIf="fish.type == 'fish' && fish.comment">
+                <ion-label class="greyedLines">
+                  {{ fish.comment }}
+                </ion-label>
+
+                <ion-icon class="trashIcons" *ngIf="commenting && fish.comment" (click)="editCommentFromFish(fish)" slot="end" name="brush"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="commenting && fish.comment" (click)="deleteCommentFromFish(fish)" slot="end" name="trash"></ion-icon>
+
+              </ion-item>
+              <!-- <ion-item-options side="end">
+                <ion-item-option (click)="deleteFishFromTank(fish)">
+
+                </ion-item-option>
+              </ion-item-options> -->
+
+
+            </div>
+          </ion-reorder-group>
+
+        <!-- <ion-item (click)="selectSpecies('Butterflyfish')">1x c <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
+        <ion-item (click)="selectSpecies('Pinoy Blue Angelfish')">2x &nbsp; <b> Pinoy Blue Angelfish </b> &nbsp; <i>(Pterophyllum)</i></ion-item>
+        <ion-item (click)="selectSpecies('Kuhli Loach')">4x &nbsp; <b> Kuhli Loach </b> &nbsp; <i>(Actinopterygii)</i></ion-item>
+        <ion-item (click)="selectSpecies('Otocinclus')">1x &nbsp; <b> Otocinclus </b> &nbsp; <i>(Hypoptopomatinae)</i></ion-item> -->
+      </ion-list>
+
+      <ion-list class="speciesList statsListBottom">
+        <ion-list-header>
+          <!-- <a class="lilEdit" href="#">edit</a> -->
+          <ion-label>Tank Stats</ion-label>
+        </ion-list-header>
+
+        <ion-item>
+          <ion-icon name="flask" slot="start"></ion-icon>
+          <ion-label>
+            <b> average pH </b> &nbsp;
+            <i>{{activeTankData.ph}}</i>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="flame" slot="start"></ion-icon>
+          <ion-label>
+            <b> Temp (Celcius &deg;) </b> &nbsp;
+          </ion-label>
+          <ion-input (change)="updateTankTemp($event.target.value)" inputmode="numeric" type="number" [value]="activeTankData.temp"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="cube" slot="start"></ion-icon>
+          <ion-label>
+            <b> Size (Litres) </b> &nbsp;
+          </ion-label>
+          <ion-input (change)="updateTankSize($event.target.value)" inputmode="numeric" type="number" [value]="activeTankData.size"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="funnel" slot="start"></ion-icon>
+          <ion-label (click)="presentSubstrateEditModal()">
+            <b> Substrate </b> &nbsp; <i>{{activeTankData.substrate}}</i>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+</ion-content>

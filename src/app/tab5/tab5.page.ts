@@ -46,6 +46,8 @@ export class Tab5Page {
   userOnAndroid: boolean;
   wishlistMode: boolean;
 
+  fullAccountMode: boolean = true;
+
   speciesVunFloored;
   tankChanges: any;
   tankDetailChanges: any;
@@ -64,6 +66,7 @@ export class Tab5Page {
   tanks: any;
   wishlist: any;
   wishlistItems: any;
+  checkCollection: any;
   fish_in_tank: any = [];
   dividers: any = [];
   user: any = [];
@@ -89,6 +92,8 @@ export class Tab5Page {
   // }
 
   totalQuanityOfFish: number = 0;
+  totalQuanityOfFollows: number = 0;
+  totalQuanityOfFollowers: number = 0;
   QuanityOfFish: number = 0;
   tankFishQuantity: number = 0;
 
@@ -107,7 +112,6 @@ export class Tab5Page {
     public loadingController: LoadingController,
     public alertController: AlertController
   ) { }
-
 
     ngOnInit() {
 
@@ -146,6 +150,7 @@ export class Tab5Page {
       }
 
 
+
     }
 
     ionViewDidEnter(){
@@ -155,6 +160,34 @@ export class Tab5Page {
 
     login(){
       this.router.navigateByUrl('/login');
+    }
+
+    logScrolling($event){
+      if($event.detail['scrollTop'] > 250){
+        this.fullAccountMode = false;
+      }
+
+      if($event.detail['scrollTop'] < 30){
+        this.fullAccountMode = true;
+      }
+    }
+
+    reOrderTanks(ev){
+      console.log(ev);
+      
+      console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
+
+      ev.detail.complete();
+    }
+
+
+    doRefresh(event){
+      this.populateTanks();
+
+      setTimeout(() => {
+        console.log('Async operation has ended');
+        event.target.complete();
+      }, 1500);
     }
 
     ionViewDidLeave(){}
@@ -189,29 +222,42 @@ export class Tab5Page {
 
           this.wishlist = values;
         });
+
+        this.triggerWishlist();
       }
     }
 
     triggerWishlist(){
-
-      this.populateWishlist();
-
       this.wishListTrueSpeciesChanges = this.fireStore.collection('Species').valueChanges().subscribe(
       values =>{
         this.wishlistMode = true;
         let wishlistArray = [];
 
-        this.wishlist.forEach(eachSpecies => {
-          values.forEach(eachWishlistSpecies => {
-            if(eachSpecies['specCode'] == eachWishlistSpecies['specCode']){
-              wishlistArray.push(eachWishlistSpecies)
-            }
-          });
-        });
+        //console.log(this.wishlist);
 
-        this.wishlistItems = wishlistArray
-        console.log(this.wishlistItems);
-        this.content.scrollToTop(400);
+        if(this.wishlist){
+          this.wishlist.forEach(eachSpecies => {
+            values.forEach(eachWishlistSpecies => {
+              if(eachSpecies['specCode'] == eachWishlistSpecies['specCode']){
+                wishlistArray.push(eachWishlistSpecies)
+              }
+            });
+          });
+
+          this.wishlistItems = wishlistArray
+          console.log(this.wishlistItems);
+          //this.content.scrollToTop(400);
+
+
+          this.wishListChanges.unsubscribe();
+          this.wishListTrueSpeciesChanges.unsubscribe();
+        }else{
+          this.wishListChanges.unsubscribe();
+          this.wishListTrueSpeciesChanges.unsubscribe();
+        }
+
+      }, error => {
+        console.log(error);
       });
 
     }
@@ -237,6 +283,43 @@ export class Tab5Page {
     populateTanks(){
       this.userTankChanges.unsubscribe();
 
+      // Find follow count
+      this.userTankChanges = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/follows').valueChanges().subscribe(
+      values =>{
+        let followerCount = 0;
+
+        if(values){
+          values.forEach(follower => {
+            followerCount++
+          });
+
+          this.totalQuanityOfFollows = followerCount;
+        }
+
+      });
+
+      // Find Followers
+      this.userTankChanges = this.fireStore.collection('Users').valueChanges().subscribe(values =>{
+        let followsCount = 0;
+
+        if(values && values['uid'] !== this.afAuth.auth.currentUser.uid){
+          values.forEach(user => {
+            this.checkCollection = this.fireStore.collection('Users/' + user['uid'] + '/follows').valueChanges().subscribe(specificUser => {
+              specificUser.forEach(user => {
+                //console.log(user['userID'] +' vs '+ this.afAuth.auth.currentUser.uid);
+                if(user['userID'] == this.afAuth.auth.currentUser.uid){
+                  followsCount++;
+                }
+              });
+
+              this.totalQuanityOfFollowers = followsCount;
+            });
+          });
+        }
+
+      });
+
+
       if(this.afAuth.auth.currentUser.uid){
         this.userTankChanges = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
         values =>{
@@ -244,7 +327,6 @@ export class Tab5Page {
           if(this.debug){
             console.log("Loading Tanks ...");
           }
-
 
           this.totalQuanityOfFish = 0;
           this.tanks = values;
@@ -261,19 +343,20 @@ export class Tab5Page {
           values.forEach(tankResult => {
             this.populateColours(tankResult);
 
-            this.repeatArrayTank = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tankResult['name'] + '/species').valueChanges().subscribe(
+            this.repeatArrayTank = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tankResult['name'].toLowerCase() + '/species').valueChanges().subscribe(
             species =>{
+
               species.forEach(speciesSpecific => {
                 //console.log(Number(speciesSpecific['quantity']));
                 this.totalQuanityOfFish = this.totalQuanityOfFish + +Number(speciesSpecific['quantity']);
-
               });
 
             });
           });
 
-          // THIS IS SEPERATLY POPULATING FISH COUNT :)
 
+
+          // THIS IS SEPERATLY POPULATING FISH COUNT :)
           setTimeout(()=>{
             let fishCount;
 
@@ -285,17 +368,18 @@ export class Tab5Page {
 
             this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid)
             .set({
-              fishCount: fishCount
+              fishCount: fishCount,
+              following: this.totalQuanityOfFollows,
+              followers:  this.totalQuanityOfFollowers
             },{
               merge: true
             }).then(() => {
-              if(this.debug){
-                console.log('User has ' + fishCount + ' fish')
-              }
-              this.repeatArrayTank.unsubscribe();
-
               this.populateWishlist();
+
+              this.userTankChanges.unsubscribe();
+              this.checkCollection.unsubscribe();
             });
+
           }, 2000);
 
 
@@ -366,160 +450,6 @@ export class Tab5Page {
 
     }
 
-    doReorder(ev: any) {
-      console.log('Before complete fish:', this.fish_in_tank);
-
-      let scope = this;
-
-      //console.log(this.fish_in_tank[ev.detail['to']])
-
-      this.fish_in_tank = ev.detail.complete(this.fish_in_tank);
-
-      setTimeout(()=>{
-
-        this.fish_in_tank.forEach(function(value, key) {
-          if(value['type'] == 'divider'){
-            //console.log('Setting ' + key + " to divider " + value['id'])
-            //console.log('setting to ' + 'Users/' + scope.currentUser + '/tanks/' + scope.activeTankData['name'] + '/dividers/' + value['name']);
-            scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + scope.activeTankData['name'] + '/dividers/' + value['id'])
-            .set({
-              order: key
-            },{
-              merge: true
-            });
-          }
-
-          if(value['type'] == 'fish'){
-            //console.log('Setting ' + key + " to fish " + value['genus'])
-            //console.log('setting to ' + 'Users/' + scope.currentUser + '/tanks/' + scope.activeTankData['name'] + '/species/' + value['spec_code']);
-            scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + scope.activeTankData['name'] + '/species/' + value['spec_code'])
-            .set({
-              order: key
-            },{
-              merge: true
-            });
-          }
-        });
-
-        console.log('After complete fish:', this.fish_in_tank);
-
-      }, 1000);
-
-
-      // if(this.dividers.length > 1){
-      //   console.log('Before complete dividers:', this.dividers);
-      //   this.dividers = ev.detail.complete(this.dividers);
-      //   console.log('After complete dividers: ', this.dividers);
-      // }
-    }
-
-    triggerTrash(){
-      this.trashMode = true;
-    }
-
-    unTriggerTrash(){
-      this.trashMode = false;
-      this.reorderMode = false;
-      this.commenting = false;
-    }
-
-    getFish() {
-      if(this.debug)
-      console.log(this.activeTankData['name'])
-
-      this.tankChanges = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/species').valueChanges().subscribe(values => {
-        //console.log(this.fish_in_tank);
-
-        if(this.debug)
-        console.log('Populating species...')
-
-        values.forEach(fish => {
-            //console.log(fish)
-
-            let comm_name;
-            let comment;
-            let nickname;
-
-            if(fish['specCode'] && fish['name']){
-              comm_name = fish['name'];
-            }else if(fish['specCode'] && !fish['name']){
-              comm_name = fish['genus'];
-            }else{
-              comm_name = ''
-            }
-
-            if(fish['comment']){
-              comment = fish['comment'];
-            }else{
-              comment = ''
-            }
-
-            if(fish['nickname']){
-              nickname = fish['nickname'];
-            }else{
-              nickname = ''
-            }
-
-
-            let quantity = fish['quantity'];
-            let specCode = fish['specCode'];
-            let genus = fish['genus'];
-            let order = fish['order'];
-
-            let fishObj = {
-              'comm_name': comm_name,
-              'genus': genus,
-              'spec_code': specCode,
-              'quantity': quantity,
-              'nickname': nickname,
-              'type': 'fish',
-              'order': order,
-              'comment': comment
-            }
-
-            this.tankFishQuantity = +this.tankFishQuantity + +quantity;
-
-            if(comm_name){
-              this.fish_in_tank.push(fishObj);
-            }
-
-        });
-
-        setTimeout(()=>{
-          if(this.tankChanges){
-            if(this.debug)
-            console.log('done populating species')
-
-            this.tankChanges.unsubscribe();
-          }
-        }, 1000);
-
-      });
-      // }, () => {
-      //
-      // }).then(function() {
-      //   console.log('done populating species')
-      //   this.tankChanges.unsubscribe();
-      //   console.log(this.fish_in_tank);
-      // });
-
-      // var scope = this;
-      // var _fishlist = [];
-      // var tank_fish = this.fireStore.collection('Users/' + this.currentUser + '/tanks/' + this.activeTankData['name'] + '/species');
-      // tank_fish.get().forEach(data => {
-      //   var _data = data.docs;
-      //   _data.forEach(record => {
-      //     var fishData = record.data();
-      //     console.log(fishData);
-      //     _fishlist.push(fishData);
-      //   });
-      //   return;
-      // }).then(function() {
-      //   console.log(_fishlist);
-      //   var _allfish = [];
-      //
-      // });
-    }
 
     // openNewChemistrySession() {
     //   this.tankDetailMode = false;
@@ -588,148 +518,8 @@ export class Tab5Page {
     // }
 
     initTankDetail(tankname){
-
-      if (this.plt.is('ios') || this.plt.is('android')) {
-        this.showLocalUpload = false;
-      }{
-        this.showLocalUpload = true;
-      }
-
-      this.tankDetailMode = true;
-      this.tankDetailChanges = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tankname)
-      .valueChanges().subscribe(data => {
-        if(data){
-          // console.log(data);
-          this.activeTankData = data;
-
-          if(this.debug){
-            console.log("ASYNC: Refreshing active tank object");
-            console.log(this.activeTankData);
-          }
-
-
-          this.tankDetailMode = true;
-          this.defaultMode = false;
-          this.addTankMode = false;
-          this.addChemistryMode = false;
-          this.wishlistMode = false;
-
-          // this.initChemistry();
-          // this.calculateAveragePH();
-
-          this.content.scrollToTop(400);
-          this.tankDetailChanges.unsubscribe();
-
-        } else {
-          console.log("Cannot find tank data");
-        }
-      });
-
-      setTimeout(()=>{
-        this.getFish();
-        this.getDividers();
-      }, 500);
+      this.router.navigateByUrl('/tanks/' + this.afAuth.auth.currentUser.uid + '/' + tankname);
     }
-
-    getDividers(){
-      if(this.debug){
-        console.log('Grabbing dividers..');
-      }
-
-      this.dividerChanges = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/dividers').valueChanges().subscribe(values => {
-        //console.log(this.fish_in_tank);
-        if(this.debug)
-        console.log('Populating dividers...')
-
-        values.forEach(divider => {
-
-            let name = divider['name'];
-            let order = divider['order'];
-            let id = divider['id'];
-
-            let divderObj = {
-              'name': name,
-              'order': order,
-              'id': id,
-              'type': 'divider'
-            }
-
-            this.fish_in_tank.push(divderObj);
-        });
-
-        setTimeout(()=>{
-          if(this.dividerChanges){
-
-            if(this.debug)
-            console.log('done populating dividers')
-
-            this.dividerChanges.unsubscribe();
-            this.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
-
-            if(this.debug)
-            console.log(this.fish_in_tank);
-
-            this.fishLoaded = true;
-          }
-        }, 500);
-
-      });
-    }
-
-    async addDivider() {
-    const alert = await this.alertController.create({
-      header: 'Add a new divider',
-      inputs: [
-        {
-          name: 'divider_name',
-          type: 'text',
-          placeholder: 'Divider Name...'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            console.log('Confirm Cancel');
-          }
-        }, {
-          text: 'Ok',
-          handler: (data) => {
-            this.presentLoading();
-
-            let count = Math.floor(Math.random() * 1000);
-
-            let dividerName = data.divider_name
-            let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/dividers/' + count);
-
-            tankAddress.set({
-              dateSet: new Date(),
-              name: dividerName,
-              order: 0,
-              id: count
-            },{
-              merge: true
-            }).then(() => {
-              console.log("Divider added to tank!");
-
-              this.getDividers();
-              this.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
-
-              this.dismissLoading();
-            });
-
-
-            //this.restartTank();
-            //this.closeTank();
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
 
 
     // Switch to newTank mode
@@ -738,401 +528,10 @@ export class Tab5Page {
       this.defaultMode = false;
       this.tankDetailMode = false;
       this.addChemistryMode = false;
+
+      this.content.scrollToTop(400);
     }
 
-    async deleteFishFromTank(fish){
-
-      const alert = await this.alertController.create({
-        header: 'Are you sure you want to remove this ' + fish['genus'].charAt(0).toUpperCase() + ' species?',
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            cssClass: 'secondary',
-            handler: () => {
-              if(this.debug)
-              console.log('Confirm Cancel');
-            }
-          }, {
-            text: 'Remove',
-            cssClass: 'warning',
-            handler: (data) => {
-              this.presentLoading();
-
-              this.tankFishQuantity = 0;
-
-              let fishAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + "/species/" + fish['spec_code']);
-              let scope = this;
-              //this.fish_in_tank = [];
-
-              fishAddress.delete()
-              .then(function() {
-
-                scope.getFish();
-                scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
-                scope.dismissLoading();
-
-              });
-
-            }
-          }
-        ]
-      });
-
-      await alert.present();
-
-    }
-
-    restartTank(){
-      console.log('restarting tank..')
-      this.fish_in_tank = [];
-      this.dividers = [];
-      this.tankFishQuantity = 0;
-
-      this.setReorders();
-
-      setTimeout(()=>{
-        if(this.debug)
-        console.log('### REGETTING FISH SPECIES ###')
-
-        this.getFish();
-        this.getDividers();
-
-        if(this.debug)
-        console.log('### RESORTING SPECIES ###')
-
-        this.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
-
-        if(this.debug)
-        console.log(this.fish_in_tank);
-
-
-        setTimeout(()=>{
-          this.fishLoaded = true;
-        }, 500);
-
-      }, 1000);
-
-
-    }
-
-    commentMode(){
-      this.commenting = true;
-    }
-
-    addFishComment(fish){
-      if(this.debug)
-      console.log(fish)
-
-      this.commentAlertPrompt(fish);
-    }
-
-    editCommentFromFish(fish){
-      this.commentAlertPrompt(fish);
-    }
-
-    editFishNickname(fish){
-      this.fishNicknameAlertPrompt(fish);
-    }
-
-    editDivider(fish){
-      this.dividerAlertPrompt(fish);
-    }
-
-    deleteCommentFromFish(fish){
-      fish['comment'] = '';
-
-      let commentAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/species/' + fish['spec_code']);
-
-      commentAddress.set({
-        comment: ''
-      },{
-        merge: true
-      });
-
-      if(this.debug)
-      console.log("Comment removed from species!");
-    }
-
-
-
-
-    async commentAlertPrompt(fish) {
-      let placeholderValue;
-      if(fish['comment']){
-        placeholderValue = fish['comment']
-      }else{
-        placeholderValue = ''
-      }
-
-    const alert = await this.alertController.create({
-      header: fish['comm_name'] + ' comments'.charAt(0).toUpperCase(),
-      inputs: [
-        {
-          name: 'comment',
-          type: 'text',
-          placeholder: 'Species comments...',
-          value: placeholderValue
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            if(this.debug)
-            console.log('User Cancelled');
-          }
-        }, {
-          text: 'Ok',
-          handler: (data) => {
-            fish['comment'] = data.comment;
-
-            let commentAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/species/' + fish['spec_code']);
-
-            commentAddress.set({
-              comment: data.comment
-            },{
-              merge: true
-            });
-
-            if(this.debug)
-            console.log("Comment added to species!");
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-
-    deleteDivider(divider){
-      this.presentLoading();
-      console.log('deleteing divider...')
-
-      let dividerAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + "/dividers/" + divider['id']);
-      let scope = this;
-      //this.fish_in_tank = []
-
-      dividerAddress.delete()
-      .then(function() {
-        scope.getDividers();
-        scope.getFish();
-        scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
-        scope.dismissLoading();
-      });
-
-    }
-
-
-    async dividerAlertPrompt(fish) {
-      //console.log(fish)
-      let placeholderValue;
-      if(fish['name']){
-        placeholderValue = fish['name']
-      }else{
-        placeholderValue = ''
-      }
-
-    const alert = await this.alertController.create({
-      header: 'Rename Divider',
-      inputs: [
-        {
-          name: 'dividerName',
-          type: 'text',
-          placeholder: 'Divider Name...',
-          value: placeholderValue
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            if(this.debug)
-            console.log('Confirm Cancel');
-          }
-        }, {
-          text: 'Ok',
-          handler: (data) => {
-            fish['name'] = data.dividerName;
-
-            let commentAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/dividers/' + fish['id']);
-
-            commentAddress.set({
-              name: data.dividerName
-            },{
-              merge: true
-            });
-
-            if(this.debug)
-            console.log("Divider updated!");
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  async adjustQuantity(fish) {
-    //console.log(fish)
-    let placeholderValue;
-    if(fish['quantity']){
-      placeholderValue = fish['quantity']
-    }else{
-      placeholderValue = ''
-    }
-
-  const alert = await this.alertController.create({
-    header: 'Change Quantity',
-    inputs: [
-      {
-        name: 'fishQuan',
-        type: 'tel',
-        placeholder: 'Fish Quantity...',
-        value: placeholderValue
-      }
-    ],
-    buttons: [
-      {
-        text: 'Cancel',
-        role: 'cancel',
-        cssClass: 'secondary',
-        handler: () => {
-          if(this.debug)
-          console.log('Confirm Cancel');
-        }
-      }, {
-        text: 'Ok',
-        handler: (data) => {
-          fish['quantity'] = data.fishQuan;
-
-          let commentAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/species/' + fish['spec_code']);
-
-          commentAddress.set({
-            quantity: data.fishQuan
-          },{
-            merge: true
-          });
-
-          console.log("Fish quantity updated to " + data.fishQuan + "!");
-        }
-      }
-    ]
-  });
-
-  await alert.present();
-}
-
-  async fishNicknameAlertPrompt(fish) {
-      console.log(fish);
-
-      let placeholderValue;
-      if(fish['nickname']){
-        placeholderValue = fish['nickname']
-      }else{
-        placeholderValue = ''
-      }
-
-    let commName = fish['comm_name'].charAt(0).toUpperCase() + fish['comm_name'].slice(1);
-      
-    const alert = await this.alertController.create({
-      header: commName + "\'s Nickname",
-      inputs: [
-        {
-          name: 'fishNickname',
-          type: 'text',
-          placeholder: 'Fish Nickname...',
-          value: placeholderValue
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {if(this.debug)
-            if(this.debug)
-            console.log('Confirm Cancel');
-          }
-        }, {
-          text: 'Ok',
-          handler: (data) => {
-            fish['nickname'] = data.fishNickname;
-
-            let commentAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'] + '/species/' + fish['spec_code']);
-
-            commentAddress.set({
-              nickname: data.fishNickname
-            },{
-              merge: true
-            });
-
-            if(this.debug)
-            console.log("Fish nickname set!");
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-
-    // Update tank temperature
-    updateTankTemp(value) {
-      if(value > 0) {
-        this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'])
-        .set({
-          temp: value
-        },{
-          merge: true
-        }).then(() => {
-          this.populateTanks();
-        });
-      } else {
-        if(this.debug)
-        console.log("tank temp cannot be 0 or null ! Try again dweeb :)");
-      }
-    }
-
-    // Update tank size
-    updateTankSize(value) {
-      if(value > 0) {
-        this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'])
-        .set({
-          size: value
-        },{
-          merge: true
-        }).then(() => {
-          this.populateTanks();
-        });
-      } else {
-        if(this.debug)
-        console.log("tank size cannot be 0 or null ! Try again dweeb :)");
-      }
-    }
-
-    // Save substrate data
-    updateTankSubstrate(value) {
-      if(value) {
-        this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'])
-        .set({
-          substrate: value
-        },{
-          merge: true
-        }).then(() => {
-          this.populateTanks();
-        });
-      } else {
-        if(this.debug)
-        console.log("tank substrate cannot be 0 or null ! Try again dweeb :)");
-      }
-    }
 
     // Show fish detail modal
    //  async openFishDetailModal(fish, tankData) {
@@ -1177,182 +576,6 @@ export class Tab5Page {
       this.router.navigateByUrl('/species/' + fishSpecCode);
    }
 
-    // Show susbstrate edit modal
-    async presentSubstrateEditModal() {
-     console.log("creating call type selector");
-     const modal = await this.modalCtrl.create({
-       component: SelectTankSubstratePage
-       // componentProps: { default: user }
-     });
-
-     modal.onDidDismiss().then(modalData => {
-       // this.updateCallType(modalData.data);
-       console.log("Substrate edit finished");
-       console.log(modalData.data);
-       // Make sure you pass the value object
-       this.updateTankSubstrate(modalData.data["value"]);
-     })
-
-     return await modal.present();
-   }
-
-   // Remove tank from database
-   deleteTank() {
-     this.confirmTankDelete();
-   }
-
-   async confirmTankDelete() {
-     const confirmDelete = await this.alertController.create({
-        header: 'Are you sure you want to delete this tank?',
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            cssClass: 'secondary',
-            handler: () => {
-              console.log('Confirm Cancel');
-            }
-          }, {
-            text: 'Delete',
-            handler: () => {
-              let scope = this;
-              let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"]);
-
-              this.deleteAllSpecies = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + '/species').valueChanges().subscribe(
-              species =>{
-                species.forEach(result => {
-                  console.log(result)
-                  let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + '/species/' + result['specCode']);
-                  resultAddress.delete();
-                });
-              });
-
-              this.deleteAllDividers = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + '/dividers').valueChanges().subscribe(
-              species =>{
-                species.forEach(result => {
-                  console.log(result)
-                  let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + '/dividers/' + result['id']);
-                  resultAddress.delete();
-                });
-              });
-
-              tankAddress.delete()
-              .then(function() {
-                scope.deleteAllSpecies.unsubscribe();
-                scope.deleteAllDividers.unsubscribe();
-                scope.defaultMode = true;
-                scope.addTankMode = false;
-                scope.wishlistMode = false;
-                scope.tankDetailMode = false;
-                scope.addChemistryMode = false;
-                scope.activeTankData = null;
-                scope.populateTanks();
-              });
-            }
-
-            }
-        ]
-      });
-
-      await confirmDelete.present();
-    }
-
-
-   renameTank(){
-    this.renameTankPrompt();
-   }
-
-   async renameTankPrompt() {
-     let tankName;
-
-     if(this.activeTankData['nickname']){
-       tankName = this.activeTankData['nickname'];
-     }else if(this.activeTankData['name']){
-       tankName = this.activeTankData['name']
-     }else{
-       tankName = ''
-     }
-
-     const alert = await this.alertController.create({
-       header: 'Rename this tank',
-       inputs: [
-         {
-           name: 'tankName',
-           type: 'text',
-           placeholder: 'Tank Name...',
-           value: tankName
-         }
-       ],
-       buttons: [
-         {
-           text: 'Cancel',
-           role: 'cancel',
-           cssClass: 'secondary',
-           handler: () => {
-             console.log('Confirm Cancel');
-           }
-         }, {
-           text: 'Ok',
-           handler: (data) => {
-
-             let newTankName = data.tankName
-             let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name']);
-             console.log('setting to ' + ('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name']))
-
-             tankAddress.set({
-               nickname: String(newTankName)
-             },{
-               merge: true
-             }).then(() => {
-               this.activeTankData['name'] = String(newTankName);
-
-               console.log("Tank name changed to " + String(newTankName))
-               this.populateTanks();
-             });
-
-           }
-         }
-       ]
-     });
-
-     await alert.present();
-   }
-
-   closeTank() {
-     this.defaultMode = true;
-     this.addTankMode = false;
-     this.wishlistMode = false;
-     this.tankDetailMode = false;
-     this.addChemistryMode = false;
-     this.fishLoaded = false;
-     this.activeTankData = null;
-     this.fish_in_tank = [];
-     this.dividers = [];
-     this.tankFishQuantity = 0;
-
-     this.setReorders();
-   }
-
-   setReorders(){
-     // let scope = this;
-     //
-     // this.fish_in_tank.forEach(function(value, key) {
-     //   scope.fireStore.doc('Users/' + scope.currentUser + '/tanks/' + scope.activeTankData['name'] + '/species/' + value['spec_code'])
-     //   .set({
-     //     order: key
-     //   },{
-     //     merge: true
-     //   });
-     // })
-   }
-
-   closeChemistrySession() {
-     this.defaultMode = false;
-     this.addTankMode = false;
-     this.tankDetailMode = true;
-     this.addChemistryMode = false;
-   }
-
    closeAddTank() {
      this.defaultMode = true;
      this.addTankMode = false;
@@ -1362,9 +585,9 @@ export class Tab5Page {
 
   // Submit tank to database
   confirmForm(){
-    let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name);
+    let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name.toLowerCase());
 
-    console.log('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name);
+    console.log('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.tank.name.toLowerCase());
 
     tankAddress.set({
       name: this.tank.name,
@@ -1373,6 +596,7 @@ export class Tab5Page {
       temp: this.tank.temp,
       size: this.tank.size,
       substrate: this.tank.substrate,
+      order:  0,
       colourNumber: 1
     },{
       merge: true
@@ -1380,6 +604,9 @@ export class Tab5Page {
       this.addTankMode = false;
       this.defaultMode = true;
       console.log(this.tank);
+
+      this.tanks.push(this.tank);
+      this.content.scrollToTop(400);
     });
 
   }
@@ -1444,7 +671,7 @@ export class Tab5Page {
     let amountOfColours = 15;
 
     if(tank["name"] && this.canLoadTank){
-      this.colourDoc = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank["name"]).valueChanges().subscribe(
+      this.colourDoc = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank["name"].toLowerCase()).valueChanges().subscribe(
       tank =>{
         //console.log(tank['colourNumber'])
 
@@ -1469,18 +696,21 @@ export class Tab5Page {
         }
 
         if(tank["name"]){
-          this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank["name"])
+          this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank["name"].toLowerCase())
           .set({
             colourNumber: counterNumber
           },{
             merge: true
           }).then(() => {
-              this.canLoadTank = false;
-              this.colourFound = true;
-              this.colourDoc.unsubscribe();
-          });
+            this.canLoadTank = false;
+            this.colourFound = true;
 
+            this.tanks = this.tanks;
+            this.colourDoc.unsubscribe();
+          });
         }
+
+        this.colourDoc.unsubscribe();
 
       });
     }else{
@@ -1512,6 +742,19 @@ export class Tab5Page {
 
   async dismissLoading() {
     return await this.loadingController.dismiss();
+  }
+
+
+  closeTank() {
+    this.defaultMode = true;
+    this.addTankMode = false;
+    this.tankDetailMode = false;
+    this.addChemistryMode = false;
+    this.fishLoaded = false;
+    this.activeTankData = null;
+    this.fish_in_tank = [];
+    this.dividers = [];
+    this.tankFishQuantity = 0;
   }
 
 }

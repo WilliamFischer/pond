@@ -19,7 +19,10 @@
   <div class="coreContent" *ngIf="speciesLoaded && species.genus" (swipe)="swipeEvent($event)">
 
     <!-- Genus & Species -->
-    <h2 (click)="showGenus(species.genus)">{{species.genus}}</h2>
+    <h2 (click)="showGenus(species.genus)">
+      {{species.genus}}
+    </h2>
+
     <h1>{{species.species}}</h1>
 
     <!-- Species Name and Wikipedia Common Names -->
@@ -31,9 +34,16 @@
       </label>
     </h4>
 
+    <!-- Etymology -->
+    <h5 *ngIf="species.etymology || species.ausEty || species.SFEtymology">
+      <label [innerHTML]="species.etymology"></label>
+      <label [innerHTML]="species.ausEty"></label>
+      <label [innerHTML]="species.SFEtymology"></label>
+    </h5>
 
     <!-- Temp, Ph, Hardness, Vunerability, Conservation & Size -->
     <div class="infoCubes">
+
       <div class="cube" *ngIf="species.temperature">
         <span>Temp</span>
         <label [innerHTML]="species.temperature"></label>
@@ -54,62 +64,64 @@
         <label>{{speciesVunFloored}}/100</label>
       </div>
 
-      <div class="cube" *ngIf="species.blackWater">
-        <span>Tea-coloured water!</span>
+      <div class="cube" *ngIf="species.family || species.scotsFamily">
+        <span>Family</span>
+        <label [innerHTML]="species.family"></label>
+        <label [innerHTML]="species.scotsFamily"></label>
       </div>
 
-      <div class="cube" *ngIf="species.aquaticPlants">
+      <div class="cube" *ngIf="species.order">
+        <span>Order</span>
+        <label [innerHTML]="species.order"></label>
+      </div>
+
+      <div class="cube fullCube" *ngIf="species.blackWater">
+        <span>Tea-coloured water is recommended</span>
+      </div>
+
+      <div class="cube fullCube" *ngIf="species.aquaticPlants">
         <span>Aquatic plants recommended</span>
-      </div>
-
-      <div class="cube" *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize || species.SFFishSize">
-        <span>Size</span>
-        <label [innerHTML]="species.size"></label>
-        <label [innerHTML]="species.ausRegSize"></label>
-        <label [innerHTML]="species.sharkSize"></label>
-        <label [innerHTML]="species.ausSize"></label>
-        <label [innerHTML]="species.SFFishSize"></label>
       </div>
     </div>
 
     <!-- Summary -->
-    <span *ngIf="species.wikiDesc">
+    <span *ngIf="species.wikiDesc || species.scotsSummary">
       <h3>Summary</h3>
       <p [innerHTML]="species.wikiDesc"></p>
+      <p [innerHTML]="species.scotsSummary"></p>
     </span>
 
-    <!-- Etymology -->
-    <span *ngIf="species.ausEty || species.ausEty || species.SFEtymology">
-      <h3>Etymology</h3>
-      <p [innerHTML]="species.etymology"></p>
-      <p [innerHTML]="species.ausEty"></p>
-      <p [innerHTML]="species.SFEtymology"></p>
+    <!-- Other Names -->
+    <span *ngIf="species.scotsOtherName">
+      <h3>Other Names</h3>
+      <p [innerHTML]="species.scotsOtherName"></p>
     </span>
 
-    <!-- Identification -->
-    <span *ngIf="species.identification">
-      <h3>Identification</h3>
-      <p [innerHTML]="species.identification"></p>
+
+    <!-- Species Size -->
+    <span class="cube" *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize || species.SFFishSize || species.scotsSize">
+      <h3>Species Size</h3>
+      <p [innerHTML]="species.size"></p>
+      <p [innerHTML]="species.ausRegSize"></p>
+      <p [innerHTML]="species.sharkSize"></p>
+      <p [innerHTML]="species.ausSize"></p>
+      <p [innerHTML]="species.SFFishSize"></p>
+      <p [innerHTML]="species.scotsSize"></p>
     </span>
 
-    <!-- Sexing -->
-    <span *ngIf="species.sexing">
-      <h3>Sexing</h3>
-      <p [innerHTML]="species.sexing"></p>
-    </span>
-
-    <!-- Identification -->
+    <!-- Recommended Tank Size -->
     <span *ngIf="species.recommendedTankSize">
       <h3>Recommended Tank Size</h3>
-      <p [innerHTML]="species.recommendedTankSize"></p>
+      <p [innerHTML]="species.recommendedTankSize"> </p>
     </span>
 
     <!-- Distribution -->
-    <span *ngIf="species.distribution || species.sharkDist || species.norDist">
+    <span *ngIf="species.distribution || species.sharkDist || species.norDist || species.scotsDistribution">
       <h3>Distribution</h3>
       <p [innerHTML]="species.distribution"></p>
       <p [innerHTML]="species.sharkDist"></p>
       <p [innerHTML]="species.norDist"></p>
+      <p [innerHTML]="species.scotsDistribution"></p>
     </span>
 
     <!-- Locality -->
@@ -126,41 +138,19 @@
       </p>
     </span>
 
-    <!-- Conservation -->
-    <span *ngIf="species.ausConserve">
-      <h3>Conservation</h3>
-      <p [innerHTML]="species.ausConserve"></p>
-    </span>
-
     <!-- Feeding -->
-    <span *ngIf="species.feeding || species.ausFeed">
+    <span *ngIf="species.feeding || species.ausFeed || species.scotsFeeding">
       <h3>Feeding</h3>
       <p [innerHTML]="species.feeding"></p>
       <p [innerHTML]="species.ausFeed"></p>
-    </span>
-
-    <!-- Diet -->
-    <span *ngIf="species.diet">
-      <h3>Diet</h3>
-      <p [innerHTML]="species.diet"></p>
-    </span>
-
-    <!-- Diet -->
-    <span *ngIf="species.enviroment">
-      <h3>Enviroment</h3>
-      <p [innerHTML]="species.enviroment"></p>
-    </span>
-
-    <!-- Furniture -->
-    <span *ngIf="species.furniture">
-      <h3>Recommended Tank Decoration</h3>
-      <p [innerHTML]="species.furniture"></p>
+      <p [innerHTML]="species.scotsFeeding"></p>
     </span>
 
     <!-- Compatibility -->
-    <span *ngIf="species.compatibility">
+    <span *ngIf="species.compatibility || species.scotsCompat">
       <h3>Compatibility</h3>
       <p [innerHTML]="species.compatibility"></p>
+      <p [innerHTML]="species.scotsCompat"></p>
     </span>
 
     <!-- Recommended Tank Mates -->
@@ -170,10 +160,50 @@
       <p [innerHTML]="species.SFtankMates"></p>
     </span>
 
+    <!-- Diet -->
+    <span *ngIf="species.diet">
+      <h3>Diet</h3>
+      <p [innerHTML]="species.diet"></p>
+    </span>
+
+    <!-- Enviroment -->
+    <span *ngIf="species.enviroment">
+      <h3>Enviroment</h3>
+      <p [innerHTML]="species.enviroment"></p>
+    </span>
+
+    <!-- Habitat -->
+    <span *ngIf="species.habitat || species.scotsHabitat">
+      <h3>Habitat</h3>
+      <p [innerHTML]="species.habitat"></p>
+      <p [innerHTML]="species.scotsHabitat"></p>
+    </span>
+
+    <!-- Furniture -->
+    <span *ngIf="species.furniture">
+      <h3>Recommended Tank Decoration</h3>
+      <p [innerHTML]="species.furniture"></p>
+    </span>
+
+    <!-- Sexing -->
+    <span *ngIf="species.sexing || species.scotsSex">
+      <h3>Sexing</h3>
+      <p [innerHTML]="species.sexing"></p>
+      <p [innerHTML]="species.scotsSex"></p>
+    </span>
+
+    <!-- Identification -->
+    <span *ngIf="species.identification">
+      <h3>Identification</h3>
+      <p [innerHTML]="species.identification"></p>
+    </span>
+
     <!-- Breeding -->
-    <span *ngIf="species.repoduction">
-      <h3>Breeding</h3>
+    <span *ngIf="species.repoduction || species.breeding || species.scotsBreeding">
+      <h3>Reproduction</h3>
       <p [innerHTML]="species.repoduction"></p>
+      <p [innerHTML]="species.breeding"></p>
+      <p [innerHTML]="species.scotsBreeding"></p>
     </span>
 
     <!-- Danger -->
@@ -197,21 +227,29 @@
     </span>
 
     <!-- Features -->
-    <span *ngIf="species.ausFeatures">
+    <span *ngIf="species.ausFeatures || species.scotsCharacter">
       <h3>Features</h3>
       <p [innerHTML]="species.ausFeatures"></p>
+      <p [innerHTML]="species.scotsCharacter"></p>
     </span>
 
     <!-- Colour -->
-    <span *ngIf="species.ausColour">
+    <span *ngIf="species.ausColour || species.scotsColour">
       <h3>Colouration</h3>
       <p [innerHTML]="species.ausColour"></p>
+      <p [innerHTML]="species.scotsColour"></p>
     </span>
 
     <!-- Fisheries -->
     <span *ngIf="species.ausFisheries">
       <h3>Fisheries</h3>
       <p [innerHTML]="species.ausFisheries"></p>
+    </span>
+
+    <!-- Conservation -->
+    <span *ngIf="species.ausConserve">
+      <h3>Conservation</h3>
+      <p [innerHTML]="species.ausConserve"></p>
     </span>
 
     <!-- Remarks -->
@@ -245,7 +283,14 @@
       <ion-icon name="star" *ngIf="species.isFavourited" class="animated bounceIn"></ion-icon>
       <ion-icon name="star-outline"  *ngIf="!species.isFavourited" class="animated bounceIn"></ion-icon>
     </button>
-    <button class="addToTankButton" (click)="addTankTrigger(species)">Add Species</button>
+
+    <button *ngIf="specimensOwend == 0" class="addToTankButton" (click)="addTankTrigger(species)">Add Species</button>
+
+    <label *ngIf="specimensOwend >= 1" class="specimenOwned" (click)="addTankTrigger(species)">
+      {{specimensOwend}} Specimen
+      <label *ngIf="specimensOwend > 1">s</label>
+      Kept
+    </label>
   </div>
 
 </ion-content>

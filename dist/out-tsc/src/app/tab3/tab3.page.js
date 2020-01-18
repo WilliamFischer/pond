@@ -200,7 +200,7 @@ var Tab3Page = /** @class */ (function () {
         // GOOGLE IMAGES SEARCH
         console.log('RUNNING GOOGLE IMAGE SEARCH');
         searchName = eachObj['Genus'] + " " + eachObj['Species'];
-        this.http.get('https://www.googleapis.com/customsearch/v1?q=' + searchName + '&searchType=image&num=4&imgSize=medium&key=AIzaSyAOf-59bhKidnZ3xZBdS_0Pt77g3a6NllQ&cx=013483737079049266941:mzydshy4xwi').subscribe(function (result) {
+        this.http.get('https://www.googleapis.com/customsearch/v1?q=' + searchName + '&searchType=image&num=4&imgSize=medium&key=AIzaSyAPvDEdOoGeldbbmVWShXguFmWFaX79DI8&cx=013483737079049266941:mzydshy4xwi').subscribe(function (result) {
             var images = [];
             var loopValue = result['items'];
             loopValue.forEach(function (eachObj) {

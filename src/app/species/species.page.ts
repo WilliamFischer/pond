@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+
+import { LoadingController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-species',
@@ -29,6 +32,7 @@ export class SpeciesPage implements OnInit {
   speciesVunFloored: number;
   currentQuantity: number;
   currentOrder: number;
+  specimensOwend: number = 0;
 
   activeTankSelect: string;
   selectedTempTank: string;
@@ -47,6 +51,7 @@ export class SpeciesPage implements OnInit {
   public afAuth: AngularFireAuth,
   private location: Location,
   private router: Router,
+  public loadingController: LoadingController,
   private photoViewer: PhotoViewer
   ) {}
 
@@ -63,14 +68,6 @@ export class SpeciesPage implements OnInit {
       console.log(fishSpecCodeFinal);
     }
 
-    this.afAuth.authState.subscribe(auth=>{
-      if(auth){
-        this.loggedIn = true;
-      }else{
-        this.loggedIn = false;
-      }
-    });
-
     this.visualCollection = this.fireStore.doc('Species/' + fishSpecCodeFinal).valueChanges().subscribe(
     species =>{
       console.log(species);
@@ -83,10 +80,39 @@ export class SpeciesPage implements OnInit {
           this.speciesVunFloored = Math.floor(species['vulnerability']);
         }
 
+        if(!species['comments'] && !species['locality'] && !species['distribution']){
+          console.log('Hmm, something is wrong with this species, we outta delete it');
+          this.removeSpecies()
+        }
+
         this.speciesLoaded = true;
         this.visualCollection.unsubscribe();
       }
     });
+
+    this.afAuth.authState.subscribe(auth=>{
+      if(auth){
+        this.loggedIn = true;
+        this.userHasSpecies();
+      }else{
+        this.loggedIn = false;
+      }
+    });
+
+  }
+
+  async presentLoading() {
+    return await this.loadingController.create({
+      message: 'Loading...'
+    }).then(a => {
+      a.present().then(() => {
+        //console.log('loading presented');
+      });
+    });
+  }
+
+  async dismissLoading() {
+    return await this.loadingController.dismiss();
   }
 
   goHome(){
@@ -99,6 +125,8 @@ export class SpeciesPage implements OnInit {
     }
 
     this.species = '';
+    this.speciesLoaded = false;
+    this.speciesSelected = false;
 
     if (window.history.length > 1) {
       console.log('Go Straight back')
@@ -222,7 +250,7 @@ export class SpeciesPage implements OnInit {
       quantity: 1
     };
 
-    let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.selectedTempTank['name'] + '/species/' + this.toAddToTankSpecies['specCode']);
+    let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.selectedTempTank['name'].toLowerCase() + '/species/' + this.toAddToTankSpecies['specCode']);
     let scope = this;
 
     if (setList) {
@@ -310,6 +338,63 @@ export class SpeciesPage implements OnInit {
   showGenus(genus){
     console.log('navigate to search')
     this.router.navigateByUrl('tabs/species?search_query=' + genus.toLowerCase())
+
+    this.presentLoading();
+
+    setTimeout(()=>{
+        this.dismissLoading();
+
+      location.reload();
+    }, 2000);
+
   }
 
+  userHasSpecies(){
+    let collection1;
+    let collection2;
+
+    if(this.loggedIn){
+      this.specimensOwend = 0;
+
+      collection1 = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
+      tanks =>{
+
+        if(!tanks){
+          console.log('Can\'t yet populate user tanks...')
+        }else{
+          tanks.forEach(tank => {
+            collection2 = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['name'] + '/species').valueChanges().subscribe(
+            species =>{
+              species.forEach(singleSpecies => {
+                if(singleSpecies['specCode'] == this.species['specCode']){
+                  this.specimensOwend++;
+                  console.log('species owned')
+                }
+              });
+
+              console.log('unSub')
+              collection1.unsubscribe();
+              collection2.unsubscribe();
+
+            });
+          });
+
+
+        }
+
+      });
+    }else{
+      console.log('Nobody is logged in!')
+    }
+  }
+
+  removeSpecies(){
+
+    let removeCollection = this.fireStore.doc('Species/' + this.species['specCode']);
+    removeCollection.delete();
+
+    alert('Oh, we had to delete this... Sorry, please readd it by searching for it again. ♡')
+    this.router.navigateByUrl('tabs');
+
+  }
 }
