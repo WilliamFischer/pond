@@ -194,7 +194,7 @@
 .viewProfBtn{
   background: #7eb3ff;
   border: none;
-  padding: 2%;
+  padding: 5%;
   width: 100px;
   border-radius: 50px;
   font-size: 10px;
@@ -205,9 +205,11 @@
   position: absolute;
   white-space: nowrap;
   display: block;
-  margin-top: 3%;
-
-  margin-left: 9%;
+  margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
 }
 
 .splittingLine{
@@ -243,7 +245,7 @@
   display: block;
   object-fit: cover;
   opacity: 0.1;
-  transition: all 200ms ease-in-out;
+  transition: all 300ms ease-in-out;
 }
 
 .heartBox{
@@ -512,14 +514,14 @@
   height: 160px !important;
   object-fit: cover;
   transition: all 500ms ease-in-out;
-  padding-top: 3%;
+  padding-top: 6%;
 }
 
 .smallImage{
   width: 50px;
   height: 50px;
-  margin-top: 3%;
   transition: all 500ms ease-in-out;
+  margin-top: 2%;
 }
 
 .hideLowOpacity{
@@ -537,7 +539,6 @@ ion-refresher{
 }
 
 .addTankContent{
-  top: 15% !important;
   position: absolute;
   width: 100%;
   height: 100%;
@@ -546,7 +547,7 @@ ion-refresher{
 .addTank{
   width: 80%;
   overflow: hidden;
-  height: 80%;
+  height: 100%;
   position: absolute;
   margin-left: auto;
   margin-top: 10%;

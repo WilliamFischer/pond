@@ -8,7 +8,7 @@
 
     <div class="infoSection" *ngIf="defaultMode" [ngClass]="{'smallBack' : !fullAccountMode }">
       <img class="profileImg" [src]="user.photoURL" [ngClass]="{'smallImage' : !fullAccountMode }" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
-      <div class="rightStuff" [ngClass]="{'hideLowOpacity' : !fullAccountMode }">
+      <div class="rightStuff animated bounceIn" [ngClass]="{'hideLowOpacity' : !fullAccountMode }">
         <label class="topTitle2">{{user.name}}</label>
         <label class="topTitle3">
           <b>Keeps {{totalQuanityOfFish}} Species</b> <br />
@@ -64,7 +64,7 @@
 
                 <ion-reorder-group (ionItemReorder)="reOrderTanks($event)" disabled="false">
                   <div *ngFor="let tank of tanks; let i = index">
-                    <div class="tankSpace" [ngStyle]="{'background' : tank.fullColour}">
+                    <div class="tankSpace animated bounceIn" [ngStyle]="{'background' : tank.fullColour}">
 
                       <ion-reorder>
                         <ion-icon name="list" class="selectPal"></ion-icon>

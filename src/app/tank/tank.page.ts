@@ -45,7 +45,7 @@ export class TankPage implements OnInit {
   deleteAllSpecies: any;
   deleteAllDividers: any;
 
-  // arrays
+  // arraysf
   activeTankData: any = [];
   fish_in_tank: any = [];
   dividers: any = [];
@@ -191,7 +191,7 @@ export class TankPage implements OnInit {
 
           this.tankChanges.unsubscribe();
         }
-      }, 1000);
+      }, 500);
 
     });
   }
@@ -266,6 +266,7 @@ export class TankPage implements OnInit {
         text: 'Ok',
         handler: (data) => {
           this.presentLoading();
+          this.fish_in_tank = []
 
           let count = Math.floor(Math.random() * 1000);
 
@@ -282,7 +283,9 @@ export class TankPage implements OnInit {
           }).then(() => {
             console.log("Divider added to tank!");
 
+            this.getFish();
             this.getDividers();
+
             this.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
 
             this.dismissLoading();
@@ -369,16 +372,19 @@ closeTank() {
 
     deleteDivider(divider){
       this.presentLoading();
+      this.fish_in_tank = [];
       console.log('deleteing divider...')
 
-      let dividerAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + "/dividers/" + divider['id']);
+      let dividerAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + "/dividers/" + divider['id']);
       let scope = this;
       //this.fish_in_tank = []
 
       dividerAddress.delete()
       .then(function() {
-        scope.getDividers();
+
         scope.getFish();
+        scope.getDividers();
+
         scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
         scope.dismissLoading();
       });
@@ -594,17 +600,16 @@ closeTank() {
 
     let scope = this;
 
-    //console.log(this.fish_in_tank[ev.detail['to']])
-
     this.fish_in_tank = ev.detail.complete(this.fish_in_tank);
 
     setTimeout(()=>{
 
       this.fish_in_tank.forEach(function(value, key) {
+
         if(value['type'] == 'divider'){
           //console.log('Setting ' + key + " to divider " + value['id'])
           //console.log('setting to ' + 'Users/' + scope.currentUser + '/tanks/' + scope.activeTankData['name'] + '/dividers/' + value['name']);
-          scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + scope.activeTankData['name'] + '/dividers/' + value['id'])
+          scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + scope.activeTankData['name'].toLowerCase() + '/dividers/' + value['id'])
           .set({
             order: key
           },{
@@ -615,18 +620,19 @@ closeTank() {
         if(value['type'] == 'fish'){
           //console.log('Setting ' + key + " to fish " + value['genus'])
           //console.log('setting to ' + 'Users/' + scope.currentUser + '/tanks/' + scope.activeTankData['name'] + '/species/' + value['spec_code']);
-          scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + scope.activeTankData['name'] + '/species/' + value['spec_code'])
+          scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + scope.activeTankData['name'].toLowerCase() + '/species/' + value['spec_code'])
           .set({
             order: key
           },{
             merge: true
           });
         }
+
       });
 
       console.log('After complete fish:', this.fish_in_tank);
 
-    }, 1000);
+    }, 500);
 
 
     // if(this.dividers.length > 1){
@@ -650,8 +656,10 @@ closeTank() {
 
   async deleteFishFromTank(fish){
 
+    console.log(fish);
+
     const alert = await this.alertController.create({
-      header: 'Are you sure you want to remove this ' + fish['genus'].charAt(0).toUpperCase() + ' species?',
+      header: 'Are you sure you want to remove your ' + fish['comm_name']  + '?',
       buttons: [
         {
           text: 'Cancel',
@@ -669,7 +677,7 @@ closeTank() {
 
             this.tankFishQuantity = 0;
 
-            let fishAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + "/species/" + fish['spec_code']);
+            let fishAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + "/species/" + fish['spec_code']);
             let scope = this;
             //this.fish_in_tank = [];
 
@@ -823,22 +831,22 @@ async confirmTankDelete() {
          text: 'Delete',
          handler: () => {
            let scope = this;
-           let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"]);
+           let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase());
 
-           this.deleteAllSpecies = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + '/species').valueChanges().subscribe(
+           this.deleteAllSpecies = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/species').valueChanges().subscribe(
            species =>{
              species.forEach(result => {
                console.log(result)
-               let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + '/species/' + result['specCode']);
+               let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/species/' + result['specCode']);
                resultAddress.delete();
              });
            });
 
-           this.deleteAllDividers = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + '/dividers').valueChanges().subscribe(
+           this.deleteAllDividers = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/dividers').valueChanges().subscribe(
            species =>{
              species.forEach(result => {
                console.log(result)
-               let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"] + '/dividers/' + result['id']);
+               let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/dividers/' + result['id']);
                resultAddress.delete();
              });
            });

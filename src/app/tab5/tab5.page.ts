@@ -163,21 +163,44 @@ export class Tab5Page {
     }
 
     logScrolling($event){
-      if($event.detail['scrollTop'] > 250){
+      if($event.detail['scrollTop'] > 100){
         this.fullAccountMode = false;
       }
 
-      if($event.detail['scrollTop'] < 30){
+      if($event.detail['scrollTop'] < 5){
         this.fullAccountMode = true;
       }
     }
 
     reOrderTanks(ev){
-      console.log(ev);
-      
-      console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
+      // console.log(ev);
+      //
+      // console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
+      //
+      // ev.detail.complete();
 
-      ev.detail.complete();
+      console.log('Before complete tanks:', this.tanks);
+
+      let scope = this;
+
+      //console.log(this.fish_in_tank[ev.detail['to']])
+
+      this.tanks = ev.detail.complete(this.tanks);
+
+      setTimeout(()=>{
+
+        this.tanks.forEach(function(value, key) {
+          scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + value['trueName'].toLowerCase())
+          .set({
+            order: key
+          },{
+            merge: true
+          });
+        });
+
+        console.log('After complete tanks:', this.tanks);
+
+      }, 1000);
     }
 
 
@@ -188,6 +211,8 @@ export class Tab5Page {
         console.log('Async operation has ended');
         event.target.complete();
       }, 1500);
+
+
     }
 
     ionViewDidLeave(){}
@@ -330,6 +355,8 @@ export class Tab5Page {
 
           this.totalQuanityOfFish = 0;
           this.tanks = values;
+          this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
+
 
           if(this.repeatArrayTank){
             this.repeatArrayTank.unsubscribe();
@@ -635,7 +662,7 @@ export class Tab5Page {
                console.log(url);
                this.activeTankData['photoURL'] = url;
 
-                this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'])
+                this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase())
                 .set({
                   photoURL: url
                 },{
@@ -706,6 +733,7 @@ export class Tab5Page {
             this.colourFound = true;
 
             this.tanks = this.tanks;
+            this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
             this.colourDoc.unsubscribe();
           });
         }

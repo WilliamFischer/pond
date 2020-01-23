@@ -19,7 +19,7 @@
   <div class="coreContent" *ngIf="speciesLoaded && species.genus" (swipe)="swipeEvent($event)">
 
     <!-- Genus & Species -->
-    <h2 (click)="showGenus(species.genus)">
+    <h2 (click)="showgenus(species.genus)">
       {{species.genus}}
     </h2>
 
@@ -67,7 +67,7 @@
       <div class="cube" *ngIf="species.family || species.scotsFamily">
         <span>Family</span>
         <label [innerHTML]="species.family"></label>
-        <label [innerHTML]="species.scotsFamily"></label>
+        <label *ngIf="!species.family" [innerHTML]="species.scotsFamily"></label>
       </div>
 
       <div class="cube" *ngIf="species.order">
@@ -134,7 +134,7 @@
     <span *ngIf="species.rules">
       <h3>Australian Legality</h3>
       <p *ngFor="let rule of species['rules']">
-        {{rule}} <br />
+        <label [innerHTML]="rule"></label> <br />
       </p>
     </span>
 
@@ -279,18 +279,22 @@
   </div>
 
   <div class="stickyFooter animated slideInUp" *ngIf="loggedIn" >
-    <button class="likeButton" (click)="addFishToWishlist(species)">
+
+    <button class="likeButton" [ngClass]="{'biggerStar' : specimensOwend != 0}" (click)="addFishToWishlist(species)">
       <ion-icon name="star" *ngIf="species.isFavourited" class="animated bounceIn"></ion-icon>
       <ion-icon name="star-outline"  *ngIf="!species.isFavourited" class="animated bounceIn"></ion-icon>
     </button>
 
-    <button *ngIf="specimensOwend == 0" class="addToTankButton" (click)="addTankTrigger(species)">Add Species</button>
+    <button *ngIf="specimensOwend != 0" class="ownedTxt" (click)="addTankTrigger(species)">{{specimensOwend}} Owned</button>
+    <button class="addToTankButton" (click)="addTankTrigger(species)" [ngClass]="{'smallerFooterBtn' : specimensOwend != 0}">
+      Add <label *ngIf="specimensOwend != 0">/ Update</label> Species
+    </button>
 
-    <label *ngIf="specimensOwend >= 1" class="specimenOwned" (click)="addTankTrigger(species)">
+    <!-- <label *ngIf="specimensOwend >= 1" class="specimenOwned" (click)="addTankTrigger(species)">
       {{specimensOwend}} Specimen
       <label *ngIf="specimensOwend > 1">s</label>
       Kept
-    </label>
+    </label> -->
   </div>
 
 </ion-content>
@@ -317,7 +321,7 @@
   <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity == 0">
     <h1>Number of {{toAddToTankSpecies.name}} in {{activeTankSelect.name}}</h1>
 
-    <ion-input class="centerSelectNumber" pattern="[0-9]*" [(ngModel)]="amountOfSpecies" value="1" type="text" placeholder="1"></ion-input>
+    <ion-input class="centerSelectNumber" pattern="[0-9]*" [(ngModel)]="amountOfSpecies" value="1" type="text" placeholder="Species Quantity"></ion-input>
 
     <div class="buttonsLive">
       <div class="block" (click)="cancelAddToTank()">CANCEL</div>

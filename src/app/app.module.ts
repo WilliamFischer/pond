@@ -74,7 +74,8 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
       projectId: "pond-b8861",
       storageBucket: "pond-b8861.appspot.com",
       messagingSenderId: "761650598572",
-      appId: "1:761650598572:web:aed495a2a96a057a0ac509"
+      appId: "1:761650598572:web:d99d69b31c1eec780ac509",
+      measurementId: "G-VXR4B124HE"
     }),
     AngularFirestoreModule,
     AngularFireAuthModule,

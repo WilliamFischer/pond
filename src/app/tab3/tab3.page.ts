@@ -357,6 +357,12 @@ export class Tab3Page {
 
     this.searchQuery = genus;
     this.checkAPI(false, genus);
+
+    setTimeout(()=>{
+      this.showAutoComplete = false;
+      this.showPreviousResults = false;
+    }, 500);
+
   }
 
   showSaltWater(){
@@ -1053,7 +1059,7 @@ export class Tab3Page {
           this.showAutoComplete = true;
           this.showPreviousResults = false;
         }else{
-          console.log('Nothing found...')
+          console.log('Nothing found... ' + this.searchQuery)
 
           if(query.length <= 3){
             console.log('Showing previous Results')
@@ -1496,6 +1502,7 @@ export class Tab3Page {
     this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
     values =>{
       this.tanks = values;
+      this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
     });
   }
 
@@ -2306,6 +2313,8 @@ export class Tab3Page {
         }
     }, error => {
       console.log(error);
+
+      this.ScotMateILoveIt(this.sfSpecies);
     });
 
   }
@@ -2518,7 +2527,7 @@ export class Tab3Page {
       this.populateDetailedInformation(this.sfSpecies);
     }
 
-      this.ScotMateILoveIt(this.sfSpecies);
+    this.ScotMateILoveIt(this.sfSpecies);
 
 
   }
