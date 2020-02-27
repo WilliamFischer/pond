@@ -1,451 +1,467 @@
-<ion-header [ngClass]="{'androidHeader' : userOnAndroid }">
-  <ion-toolbar>
-    <ion-item class="toggle backArrowTop animated fadeIn" (click)="unSelectSpecies()" *ngIf="speciesSelected">
-      <ion-icon name="arrow-back" class="backArrow"></ion-icon>
-    </ion-item>
-
-    <form action="." (ngSubmit)="checkAPI($event, false)">
-      <ion-searchbar [ngClass]="{'littleSearcher' : littleSearchbar, 'littleRightSearcher' : speciesSelected, 'tinySearcher' : littleSearchbar && speciesSelected }" (ionChange)='triggerAutoComplete($event.target.value)' placeholder="Search for a {{typeofTrigger}} fish or user..." value="{{searchQuery}}" type="search" (ionClear)="clearSearch()" [(ngModel)]="searchQueryController" [ngModelOptions]="{standalone: true}" (click)="retriggerAutoComplete()" showSearchButton></ion-searchbar>
-    </form>
-
-    <ion-item class="toggle littleSwitch animated fadeIn" *ngIf="littleSearchbar">
-      <ion-toggle [(ngModel)]="saltwater" (click)="switchSalt()"></ion-toggle>
-    </ion-item>
-  </ion-toolbar>
-
-  <ion-toolbar class="saltSwitch" *ngIf="!speciesSelected && searchQuery.length < 2">
-    <ion-item class="toggle">
-
-    <!-- <h1 class="pondTitleVersion" *ngIf="!popularMode" (click)="loadPopular()">More</h1> -->
-
-    <h1 class="pondTitleVersion" *ngIf="!popularMode && !randomMode">
-      <label (click)="loadPopular()">Popular</label>
-      <font color="#8e8e8e"> &bull; </font>
-      <label (click)="loadRandom()">Random</label>
-    </h1>
-
-    <h1 class="pondTitleVersion" *ngIf="popularMode || randomMode">
-      <label *ngIf="randomMode" (click)="loadRandom()">Reload</label>
-      <font *ngIf="randomMode" color="#8e8e8e"> &bull; </font>
-      <label (click)="unloadAll()">Done</label>
-    </h1>
-
-
-      <ion-label *ngIf="saltwater">Saltwater</ion-label>
-      <ion-label *ngIf="!saltwater">Freshwater</ion-label>
-      <ion-toggle [(ngModel)]="saltwater" (click)="switchPopular()"></ion-toggle>
-    </ion-item>
-  </ion-toolbar>
-
-  <ion-toolbar class="alphabetHeader" *ngIf="searchQuery.length > 2 && !speciesSelected">
-    <ion-item *ngIf="!doneLoading">
-      <!-- <h2 class="alphabetSpeciesLoading">Loading All Species...</h2> -->
-      <img class="tempLoader animated fadeIn" src="../assets/dnaLoader.gif" />
-    </ion-item>
-
-    <ion-item *ngIf="doneLoading">
-      <ul class="alphabet animated fadeIn">
-        <li class="letter" (click)="newLetterSwitcher('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
-        <li class="letter" (click)="newLetterSwitcher('b')" [ngClass]="{'litLetter' : selectedLetter == 'b'}">b</li>
-        <li class="letter" (click)="newLetterSwitcher('c')" [ngClass]="{'litLetter' : selectedLetter == 'c'}">c</li>
-        <li class="letter" (click)="newLetterSwitcher('d')" [ngClass]="{'litLetter' : selectedLetter == 'd'}">d</li>
-        <li class="letter" (click)="newLetterSwitcher('e')" [ngClass]="{'litLetter' : selectedLetter == 'e'}">e</li>
-        <li class="letter" (click)="newLetterSwitcher('f')" [ngClass]="{'litLetter' : selectedLetter == 'f'}">f</li>
-        <li class="letter" (click)="newLetterSwitcher('g')" [ngClass]="{'litLetter' : selectedLetter == 'g'}">g</li>
-        <li class="letter" (click)="newLetterSwitcher('h')" [ngClass]="{'litLetter' : selectedLetter == 'h'}">h</li>
-        <li class="letter" (click)="newLetterSwitcher('i')" [ngClass]="{'litLetter' : selectedLetter == 'i'}">i</li>
-        <li class="letter" (click)="newLetterSwitcher('j')" [ngClass]="{'litLetter' : selectedLetter == 'j'}">j</li>
-        <li class="letter" (click)="newLetterSwitcher('k')" [ngClass]="{'litLetter' : selectedLetter == 'k'}">k</li>
-        <li class="letter" (click)="newLetterSwitcher('l')" [ngClass]="{'litLetter' : selectedLetter == 'l'}">l</li>
-        <li class="letter" (click)="newLetterSwitcher('m')" [ngClass]="{'litLetter' : selectedLetter == 'm'}">m</li>
-        <li class="letter" (click)="newLetterSwitcher('n')" [ngClass]="{'litLetter' : selectedLetter == 'n'}">n</li>
-        <li class="letter" (click)="newLetterSwitcher('o')" [ngClass]="{'litLetter' : selectedLetter == 'o'}">o</li>
-        <li class="letter" (click)="newLetterSwitcher('p')" [ngClass]="{'litLetter' : selectedLetter == 'p'}">p</li>
-        <li class="letter" (click)="newLetterSwitcher('q')" [ngClass]="{'litLetter' : selectedLetter == 'q'}">q</li>
-        <li class="letter" (click)="newLetterSwitcher('r')" [ngClass]="{'litLetter' : selectedLetter == 'r'}">r</li>
-        <li class="letter" (click)="newLetterSwitcher('s')" [ngClass]="{'litLetter' : selectedLetter == 's'}">s</li>
-        <li class="letter" (click)="newLetterSwitcher('t')" [ngClass]="{'litLetter' : selectedLetter == 't'}">t</li>
-        <li class="letter" (click)="newLetterSwitcher('u')" [ngClass]="{'litLetter' : selectedLetter == 'u'}">u</li>
-        <li class="letter" (click)="newLetterSwitcher('v')" [ngClass]="{'litLetter' : selectedLetter == 'v'}">v</li>
-        <li class="letter" (click)="newLetterSwitcher('w')" [ngClass]="{'litLetter' : selectedLetter == 'w'}">w</li>
-        <li class="letter" (click)="newLetterSwitcher('x')" [ngClass]="{'litLetter' : selectedLetter == 'x'}">x</li>
-        <li class="letter" (click)="newLetterSwitcher('y')" [ngClass]="{'litLetter' : selectedLetter == 'y'}">y</li>
-        <li class="letter" (click)="newLetterSwitcher('z')" [ngClass]="{'litLetter' : selectedLetter == 'z'}">z</li>
-      </ul>
-    </ion-item>
-  </ion-toolbar>
-
-  <!-- PREVIOUSLY SEARCHED RESULTS -->
-  <ion-list class="autocompleteResults previousResults" *ngIf="showPreviousResults && previousResults.length >= 1" [ngClass]="{'littleAutoComplete' : littleSearchbar}">
-    <div class="fixedWhitespace">
-      <ion-item *ngFor="let fish of previousResults" (click)="selectSpecies(fish, true)">
-        <i>{{fish.name}}</i>
+<div class="whiteBackground">
+  <ion-header [ngClass]="{'androidHeader' : userOnAndroid }">
+    <ion-toolbar>
+      <ion-item class="toggle backArrowTop animated fadeIn" (click)="unSelectSpecies()" *ngIf="speciesSelected">
+        <ion-icon name="arrow-back" class="backArrow"></ion-icon>
       </ion-item>
-    </div>
-  </ion-list>
 
-  <!-- AUTOCOMPLETE RESULTS -->
-  <ion-list class="autocompleteResults" *ngIf="showAutoComplete && allLocalFish.length >= 1" [ngClass]="{'littleAutoComplete' : littleSearchbar}">
-    <h1>{{allLocalFish.length}} Potentially Related Results</h1>
-    <ion-item *ngFor="let fish of allLocalFish" (click)="selectSpecies(fish, true)">
-      <div class="autoCompleteContentBlock" *ngIf="fish">
+      <form action="." (ngSubmit)="checkAPI($event, false)">
+        <ion-searchbar [ngClass]="{'littleSearcher' : littleSearchbar, 'littleRightSearcher' : speciesSelected, 'tinySearcher' : littleSearchbar && speciesSelected }" (ionChange)='triggerAutoComplete($event.target.value)' placeholder="Search for a {{typeofTrigger}} fish or user..." value="{{searchQuery}}" type="search" (ionClear)="clearSearch()" [(ngModel)]="searchQueryController" [ngModelOptions]="{standalone: true}" (click)="retriggerAutoComplete()" showSearchButton></ion-searchbar>
+      </form>
 
-        <span class="overhauler" *ngIf="fish.Pics">
-          <img [src]="fish.Pics[0]" *ngIf="fish.Pics[0]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
-          <img [src]="fish.Pics[1]" *ngIf="fish.Pics[1]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
-          <img [src]="fish.Pics[2]" *ngIf="fish.Pics[2]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
-        </span>
+      <ion-item class="toggle littleSwitch animated fadeIn" *ngIf="littleSearchbar">
+        <ion-toggle [(ngModel)]="saltwater" (click)="switchSalt()"></ion-toggle>
+      </ion-item>
+    </ion-toolbar>
 
-        <span class="overhauler" *ngIf="!fish.Pics">
-          <img src="../assets/noImg.png" class="leftImage" />
-        </span>
+    <ion-toolbar class="saltSwitch" *ngIf="!speciesSelected && searchQuery.length < 2">
+      <ion-item class="toggle">
 
-        <div class="smallSpace">
-          <b *ngIf="fish.name">{{fish.name}}</b> <br /><br />
-          <i>(<a (click)="showGenus(fish.genus)">{{fish.genus}}</a> {{fish.species}})</i>
+      <!-- <h1 class="pondTitleVersion" *ngIf="!popularMode" (click)="loadPopular()">More</h1> -->
+
+      <h1 class="pondTitleVersion" *ngIf="!popularMode && !randomMode">
+        <label (click)="loadPopular()">Popular</label>
+        <font color="#8e8e8e"> &bull; </font>
+        <label (click)="loadRandom()">Random</label>
+      </h1>
+
+      <h1 class="pondTitleVersion" *ngIf="popularMode || randomMode">
+        <label *ngIf="randomMode" (click)="loadRandom()">Reload</label>
+        <font *ngIf="randomMode" color="#8e8e8e"> &bull; </font>
+        <label (click)="unloadAll()">Done</label>
+      </h1>
+
+
+        <ion-label *ngIf="saltwater">Saltwater</ion-label>
+        <ion-label *ngIf="!saltwater">Freshwater</ion-label>
+        <ion-toggle [(ngModel)]="saltwater" (click)="switchPopular()"></ion-toggle>
+      </ion-item>
+    </ion-toolbar>
+
+    <ion-toolbar class="alphabetHeader" *ngIf="searchQuery.length > 2 && !speciesSelected">
+      <ion-item *ngIf="!doneLoading">
+        <!-- <h2 class="alphabetSpeciesLoading">Loading All Species...</h2> -->
+        <img class="tempLoader animated fadeIn" src="../assets/dnaLoader.gif" />
+      </ion-item>
+
+      <ion-item *ngIf="doneLoading">
+        <ul class="alphabet animated fadeIn">
+          <li class="letter" (click)="newLetterSwitcher('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
+          <li class="letter" (click)="newLetterSwitcher('b')" [ngClass]="{'litLetter' : selectedLetter == 'b'}">b</li>
+          <li class="letter" (click)="newLetterSwitcher('c')" [ngClass]="{'litLetter' : selectedLetter == 'c'}">c</li>
+          <li class="letter" (click)="newLetterSwitcher('d')" [ngClass]="{'litLetter' : selectedLetter == 'd'}">d</li>
+          <li class="letter" (click)="newLetterSwitcher('e')" [ngClass]="{'litLetter' : selectedLetter == 'e'}">e</li>
+          <li class="letter" (click)="newLetterSwitcher('f')" [ngClass]="{'litLetter' : selectedLetter == 'f'}">f</li>
+          <li class="letter" (click)="newLetterSwitcher('g')" [ngClass]="{'litLetter' : selectedLetter == 'g'}">g</li>
+          <li class="letter" (click)="newLetterSwitcher('h')" [ngClass]="{'litLetter' : selectedLetter == 'h'}">h</li>
+          <li class="letter" (click)="newLetterSwitcher('i')" [ngClass]="{'litLetter' : selectedLetter == 'i'}">i</li>
+          <li class="letter" (click)="newLetterSwitcher('j')" [ngClass]="{'litLetter' : selectedLetter == 'j'}">j</li>
+          <li class="letter" (click)="newLetterSwitcher('k')" [ngClass]="{'litLetter' : selectedLetter == 'k'}">k</li>
+          <li class="letter" (click)="newLetterSwitcher('l')" [ngClass]="{'litLetter' : selectedLetter == 'l'}">l</li>
+          <li class="letter" (click)="newLetterSwitcher('m')" [ngClass]="{'litLetter' : selectedLetter == 'm'}">m</li>
+          <li class="letter" (click)="newLetterSwitcher('n')" [ngClass]="{'litLetter' : selectedLetter == 'n'}">n</li>
+          <li class="letter" (click)="newLetterSwitcher('o')" [ngClass]="{'litLetter' : selectedLetter == 'o'}">o</li>
+          <li class="letter" (click)="newLetterSwitcher('p')" [ngClass]="{'litLetter' : selectedLetter == 'p'}">p</li>
+          <li class="letter" (click)="newLetterSwitcher('q')" [ngClass]="{'litLetter' : selectedLetter == 'q'}">q</li>
+          <li class="letter" (click)="newLetterSwitcher('r')" [ngClass]="{'litLetter' : selectedLetter == 'r'}">r</li>
+          <li class="letter" (click)="newLetterSwitcher('s')" [ngClass]="{'litLetter' : selectedLetter == 's'}">s</li>
+          <li class="letter" (click)="newLetterSwitcher('t')" [ngClass]="{'litLetter' : selectedLetter == 't'}">t</li>
+          <li class="letter" (click)="newLetterSwitcher('u')" [ngClass]="{'litLetter' : selectedLetter == 'u'}">u</li>
+          <li class="letter" (click)="newLetterSwitcher('v')" [ngClass]="{'litLetter' : selectedLetter == 'v'}">v</li>
+          <li class="letter" (click)="newLetterSwitcher('w')" [ngClass]="{'litLetter' : selectedLetter == 'w'}">w</li>
+          <li class="letter" (click)="newLetterSwitcher('x')" [ngClass]="{'litLetter' : selectedLetter == 'x'}">x</li>
+          <li class="letter" (click)="newLetterSwitcher('y')" [ngClass]="{'litLetter' : selectedLetter == 'y'}">y</li>
+          <li class="letter" (click)="newLetterSwitcher('z')" [ngClass]="{'litLetter' : selectedLetter == 'z'}">z</li>
+        </ul>
+      </ion-item>
+    </ion-toolbar>
+
+    <!-- PREVIOUSLY SEARCHED RESULTS -->
+    <ion-list class="autocompleteResults previousResults" *ngIf="showPreviousResults && previousResults.length >= 1" [ngClass]="{'littleAutoComplete' : littleSearchbar}">
+      <div class="fixedWhitespace">
+        <ion-item *ngFor="let fish of previousResults" (click)="selectSpecies(fish, true)">
+          <i>{{fish.name}}</i>
+        </ion-item>
+      </div>
+    </ion-list>
+
+    <!-- AUTOCOMPLETE RESULTS -->
+    <ion-list class="autocompleteResults" *ngIf="showAutoComplete && allLocalFish.length >= 1" [ngClass]="{'littleAutoComplete' : littleSearchbar}">
+      <h1>{{allLocalFish.length}} Potentially Related Results</h1>
+      <ion-item *ngFor="let fish of allLocalFish" (click)="selectSpecies(fish, true)">
+        <div class="autoCompleteContentBlock" *ngIf="fish">
+
+          <span class="overhauler" *ngIf="fish.Pics">
+            <img [src]="fish.Pics[0]" *ngIf="fish.Pics[0]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
+            <img [src]="fish.Pics[1]" *ngIf="fish.Pics[1]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
+            <img [src]="fish.Pics[2]" *ngIf="fish.Pics[2]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
+          </span>
+
+          <span class="overhauler" *ngIf="!fish.Pics">
+            <img src="../assets/noImg.png" class="leftImage" />
+          </span>
+
+          <div class="smallSpace">
+            <b *ngIf="fish.name">{{fish.name}}</b> <br /><br />
+            <i>(<a (click)="showGenus(fish.genus)">{{fish.genus}}</a> {{fish.species}})</i>
+          </div>
+
+        </div>
+      </ion-item>
+    </ion-list>
+
+  </ion-header>
+
+  <!-- Autocomplete Dimmer -->
+  <div class="autocompleteDimmer" *ngIf="showAutoComplete || (showPreviousResults && previousResults.length >= 1) || showInstructions" (click)="clearMoreResults()"></div>
+
+  <div class="instructions" *ngIf="showInstructions" (click)="toggleInstructions()">
+    <img src="assets/topRightArrow.png" />
+      <label>Welcome! You are currently in freshwater mode, meaning you will only see fish from creeks and rivers.
+      If you'd like to see ocean fish, toggle me!</label>
+  </div>
+
+  <ion-content class="coreContentMinimal">
+    <ion-icon class="clearSearchTxt" *ngIf="selectedLetter" (click)="clearSwitcher()" name="close-circle-outline"></ion-icon>
+
+    <div *ngIf="!speciesSelected">
+
+      <!-- REFRESHER -->
+      <div class="refreshWrapper" *ngIf="doneLoading && (ourFish.length !== 0 || fbSpecies.length !== 0 || relatedSpecies.length !== 0)">
+        <ion-refresher slot="fixed" (ionRefresh)="refreshSituation($event)">
+          <ion-refresher-content pullingIcon="arrow-down" refreshingSpinner="bubbles">
+          </ion-refresher-content>
+        </ion-refresher>
+      </div>
+
+
+      <!-- LOGOS -->
+      <div *ngIf="searchQuery.length <= 2 && !popularMode && !randomMode">
+        <img *ngIf="!saltwater" src="../assets/whiteKoiClear.png" class="koiLogo animated pulse infinite"/>
+        <img *ngIf="saltwater" src="../assets/turtleClear.png" class="koiLogo tunaLogo animated pulse infinite"/>
+      </div>
+
+      <!-- NOTHING FOUND TEXT  -->
+      <label class="nothingFoundTxt" [ngClass]="{'pushNothingUp' : shortRelatedPassage.length >= 1}" *ngIf="searchQuery.length > 2 && doneLoading && (!isLNumCatfish || !possibleLNum) && usersFound.length == 0 && ourFish.length == 0 && fbSpecies.length == 0 && relatedSpecies.length == 0">
+        <b>No results returned.</b>
+        <br  /><br />
+        Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.
+        <br /><br />
+        When searching for a saltwater or ocean fish,  try a
+        <a *ngIf="saltwater" (click)="showFreshWater()">freshwater search</a>
+        <a *ngIf="!saltwater" (click)="showSaltWater()">saltwater search</a>?
+
+        <!-- DID YOU MEAN RESULTS -->
+        <div *ngIf="doneLoading && relatedSearchResults" class="genusDescription cyaTxt" [innerHTML]="relatedSearchResults"></div>
+
+        <div *ngIf="doneLoading && relatedSearchResults && shortRelatedPassage.length !== 0" class="didYouMeanResults">
+          <h1>Potentially Related Species:</h1>
+          <p [innerHTML]="shortRelatedPassage"></p>
+
+          <span *ngIf="finalRelatedSearchResults">
+            <h1 *ngIf="finalRelatedSearchResults.length >= 1">Species Match:</h1>
+            <ul>
+              <li class="didYouMeanItem" *ngFor="let species of finalRelatedSearchResults" (click)="showGenus(species)">{{species}}</li>
+            </ul>
+          </span>
+
         </div>
 
-      </div>
-    </ion-item>
-  </ion-list>
+      </label>
 
-</ion-header>
+      <!-- RELATED GENUS -->
+      <span *ngIf="searchQuery.length > 2 && searchingGenus && genusDescription && relatedGenus.length !== 0 && (ourFish.length !== 0 || fbSpecies.length !== 0 || relatedSpecies.length !== 0)" class="relatedGenuses">
+        <h1 *ngIf="currentFamily">Genus in the family {{ currentFamily }}</h1>
+        <div class="relatedSpeciesOfGenus">
+          <a *ngFor="let fish of relatedGenus" (click)="showGenus(fish)">{{ fish }}</a>
+        </div>
+      </span>
 
-<!-- Autocomplete Dimmer -->
-<div class="autocompleteDimmer" *ngIf="showAutoComplete || (showPreviousResults && previousResults.length >= 1)" (click)="clearMoreResults()"></div>
+      <!-- GENUS DESCRIPTION -->
+      <span *ngIf="searchQuery.length > 2 && searchingGenus && genusDescription && (ourFish.length !== 0 || fbSpecies.length !== 0 || relatedSpecies.length !== 0)">
+        <div *ngIf="!fullGenusDescription" class="genusDescription animated slideInLeft" [innerHTML]="genusDescription" (click)="generateFullGenusDescription()"></div>
+        <div *ngIf="fullGenusDescription" class="genusDescription animated slideInLeft" [innerHTML]="genusDescription" (click)="generateGenusDescription()"></div>
+      </span>
 
-<ion-content *ngIf="!speciesSelected" class="blueBack" id="coreScroll" [ngClass]="{'greyBack': searchQuery.length >= 2}">
+      <!-- BETTA VARIATIONS -->
+      <span *ngIf="searchQuery.length > 2 && bettaVariations.length !== 0" class="bettaSection">
+        <h2>Betta Splenden Variations</h2>
+        <ul>
+          <li *ngFor="let fish of bettaVariations" [innerHTML]="fish" (click)="bettaLink(fish)"></li>
+        </ul>
+      </span>
 
-  <ion-icon class="clearSearchTxt" *ngIf="selectedLetter" (click)="clearSwitcher()" name="close-circle-outline"></ion-icon>
+      <!-- L NUMBER LIST -->
+      <span *ngIf="searchQuery.length > 2 && doneLoading && isLNumCatfish">
+        <button class="lNumButton" (click)="showLNumGuide()">View All L Number Species on planetcatfish.com</button>
 
-  <div *ngIf="!speciesSelected">
+        <div  class="loadingSpinner" *ngIf="!possibleLNum && !doneLoading">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
 
-    <!-- LOGOS -->
-    <div *ngIf="searchQuery.length <= 2 && !popularMode && !randomMode">
-      <img *ngIf="!saltwater" src="../assets/whiteKoiClear.png" class="koiLogo animated pulse infinite"/>
-      <img *ngIf="saltwater" src="../assets/turtleClear.png" class="koiLogo tunaLogo animated pulse infinite"/>
-    </div>
+        <h2 *ngIf="possibleLNum" class="lNumTxt">{{searchQuery}}? Could that be a species of <a (click)="checkAPI(false, possibleLNum)">{{ possibleLNum }}</a>?</h2>
 
-    <!-- NOTHING FOUND TEXT  -->
-    <label class="nothingFoundTxt" [ngClass]="{'pushNothingUp' : shortRelatedPassage.length >= 1}" *ngIf="searchQuery.length > 2 && doneLoading && (!isLNumCatfish || !possibleLNum) && usersFound.length == 0 && ourFish.length == 0 && fbSpecies.length == 0 && relatedSpecies.length == 0">
-      <b>No results returned.</b>
-      <br  /><br />
-      Please try a different query. If nothing seems to work, type the fish name into google, then copy either the genus or species name into the searchbar.
-      <br /><br />
-      When searching for a saltwater or ocean fish,  try a
-      <a *ngIf="saltwater" (click)="showFreshWater()">freshwater search</a>
-      <a *ngIf="!saltwater" (click)="showSaltWater()">saltwater search</a>?
+      </span>
 
-      <!-- DID YOU MEAN RESULTS -->
-      <div *ngIf="doneLoading && relatedSearchResults" class="genusDescription cyaTxt" [innerHTML]="relatedSearchResults"></div>
+      <!-- POPULAR SPECIES -->
+      <div *ngIf="popularMode" class="theResults">
+        <div class="topTitle" *ngIf="!saltwater">The most viewed freshwater species</div>
+        <div class="topTitle" *ngIf="saltwater">The most viewed saltwater species</div>
 
-      <div *ngIf="doneLoading && relatedSearchResults && shortRelatedPassage.length !== 0" class="didYouMeanResults">
-        <h1>Potentially Related Species:</h1>
-        <p [innerHTML]="shortRelatedPassage"></p>
+        <div  class="loadingSpinner" *ngIf="popularSpecies.length == 0">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
 
-        <span *ngIf="finalRelatedSearchResults">
-          <h1 *ngIf="finalRelatedSearchResults.length >= 1">Species Match:</h1>
-          <ul>
-            <li class="didYouMeanItem" *ngFor="let species of finalRelatedSearchResults" (click)="showGenus(species)">{{species}}</li>
-          </ul>
-        </span>
+        <ion-card class="animated fadeIn" *ngFor="let fish of popularSpecies">
+          <ion-card-header>
+            <ion-card-subtitle>
 
-      </div>
+              <div class="subtitleTxt">
+                <b (click)="showGenus(fish.genus)">{{fish.genus}}</b>
+                <i> {{fish.species}}</i>
+              </div>
 
-    </label>
+              <!-- <ion-icon *ngIf="!fish.isFavourited && loggedIn" class="rightIconMore" (click)="addFishToWishlist(fish)" name="star-outline"></ion-icon>
+              <ion-icon *ngIf="fish.isFavourited && loggedIn" class="rightIconMore starIco" (click)="addFishToWishlist(fish)" name="star"></ion-icon> -->
 
-    <!-- RELATED GENUS -->
-    <span *ngIf="searchQuery.length > 2 && searchingGenus && genusDescription && relatedGenus.length !== 0 && (ourFish.length !== 0 || fbSpecies.length !== 0 || relatedSpecies.length !== 0)" class="relatedGenuses">
-      <h1 *ngIf="currentFamily">Genus in the family {{ currentFamily }}</h1>
-      <div class="relatedSpeciesOfGenus">
-        <a *ngFor="let fish of relatedGenus" (click)="showGenus(fish)">{{ fish }}</a>
-      </div>
-    </span>
+              <!-- <ion-icon class="rightIconMore" *ngIf="loggedIn" (click)="addTankTrigger(fish)" name="add-circle-outline"></ion-icon> -->
 
-    <!-- GENUS DESCRIPTION -->
-    <span *ngIf="searchQuery.length > 2 && searchingGenus && genusDescription && (ourFish.length !== 0 || fbSpecies.length !== 0 || relatedSpecies.length !== 0)">
-      <div *ngIf="!fullGenusDescription" class="genusDescription animated slideInLeft" [innerHTML]="genusDescription" (click)="generateFullGenusDescription()"></div>
-      <div *ngIf="fullGenusDescription" class="genusDescription animated slideInLeft" [innerHTML]="genusDescription" (click)="generateGenusDescription()"></div>
-    </span>
+            </ion-card-subtitle>
+            <ion-card-title (click)="selectSpecies(fish, true)" class="fishNameText">{{fish.name}}</ion-card-title>
+          </ion-card-header>
 
-    <!-- BETTA VARIATIONS -->
-    <span *ngIf="searchQuery.length > 2 && bettaVariations.length !== 0" class="bettaSection">
-      <h2>Betta Splenden Variations</h2>
-      <ul>
-        <li *ngFor="let fish of bettaVariations" [innerHTML]="fish" (click)="bettaLink(fish)"></li>
-      </ul>
-    </span>
-
-    <!-- L NUMBER LIST -->
-    <span *ngIf="searchQuery.length > 2 && doneLoading && isLNumCatfish">
-      <button class="lNumButton" (click)="showLNumGuide()">View All L Number Species on planetcatfish.com</button>
-
-      <div  class="loadingSpinner" *ngIf="!possibleLNum && !doneLoading">
-        <ion-spinner name="crescent"></ion-spinner>
-      </div>
-
-      <h2 *ngIf="possibleLNum" class="lNumTxt">{{searchQuery}}? Could that be a species of <a (click)="checkAPI(false, possibleLNum)">{{ possibleLNum }}</a>?</h2>
-
-    </span>
-
-    <!-- POPULAR SPECIES -->
-    <div *ngIf="popularMode" class="theResults">
-      <div class="topTitle" *ngIf="!saltwater">The most viewed freshwater species</div>
-      <div class="topTitle" *ngIf="saltwater">The most viewed saltwater species</div>
-
-      <div  class="loadingSpinner" *ngIf="popularSpecies.length == 0">
-        <ion-spinner name="crescent"></ion-spinner>
-      </div>
-
-      <ion-card class="animated fadeIn" *ngFor="let fish of popularSpecies">
-        <ion-card-header>
-          <ion-card-subtitle>
-
-            <div class="subtitleTxt">
-              <b (click)="showGenus(fish.genus)">{{fish.genus}}</b>
-              <i> {{fish.species}}</i>
-            </div>
-
-            <!-- <ion-icon *ngIf="!fish.isFavourited && loggedIn" class="rightIconMore" (click)="addFishToWishlist(fish)" name="star-outline"></ion-icon>
-            <ion-icon *ngIf="fish.isFavourited && loggedIn" class="rightIconMore starIco" (click)="addFishToWishlist(fish)" name="star"></ion-icon> -->
-
-            <!-- <ion-icon class="rightIconMore" *ngIf="loggedIn" (click)="addTankTrigger(fish)" name="add-circle-outline"></ion-icon> -->
-
-          </ion-card-subtitle>
-          <ion-card-title (click)="selectSpecies(fish, true)" class="fishNameText">{{fish.name}}</ion-card-title>
-        </ion-card-header>
-
-        <ion-slides pager="false">
-          <ng-template let-img ngFor [ngForOf]="fish['Pics']">
-           <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(fish, true)">
-             <img [src]="img" onerror="this.parentNode.style.display='none'" />
-           </ion-slide>
-           </ng-template>
-        </ion-slides>
-
-      </ion-card>
-    </div>
-
-    <!-- RANDOM SPECIES -->
-    <div *ngIf="randomMode" class="theResults">
-      <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh == -1">Freshwater species generated</h1>
-      <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh != -1">Saltwater species generated</h1>
-
-      <div  class="loadingSpinner" *ngIf="!randomSpecies.genus">
-        <ion-spinner name="crescent"></ion-spinner>
-      </div>
-
-      <ion-card class="animated fadeIn" *ngIf="randomSpecies.genus">
-        <ion-card-header>
-          <ion-card-subtitle>
-            <div class="subtitleTxt">
-              <b (click)="showGenus(randomSpecies.genus)">{{randomSpecies.genus}}</b>
-              <i> {{randomSpecies.species}}</i>
-            </div>
-            <!-- <ion-icon *ngIf="!randomSpecies.isFavourited && loggedIn" class="rightIconMore" (click)="addRandomFishToWishlist()" name="star-outline"></ion-icon>
-            <ion-icon *ngIf="randomSpecies.isFavourited && loggedIn" class="rightIconMore starIco" (click)="addRandomFishToWishlist()" name="star"></ion-icon>
-
-            <ion-icon class="rightIconMore" *ngIf="loggedIn" (click)="addTankTrigger(randomSpecies)" name="add-circle-outline"></ion-icon> -->
-          </ion-card-subtitle>
-          <ion-card-title (click)="selectSpecies(randomSpecies, true)" class="fishNameText">{{randomSpecies.name}}</ion-card-title>
-        </ion-card-header>
-
-        <ion-slides pager="false">
-          <ng-template let-img ngFor [ngForOf]="randomSpecies['Pics']">
-           <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(randomSpecies, true)">
-             <img [src]="img" onerror="this.parentNode.style.display='none'"  />
-           </ion-slide>
-           </ng-template>
-        </ion-slides>
-
-      </ion-card>
-    </div>
-
-    <!-- PONDS SPECIES -->
-    <div *ngIf="ourFishLength >= 1 && searchQuery.length > 2" class="theResults" [ngClass]="{'thinResults' : showPondSpecies}">
-
-      <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('local')" *ngIf="minSpeciesLocalReturn >= 10"></ion-icon>
-      <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('local')" *ngIf="ourFish.length > 10" ></ion-icon>
-
-      <ion-icon class="seeMoreIco" name="more" (click)="collpasePondSpecies()" [ngClass]="{'rotate' : !showPondSpecies}"></ion-icon>
-
-      <div class="topTitle" *ngIf="ourFishLength >= 1"><label *ngIf="ourFish.length >= 10">{{ maxSpeciesLocalReturn }} / </label> {{ ourFishLength }} Species Found from Pond</div>
-
-      <div *ngIf="showPondSpecies">
-        <div *ngFor="let fish of ourFish">
-          <ion-card class="animated fadeIn" *ngIf="fish.id >= minSpeciesLocalReturn && fish.id <= maxSpeciesLocalReturn">
-            <ion-card-header>
-              <ion-card-subtitle>
-                <div class="subtitleTxt">
-                  <b (click)="showGenus(fish.genus)">{{fish.genus}}</b>
-                  <i> {{fish.species}}</i>
-                </div>
-
-                <!-- <ion-icon *ngIf="!fish.isFavourited && loggedIn" class="rightIconMore" (click)="addFishToWishlist(fish)" name="star-outline"></ion-icon>
-                <ion-icon *ngIf="fish.isFavourited && loggedIn" class="rightIconMore starIco" (click)="addFishToWishlist(fish)" name="star"></ion-icon>
-
-                <ion-icon class="rightIconMore" *ngIf="loggedIn" (click)="addTankTrigger(fish)" name="add-circle-outline"></ion-icon> -->
-              </ion-card-subtitle>
-              <ion-card-title (click)="selectSpecies(fish, true)" class="fishNameText">{{fish.name}}</ion-card-title>
-            </ion-card-header>
-
-            <ion-slides pager="false">
-              <ng-template let-img ngFor [ngForOf]="fish['Pics']">
-               <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(fish, true)">
-                 <img [src]="img" onerror="this.parentNode.style.display='none'"  />
-               </ion-slide>
-               </ng-template>
-            </ion-slides>
-
-            <!-- <ion-slides pager="false">
-             <ion-slide class="imageBox" *ngFor="let img of species['Pics']; let i = index" >
-               <img [src]="img" onerror="this.src='../assets/noImg.png'" />
+          <ion-slides pager="false">
+            <ng-template let-img ngFor [ngForOf]="fish['Pics']">
+             <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(fish, true)">
+               <img [src]="img" onerror="this.parentNode.style.display='none'" />
              </ion-slide>
-            </ion-slides> -->
+             </ng-template>
+          </ion-slides>
 
-            <ion-card-content *ngIf="fish.wikiDesc" class="maxSizeContent" [innerHTML]="fish.wikiDesc">
-            </ion-card-content>
-
-          </ion-card>
-        </div>
+        </ion-card>
       </div>
 
-      <div *ngIf="showPondSpecies" class="bottomTools">
-        <span *ngIf="ourFish.length > 10">
-          <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('local')" *ngIf="minSpeciesLocalReturn >= 10"></ion-icon>
-          <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('local')" *ngIf="ourFish.length > 10" ></ion-icon>
-        </span>
+      <!-- RANDOM SPECIES -->
+      <div *ngIf="randomMode" class="theResults">
+        <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh == -1">Freshwater species generated</h1>
+        <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh != -1">Saltwater species generated</h1>
 
-        <ion-icon *ngIf="ourFish.length > 3" class="seeMoreIco" name="more" (click)="collpasePondSpecies()" [ngClass]="{'rotate' : !showPondSpecies}"></ion-icon>
+        <div  class="loadingSpinner" *ngIf="!randomSpecies.genus">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+
+        <ion-card class="animated fadeIn" *ngIf="randomSpecies.genus">
+          <ion-card-header>
+            <ion-card-subtitle>
+              <div class="subtitleTxt">
+                <b (click)="showGenus(randomSpecies.genus)">{{randomSpecies.genus}}</b>
+                <i> {{randomSpecies.species}}</i>
+              </div>
+              <!-- <ion-icon *ngIf="!randomSpecies.isFavourited && loggedIn" class="rightIconMore" (click)="addRandomFishToWishlist()" name="star-outline"></ion-icon>
+              <ion-icon *ngIf="randomSpecies.isFavourited && loggedIn" class="rightIconMore starIco" (click)="addRandomFishToWishlist()" name="star"></ion-icon>
+
+              <ion-icon class="rightIconMore" *ngIf="loggedIn" (click)="addTankTrigger(randomSpecies)" name="add-circle-outline"></ion-icon> -->
+            </ion-card-subtitle>
+            <ion-card-title (click)="selectSpecies(randomSpecies, true)" class="fishNameText">{{randomSpecies.name}}</ion-card-title>
+          </ion-card-header>
+
+          <ion-slides pager="false">
+            <ng-template let-img ngFor [ngForOf]="randomSpecies['Pics']">
+             <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(randomSpecies, true)">
+               <img [src]="img" onerror="this.parentNode.style.display='none'"  />
+             </ion-slide>
+             </ng-template>
+          </ion-slides>
+
+        </ion-card>
       </div>
 
+      <!-- PONDS SPECIES -->
+      <div *ngIf="doneLoading && ourFish.length >= 1 && searchQuery.length > 2" class="theResults" [ngClass]="{'thinResults' : showPondSpecies}">
 
-    </div>
+        <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('local')" *ngIf="minSpeciesLocalReturn >= 10"></ion-icon>
+        <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('local')" *ngIf="ourFish.length > 10" ></ion-icon>
 
-    <!-- FISHBASE SPECIES -->
-    <div *ngIf="doneLoading && fbSpeciesLength > 1 && searchQuery.length >= 2" class="theResults" [ngClass]="{'thinResults' : showFishbaseSpecies}">
+        <ion-icon class="seeMoreIco" name="more" (click)="collpasePondSpecies()" [ngClass]="{'rotate' : !showPondSpecies}"></ion-icon>
 
-      <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('fishbase')" *ngIf="minSpeciesReturn >= 10"></ion-icon>
-      <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('fishbase')" *ngIf="fbSpecies.length > 10"></ion-icon>
+        <div class="topTitle" *ngIf="ourFish.length >= 1"><label *ngIf="ourFish.length >= 10">{{ maxSpeciesLocalReturn }} / </label> {{ ourFish.length }} Species Found from Pond</div>
 
-      <ion-icon class="seeMoreIco" name="more" (click)="collpaseFishbaseSpecies()" [ngClass]="{'rotate' : !showFishbaseSpecies}"></ion-icon>
+        <div *ngIf="showPondSpecies">
+          <div *ngFor="let fish of ourFish">
+            <ion-card class="animated fadeIn" *ngIf="fish.id >= minSpeciesLocalReturn && fish.id <= maxSpeciesLocalReturn">
+              <ion-card-header>
+                <ion-card-subtitle>
+                  <div class="subtitleTxt">
+                    <b (click)="showGenus(fish.genus)">{{fish.genus}}</b>
+                    <i> {{fish.species}}</i>
+                  </div>
 
-      <div class="topTitle" *ngIf="fbSpeciesLength >= 1"><label *ngIf="fbSpecies.length >= 10">{{ maxSpeciesReturn }} / </label>{{ fbSpeciesLength }} Species Found from Fishbase</div>
+                  <!-- <ion-icon *ngIf="!fish.isFavourited && loggedIn" class="rightIconMore" (click)="addFishToWishlist(fish)" name="star-outline"></ion-icon>
+                  <ion-icon *ngIf="fish.isFavourited && loggedIn" class="rightIconMore starIco" (click)="addFishToWishlist(fish)" name="star"></ion-icon>
 
-      <div *ngIf="showFishbaseSpecies">
-        <div *ngFor="let fish of fbSpecies">
-          <ion-card class="animated fadeIn" *ngIf="fish.id >= minSpeciesReturn && fish.id <= maxSpeciesReturn">
-            <ion-card-header>
-              <ion-card-subtitle><b (click)="showGenus(fish.Genus)">{{fish.Genus}}</b><i> {{fish.Species}}</i></ion-card-subtitle>
-              <ion-card-title *ngIf="fish.FBname" (click)="selectSpecies(fish, false)">{{fish.FBname}}</ion-card-title>
-              <ion-card-title *ngIf="!fish.FBname" (click)="selectSpecies(fish, false)">{{fish.Species}}</ion-card-title>
-            </ion-card-header>
+                  <ion-icon class="rightIconMore" *ngIf="loggedIn" (click)="addTankTrigger(fish)" name="add-circle-outline"></ion-icon> -->
+                </ion-card-subtitle>
+                <ion-card-title (click)="selectSpecies(fish, true)" class="fishNameText">{{fish.name}}</ion-card-title>
+              </ion-card-header>
 
-            <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
-              <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
-                <img [src]="fish.Pic[0]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
-              </ion-slide>
-              <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
-                <img [src]="fish.Pic[1]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
-              </ion-slide>
-            </ion-slides>
-          </ion-card>
+              <ion-slides pager="false">
+                <ng-template let-img ngFor [ngForOf]="fish['Pics']">
+                 <ion-slide id="myImg" class="imageBox" (click)="selectSpecies(fish, true)">
+                   <img [src]="img" onerror="this.parentNode.style.display='none'"  />
+                 </ion-slide>
+                 </ng-template>
+              </ion-slides>
+
+              <!-- <ion-slides pager="false">
+               <ion-slide class="imageBox" *ngFor="let img of species['Pics']; let i = index" >
+                 <img [src]="img" onerror="this.src='../assets/noImg.png'" />
+               </ion-slide>
+              </ion-slides> -->
+
+              <ion-card-content *ngIf="fish.wikiDesc" class="maxSizeContent" [innerHTML]="fish.wikiDesc">
+              </ion-card-content>
+
+            </ion-card>
+          </div>
         </div>
-        <!-- <label class="nextPageTxt" (click)="nextPage()" *ngIf="fbSpecies.length >= 10"> -- NEXT PAGE --</label>
+
+        <div *ngIf="showPondSpecies" class="bottomTools">
+          <span *ngIf="ourFish.length > 10">
+            <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('local')" *ngIf="minSpeciesLocalReturn >= 10"></ion-icon>
+            <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('local')" *ngIf="ourFish.length > 10" ></ion-icon>
+          </span>
+
+          <ion-icon *ngIf="ourFish.length > 3" class="seeMoreIco" name="more" (click)="collpasePondSpecies()" [ngClass]="{'rotate' : !showPondSpecies}"></ion-icon>
+        </div>
+
+
+      </div>
+
+      <!-- FISHBASE SPECIES -->
+      <div *ngIf="doneLoading && fbSpecies.length >= 1 && searchQuery.length > 2" class="theResults" [ngClass]="{'thinResults' : showFishbaseSpecies}">
+
+        <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('fishbase')" *ngIf="minSpeciesReturn >= 10"></ion-icon>
+        <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('fishbase')" *ngIf="fbSpecies.length > 10"></ion-icon>
+
+        <ion-icon class="seeMoreIco" name="more" (click)="collpaseFishbaseSpecies()" [ngClass]="{'rotate' : !showFishbaseSpecies}"></ion-icon>
+
+        <div class="topTitle" *ngIf="fbSpecies.length >= 1"><label *ngIf="fbSpecies.length >= 10">{{ maxSpeciesReturn }} / </label>{{ fbSpecies.length }} Species Found from Fishbase</div>
+
+        <div *ngIf="showFishbaseSpecies">
+          <div *ngFor="let fish of fbSpecies">
+            <ion-card class="animated fadeIn" *ngIf="fish.id >= minSpeciesReturn && fish.id <= maxSpeciesReturn">
+              <ion-card-header>
+                <ion-card-subtitle><b (click)="showGenus(fish.Genus)">{{fish.Genus}}</b><i> {{fish.Species}}</i></ion-card-subtitle>
+                <ion-card-title *ngIf="fish.FBname" (click)="selectSpecies(fish, false)">{{fish.FBname}}</ion-card-title>
+                <ion-card-title *ngIf="!fish.FBname" (click)="selectSpecies(fish, false)">{{fish.Species}}</ion-card-title>
+              </ion-card-header>
+
+              <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
+                <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
+                  <img [src]="fish.Pic[0]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
+                </ion-slide>
+                <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
+                  <img [src]="fish.Pic[1]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
+                </ion-slide>
+              </ion-slides>
+            </ion-card>
+          </div>
+          <!-- <label class="nextPageTxt" (click)="nextPage()" *ngIf="fbSpecies.length >= 10"> -- NEXT PAGE --</label>
+          <label class="nextPageTxt prev" (click)="previousPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label> -->
+        </div>
+
+        <div *ngIf="showFishbaseSpecies" class="bottomTools">
+
+          <span *ngIf="fbSpecies.length > 10">
+            <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('fishbase')" *ngIf="minSpeciesReturn >= 10"></ion-icon>
+            <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('fishbase')" *ngIf="fbSpecies.length > 10"></ion-icon>
+          </span>
+
+          <ion-icon *ngIf="fbSpecies.length > 3" class="seeMoreIco" name="more" (click)="collpaseFishbaseSpecies()" [ngClass]="{'rotate' : !showFishbaseSpecies}"></ion-icon>
+        </div>
+
+      </div>
+
+      <!-- FISHBASE RELATED SPECIES -->
+      <div *ngIf="doneLoading && relatedSpecies.length >= 1 && searchQuery.length > 2" class="theResults" [ngClass]="{'thinResults' : showFishbaseRelatedSpecies}">
+
+        <ion-icon class="seeMoreIco leftArr" name="arrow-left" (click)="previousPage('related')" *ngIf="minSpeciesRelatedReturn >= 10"></ion-icon>
+        <ion-icon class="seeMoreIco rightArr" name="arrow-right" (click)="nextPage('related')" *ngIf="relatedSpecies.length > 10"></ion-icon>
+
+        <ion-icon class="seeMoreIco" name="more" (click)="collpaseFishbaseRelatedSpecies()" [ngClass]="{'rotate' : !showFishbaseRelatedSpecies}"></ion-icon>
+
+        <div class="topTitle" *ngIf="relatedSpecies.length >= 1"><label *ngIf="relatedSpecies.length >= 10">{{ maxSpeciesRelatedReturn }} / </label> {{ relatedSpecies.length }} Species Related</div>
+
+        <div *ngIf="showFishbaseRelatedSpecies">
+          <div *ngFor="let fish of relatedSpecies">
+            <ion-card class="animated fadeIn" *ngIf="fish.id >= minSpeciesRelatedReturn && fish.id <= maxSpeciesRelatedReturn">
+              <ion-card-header>
+                <ion-card-subtitle><b (click)="showGenus(fish.Genus)">{{fish.Genus}}</b><i> {{fish.Species}}</i></ion-card-subtitle>
+                <ion-card-title *ngIf="fish.FBname" (click)="selectSpecies(fish, false)">{{fish.FBname}}</ion-card-title>
+                <ion-card-title *ngIf="!fish.FBname" (click)="selectSpecies(fish, false)" >The {{fish.Species}}</ion-card-title>
+              </ion-card-header>
+
+              <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
+               <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
+                 <img [src]="fish.Pic[0]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
+               </ion-slide>
+               <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
+                 <img [src]="fish.Pic[1]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
+               </ion-slide>
+              </ion-slides>
+            </ion-card>
+          </div>
+        </div>
+
+        <!-- <label class="nextPageTxt" (click)="nextPage()" *ngIf="relatedSpecies.length >= 10"> -- NEXT PAGE --</label>
         <label class="nextPageTxt prev" (click)="previousPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label> -->
       </div>
 
-      <div *ngIf="showFishbaseSpecies" class="bottomTools">
+      <div *ngIf="showFishbaseRelatedSpecies" class="bottomTools">
 
-        <span *ngIf="fbSpecies.length > 10">
-          <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('fishbase')" *ngIf="minSpeciesReturn >= 10"></ion-icon>
-          <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('fishbase')" *ngIf="fbSpecies.length > 10"></ion-icon>
+        <span *ngIf="relatedSpecies.length > 10">
+          <ion-icon class="seeMoreIco leftArr" name="arrow-left" (click)="previousPage('related')" *ngIf="minSpeciesRelatedReturn >= 10"></ion-icon>
+          <ion-icon class="seeMoreIco rightArr" name="arrow-right" (click)="nextPage('related')" *ngIf="relatedSpecies.length > 10"></ion-icon>
         </span>
 
-        <ion-icon *ngIf="fbSpecies.length > 3" class="seeMoreIco" name="more" (click)="collpaseFishbaseSpecies()" [ngClass]="{'rotate' : !showFishbaseSpecies}"></ion-icon>
+        <ion-icon *ngIf="relatedSpecies.length > 3" class="seeMoreIco" name="more" (click)="collpaseFishbaseRelatedSpecies()" [ngClass]="{'rotate' : !showFishbaseRelatedSpecies}"></ion-icon>
       </div>
 
     </div>
 
-    <!-- FISHBASE RELATED SPECIES -->
-    <div *ngIf="doneLoading && relatedSpeciesLength > 1 && searchQuery.length >= 2" class="theResults" [ngClass]="{'thinResults' : showFishbaseRelatedSpecies}">
+    <!-- USERS -->
+    <div *ngIf="doneLoading && usersFound.length != 0 && searchQuery.length > 2" class="theResults">
 
-      <ion-icon class="seeMoreIco leftArr" name="arrow-left" (click)="previousPage('related')" *ngIf="minSpeciesRelatedReturn >= 10"></ion-icon>
-      <ion-icon class="seeMoreIco rightArr" name="arrow-right" (click)="nextPage('related')" *ngIf="relatedSpecies.length > 10"></ion-icon>
-
-      <ion-icon class="seeMoreIco" name="more" (click)="collpaseFishbaseRelatedSpecies()" [ngClass]="{'rotate' : !showFishbaseRelatedSpecies}"></ion-icon>
-
-      <div class="topTitle" *ngIf="relatedSpeciesLength >= 1"><label *ngIf="relatedSpecies.length >= 10">{{ maxSpeciesRelatedReturn }} / </label> {{ relatedSpeciesLength }} Species Related</div>
-
-      <div *ngIf="showFishbaseRelatedSpecies">
-        <div *ngFor="let fish of relatedSpecies">
-          <ion-card class="animated fadeIn" *ngIf="fish.id >= minSpeciesRelatedReturn && fish.id <= maxSpeciesRelatedReturn">
-            <ion-card-header>
-              <ion-card-subtitle><b (click)="showGenus(fish.Genus)">{{fish.Genus}}</b><i> {{fish.Species}}</i></ion-card-subtitle>
-              <ion-card-title *ngIf="fish.FBname" (click)="selectSpecies(fish, false)">{{fish.FBname}}</ion-card-title>
-              <ion-card-title *ngIf="!fish.FBname" (click)="selectSpecies(fish, false)" >The {{fish.Species}}</ion-card-title>
-            </ion-card-header>
-
-            <ion-slides pager="false" *ngIf="fish.Pic" (click)="selectSpecies(fish, false)">
-             <ion-slide class="imageBox" *ngIf="fish.Pic[0]">
-               <img [src]="fish.Pic[0]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
-             </ion-slide>
-             <ion-slide class="imageBox" *ngIf="fish.Pic[1]">
-               <img [src]="fish.Pic[1]" onerror="this.parentNode.style.display='none'"  default="../assets/noImg.png"/>
-             </ion-slide>
-            </ion-slides>
-          </ion-card>
-        </div>
+      <div  class="loadingSpinner" *ngIf="!usersFound">
+        <ion-spinner name="crescent"></ion-spinner>
       </div>
 
-      <!-- <label class="nextPageTxt" (click)="nextPage()" *ngIf="relatedSpecies.length >= 10"> -- NEXT PAGE --</label>
-      <label class="nextPageTxt prev" (click)="previousPage()" *ngIf="minSpeciesReturn >= 10"> -- PREVIOUS PAGE --</label> -->
+      <div class="topTitle" *ngIf="usersFound.length != 0">{{ usersFound.length }} User<label *ngIf="ourFish.length >= 1">s</label> Found</div>
+
+      <ion-card class="animated fadeIn" *ngFor="let user of usersFound">
+        <ion-card-header>
+          <ion-card-subtitle>
+
+            <div class="subtitleTxt">
+              <b (click)="showUser(user)">{{user.fishCount}} Fish</b> &bull;
+              <i> {{user.email}}</i>
+            </div>
+
+          </ion-card-subtitle>
+          <ion-card-title (click)="showUser(user)" class="fishNameText">{{user.name}}</ion-card-title>
+        </ion-card-header>
+
+
+        <img [src]="user.pic" (click)="showUser(user)" onerror="this.src='../assets/noImg.png'" />
+
+      </ion-card>
+
     </div>
 
-    <div *ngIf="showFishbaseRelatedSpecies" class="bottomTools">
-
-      <span *ngIf="relatedSpecies.length > 10">
-        <ion-icon class="seeMoreIco leftArr" name="arrow-left" (click)="previousPage('related')" *ngIf="minSpeciesRelatedReturn >= 10"></ion-icon>
-        <ion-icon class="seeMoreIco rightArr" name="arrow-right" (click)="nextPage('related')" *ngIf="relatedSpecies.length > 10"></ion-icon>
-      </span>
-
-      <ion-icon *ngIf="relatedSpecies.length > 3" class="seeMoreIco" name="more" (click)="collpaseFishbaseRelatedSpecies()" [ngClass]="{'rotate' : !showFishbaseRelatedSpecies}"></ion-icon>
-    </div>
-
-  </div>
-
-  <!-- USERS -->
-  <div *ngIf="doneLoading && usersFound.length != 0 && searchQuery.length > 2" class="theResults">
-
-    <div  class="loadingSpinner" *ngIf="!usersFound">
+    <!-- LOADING SPINNER  -->
+    <div  class="loadingSpinner" *ngIf="searchQuery.length > 2 && !doneLoading && !genusDescription">
       <ion-spinner name="crescent"></ion-spinner>
     </div>
 
-    <div class="topTitle" *ngIf="usersFound.length != 0">{{ usersFound.length }} User<label *ngIf="ourFish.length >= 1">s</label> Found</div>
-
-    <ion-card class="animated fadeIn" *ngFor="let user of usersFound">
-      <ion-card-header>
-        <ion-card-subtitle>
-
-          <div class="subtitleTxt">
-            <b (click)="showUser(user)">{{user.fishCount}} Fish</b> &bull;
-            <i> {{user.email}}</i>
-          </div>
-
-        </ion-card-subtitle>
-        <ion-card-title (click)="showUser(user)" class="fishNameText">{{user.name}}</ion-card-title>
-      </ion-card-header>
-
-
-      <img [src]="user.pic" (click)="showUser(user)" onerror="this.src='../assets/noImg.png'" />
-
-    </ion-card>
-
-  </div>
-
-  <!-- LOADING SPINNER  -->
-  <div  class="loadingSpinner" *ngIf="searchQuery.length > 2 && !doneLoading && !genusDescription">
-    <ion-spinner name="crescent"></ion-spinner>
-  </div>
-
-</ion-content>
+  </ion-content>
+</div>

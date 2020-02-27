@@ -38,6 +38,13 @@ button:focus {outline:0 !important;}
     font-size: 12px !important;
 }
 
+
+.alertTextarea{
+  width: 100%;
+  display: block;
+  padding: 3%;
+}
+
 .searchbar-search-icon.sc-ion-searchbar-ios{
   width: 16px !important;
   padding-left: 1% !important;
@@ -51,8 +58,6 @@ ion-searchbar{
   text-decoration: none !important;
 }
 
-
-
 .rightStuff{
   width: 200px;
   height: 180px;
@@ -65,9 +70,19 @@ ion-searchbar{
   border-radius: 10px;
 
 }
+//
+// .refresher-pulling-icon{
+//   color: #78CBE5 !important;
+// }
 
-.refresher-pulling-icon{
-  color: #78CBE5 !important;
+.ughAbsoule ion-content{
+  background: transparent !important;
+  --background: transparent !important;
+}
+
+.ughAbsoule .paddingSpace{
+  background: transparent !important;
+  --background: transparent !important;
 }
 
 // .spinner-bubbles{
@@ -203,6 +218,6 @@ ion-searchbar{
   ion-router-outlet{
     width: 500px !important;
     height: 867px !important;
-    margin-bottom: 15%;
+    margin-bottom: 5%;
   }
 }

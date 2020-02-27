@@ -15,7 +15,7 @@
       <h1 class="coreName" *ngIf="activeTankData">
         <label *ngIf="!activeTankData.nickname">{{activeTankData.name}}</label>
         <label *ngIf="activeTankData.nickname">{{activeTankData.nickname}}</label>
-        
+
         <a (click)="renameTank()" class="deleteTitle">Rename Tank &bull; </a>
         <a (click)="deleteTank()" class="deleteTitle">Delete Tank &bull; </a>
         <a class="deleteTitle specialInput">
@@ -86,11 +86,13 @@
 
               <ion-item lines="none" class="whiteSpaceWraper" *ngIf="fish.type == 'fish'">
                 <ion-note *ngIf="fish['quantity']" slot="start">{{fish['quantity']}}x</ion-note>
-                <b (click)="openFishDetailModal(fish)" *ngIf="!fish.nickname">{{fish.comm_name | titlecase}}</b>
-                <b (click)="openFishDetailModal(fish)" *ngIf="fish.nickname">
-                  {{fish.nickname | titlecase}}
-                  <ion-note slot="end" class="noteTxt">({{fish.comm_name | titlecase}})</ion-note>
+
+                <b (click)="openFishDetailModal(fish)">
+                  <label *ngIf="fish.nickname">{{fish.nickname | titlecase}}</label>
+                  <label *ngIf="!fish.nickname">{{fish.comm_name | titlecase}}</label>
+                  <ion-note slot="end" class="noteTxt" *ngIf="fish.species">({{fish.genus}} {{fish.species}})</ion-note>
                 </b>
+
 
                 <ion-icon class="trashIcons" *ngIf="trashMode" (click)="adjustQuantity(fish)" slot="end" name="apps"></ion-icon>
                 <ion-icon class="trashIcons" *ngIf="trashMode" (click)="editFishNickname(fish)" slot="end" name="brush"></ion-icon>
@@ -105,9 +107,7 @@
               </ion-item>
 
               <ion-item lines="none" *ngIf="fish.type == 'fish' && fish.comment">
-                <ion-label class="greyedLines">
-                  {{ fish.comment }}
-                </ion-label>
+                <ion-label class="greyedLines">{{fish.comment}}</ion-label>
 
                 <ion-icon class="trashIcons" *ngIf="commenting && fish.comment" (click)="editCommentFromFish(fish)" slot="end" name="brush"></ion-icon>
                 <ion-icon class="trashIcons" *ngIf="commenting && fish.comment" (click)="deleteCommentFromFish(fish)" slot="end" name="trash"></ion-icon>

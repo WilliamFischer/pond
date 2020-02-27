@@ -10,6 +10,8 @@ import { AngularFireStorage } from '@angular/fire/storage';
 
 import { SelectTankSubstratePage } from '../modal/select-tank-substrate/select-tank-substrate.page';
 
+import { finalize } from 'rxjs/operators';
+
 @Component({
   selector: 'app-tank',
   templateUrl: './tank.page.html',
@@ -30,10 +32,12 @@ export class TankPage implements OnInit {
   trashMode: boolean;
   reorderMode: boolean;
   commenting: boolean;
+  loadingImageUpload: boolean;
 
   // strings
   tankUser: string;
   tankName: string;
+  specComment: string;
 
   // numbers
   tankFishQuantity: number = 0;
@@ -163,6 +167,7 @@ export class TankPage implements OnInit {
           let quantity = fish['quantity'];
           let specCode = fish['specCode'];
           let genus = fish['genus'];
+          let species = fish['species'];
           let order = fish['order'];
 
           let fishObj = {
@@ -748,48 +753,61 @@ closeTank() {
       placeholderValue = ''
     }
 
-  const alert = await this.alertController.create({
-    header: fish['comm_name'] + ' comments'.charAt(0).toUpperCase(),
-    inputs: [
-      {
-        name: 'comment',
-        type: 'text',
-        placeholder: 'Species comments...',
-        value: placeholderValue
-      }
-    ],
-    buttons: [
-      {
-        text: 'Cancel',
-        role: 'cancel',
-        cssClass: 'secondary',
-        handler: () => {
-          if(this.debug)
-          console.log('User Cancelled');
+    this.specComment = placeholderValue;
+
+    const alert = await this.alertController.create({
+      header: fish['comm_name'].charAt(0).toUpperCase() + fish['comm_name'].slice(1) + ' comments',
+      inputs: [
+        {
+          type: 'text',
+          id: 'reallyTextArea',
+          value: placeholderValue
         }
-      }, {
-        text: 'Ok',
-        handler: (data) => {
-          fish['comment'] = data.comment;
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            if(this.debug)
+            console.log('User Cancelled');
+          }
+        }, {
+          text: 'Ok',
+          handler: (data) => {
 
-          let commentAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase() + '/species/' + fish['spec_code']);
+            console.log(this.specComment);
 
-          commentAddress.set({
-            comment: data.comment
-          },{
-            merge: true
-          });
+            let commentAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase() + '/species/' + fish['spec_code']);
 
-          if(this.debug)
-          console.log("Comment added to species!");
+            commentAddress.set({
+              comment: this.specComment
+            },{
+              merge: true
+            });
+
+            fish['comment'] = this.specComment;
+
+            if(this.debug)
+            console.log("Comment added to species!");
+          }
         }
-      }
-    ]
-  });
+      ]
+    });
 
-  await alert.present();
-}
+    let commentInput = document.getElementById("reallyTextArea").parentElement;
+    commentInput.innerHTML = '<textarea placeholder="Species comments..." class="alertTextarea" name="comment" id="speciesComments" type="text" rows="4">'+ placeholderValue +'</textarea>'
 
+    var specCommentInput = document.getElementById("speciesComments");
+    let scope = this;
+
+    specCommentInput.addEventListener("keyup", function(value){
+      scope.specComment = value.target['value'].toString();
+    });
+
+    await alert.present();
+  }
 
 
  // Show susbstrate edit modal
@@ -814,6 +832,41 @@ closeTank() {
 // Remove tank from database
 deleteTank() {
   this.confirmTankDelete();
+}
+
+
+uploadTankImg(event) {
+  console.log('UPLOAD AN IMAGE');
+  this.loadingImageUpload = true;
+
+  const file = event.target.files[0];
+  let randomID = Math.floor(Math.random() * 1000);
+  const filePath = this.afAuth.auth.currentUser.uid + '/Tank Images/' + randomID;
+  const fileRef = this.storage.ref(filePath)
+  const task = this.storage.upload(filePath, file);
+
+  task.snapshotChanges().pipe(
+      finalize(() => {
+        const downloadURL = fileRef.getDownloadURL();
+
+        downloadURL.subscribe(url=>{
+           if(url){
+             this.loadingImageUpload = false;
+             console.log(url);
+             this.activeTankData['photoURL'] = url;
+
+              this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase())
+              .set({
+                photoURL: url
+              },{
+                merge: true
+              });
+           }
+        })
+
+      })
+   )
+  .subscribe()
 }
 
 async confirmTankDelete() {

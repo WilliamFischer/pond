@@ -60,7 +60,7 @@ export class LoginPage implements OnInit {
   googleLogin(){
     this.presentLoading();
     //console.log(this.plt);
-    
+
     if(this.plt.url().includes('pondtheapp.com') || this.plt.url().includes('localhost:8100')){
       this.authService.loginWithLegacyGoogle().then(res=>{
         this.successfulLogin(res);
@@ -83,7 +83,7 @@ export class LoginPage implements OnInit {
 
     setTimeout(() => {
       if(this.loading){ this.dismissLoader() }
-      this.router.navigateByUrl('/tabs');
+      this.router.navigateByUrl('/tabs/species');
     }, 500);
 
   }
@@ -99,13 +99,13 @@ export class LoginPage implements OnInit {
   goToSpecies(){
     setTimeout(() => {
       if(this.loading){ this.dismissLoader() }
-      this.router.navigateByUrl('/tabs');
+      this.router.navigateByUrl('/tabs/species');
     }, 500);
   }
 
   // Temp solution - route user in without authentication.
   tempLogin(){
-    this.router.navigateByUrl('/tabs');
+    this.router.navigateByUrl('/tabs/species');
   }
 
 }

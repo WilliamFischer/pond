@@ -1,4 +1,12 @@
 
+.whiteBackground{
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    display: block;
+    position: absolute;
+}
+
 .lilEdit{
   font-size: 8px;
   text-decoration: none;
@@ -9,8 +17,12 @@
 }
 
 
-.blueBack{
+ion-content{
   --background: #fff !important;
+}
+
+.refreshWrapper{
+  margin-top: 5%;
 }
 
 .nothingFoundTxt{
@@ -206,7 +218,8 @@ ion-searchbar{
 }
 
 .thinResults{
-  padding-bottom: 5% !important;
+  padding-bottom: 10% !important;
+  margin-bottom: 50% !important;
 }
 
 .leftArr{
@@ -217,6 +230,10 @@ ion-searchbar{
   padding-right: 12% !important;
 }
 
+// .coreContentMinimal{
+//   height: 75% !important;
+// }
+
 .relatedGenuses{
   margin-left: auto;
   margin-right: auto;
@@ -225,6 +242,7 @@ ion-searchbar{
   text-align: center;
   display: block;
   margin-top: 10%;
+
 
   a{
     width: 130px;
@@ -243,6 +261,10 @@ ion-searchbar{
 
   .relatedSpeciesOfGenus{
     padding: 4%;
+
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -1007,6 +1029,35 @@ ion-toolbar{
     color: #8e8e8e;
 
     border-bottom: 1px dotted #8e8e8e;
+  }
+}
+
+.instructions{
+  text-align: center;
+  /* line-height: 100px; */
+  padding: 15%;
+  padding-top: 10%;
+  margin-right: auto;
+  margin-left: auto;
+  left: 0;
+  right: 0;
+  display: block;
+  position: absolute;
+  z-index: 9000;
+
+  label{
+    //color: #4580a5;
+    font-size: 14px;
+    font-family: 'Crimson Text', serif !important;
+  }
+
+  img{
+    width: 60px;
+    right: 10%;
+    display: block;
+    position: absolute;
+    object-fit: contain;
+    margin-top: -14%;
   }
 }
 

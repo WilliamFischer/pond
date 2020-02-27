@@ -1,18 +1,23 @@
 <ion-app class="whiteBackground">
-  <div *ngIf="defaultMode" class="fadedBack" [ngClass]="{'smallBack' : !fullAccountMode }"></div>
-  <img *ngIf="defaultMode" class="fadedImg" [ngClass]="{'smallBack' : !fullAccountMode }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
-  <img *ngIf="defaultMode" class="fadedImg" [ngClass]="{'smallBack' : !fullAccountMode }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+
+  <div *ngIf="defaultMode" class="fadedBack" [ngStyle]="{'height' : accountScreenVal }"></div>
+  <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenVal }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+  <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenVal }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
 
   <div class="paddingSpace" [ngClass]="{'androidHeader' : userOnAndroid }">
     <label class="topTitle1 animated fadeIn" *ngIf="defaultMode && fullAccountMode">Account</label>
 
-    <div class="infoSection" *ngIf="defaultMode" [ngClass]="{'smallBack' : !fullAccountMode }">
+    <div class="infoSection" *ngIf="defaultMode" [ngClass]="{'noBottomMargin' : !fullAccountMode }">
       <img class="profileImg" [src]="user.photoURL" [ngClass]="{'smallImage' : !fullAccountMode }" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
       <div class="rightStuff animated bounceIn" [ngClass]="{'hideLowOpacity' : !fullAccountMode }">
         <label class="topTitle2">{{user.name}}</label>
         <label class="topTitle3">
           <b>Keeps {{totalQuanityOfFish}} Species</b> <br />
-          <i *ngIf="fullAccountMode">{{totalQuanityOfFollowers}} Followers <br /> {{totalQuanityOfFollows}} Following</i>
+          <i *ngIf="fullAccountMode">
+            <b>{{totalQuanityOfFollows}}</b> Follower<label *ngIf="totalQuanityOfFollows > 1">s</label>
+            <br />
+            Following <b>{{totalQuanityOfFollowers}}</b>
+          </i>
         </label>
         <!-- <button class="viewProfBtn">View Profile</button><br /> -->
         <button class="viewProfBtn" *ngIf="user.name && fullAccountMode" (click)="logout()">Logout</button>
@@ -20,16 +25,23 @@
       </div>
     </div>
 
-    <div class="ughAbsoule" [ngClass]="{'ughSmallAbsoulte' : !fullAccountMode }">
+    <div class="ughAbsoule" [ngClass]="{'dynamicUghBox' : dynamicUgh }">
       <div class="aLittlePadding ion-page">
+
           <ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)">
 
             <div class="splittingLine"></div>
 
             <div class="paddingSpace" *ngIf="defaultMode">
 
+              <!-- Section 1: ALL TANKS -->
+              <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+                <ion-refresher-content pullingIcon="arrow-down" refreshingSpinner="bubbles">
+                </ion-refresher-content>
+              </ion-refresher>
+
               <!-- Section 1: WISHLIST -->
-              <div  *ngIf="wishlist && wishlist.length >= 1">
+              <div class="animated bounceIn"  *ngIf="wishlist && wishlist.length >= 1">
                 <label class="leftTitle topTitle2">Your Wishlist</label>
 
                 <div class="wishlistPillScroller">
@@ -41,14 +53,10 @@
                     <h2>{{fish.genus}} &bull; {{fish.species}}</h2>
                   </div>
 
+                  <div class="wishlistPill emptyPill"></div>
+
                 </div>
               </div>
-
-              <!-- Section 1: ALL TANKS -->
-              <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-                <ion-refresher-content pullingIcon="arrow-down" refreshingSpinner="bubbles">
-                </ion-refresher-content>
-              </ion-refresher>
 
               <label class="leftTitle topTitle2">Your Tanks</label>
               <h4 class="notLoggedIn" *ngIf="!user.name">Login to create tanks & store species</h4>
@@ -76,12 +84,28 @@
                       <h3 *ngIf="tank.nickname"  (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
 
                       <h4 (click)="initTankDetail(tank.name)">
-                        <label *ngIf="tank.temp">{{tank.temp}}deg</label>
-                        <label *ngIf="tank.ph"> &bull; PH{{tank.ph}}</label>
-                        <label *ngIf="tank.size"> &bull; {{tank.size}}L </label>
+                        <label *ngIf="tank.temp">{{tank.individualCount}} fish, {{tank.speciesCount}} species</label>
+                        <label *ngIf="tank.temp"> &bull; {{tank.temp}}deg</label>
                       </h4>
 
-                      <h5 *ngIf="tank.substrate" (click)="initTankDetail(tank.name)">With a {{tank.substrate}} Substrate</h5>
+                      <h5 *ngIf="tank.substrate && tank.substrate !== 'Other'" (click)="initTankDetail(tank.name)">
+                        <label *ngIf="tank.size"> A <b>{{tank.size}}</b>L
+
+                        <label *ngIf="tank.isSaltwater"> saltwater </label>
+                        <label *ngIf="tank.isBrackish"> brackish </label>
+                        <label *ngIf="!tank.isBrackish && !tank.isSaltwater"> freshwater </label>
+
+                         environment with a </label><br />
+                        <label *ngIf="!tank.size"> With a </label>
+                        <b>{{tank.substrate}}</b> Substrate.
+                        <label *ngIf="tank.ph"> ph:<b>{{tank.ph}}</b>.</label>
+                      </h5>
+
+                      <h5 *ngIf="tank.substrate && tank.substrate == 'Other'" (click)="initTankDetail(tank.name)">
+                        <label *ngIf="tank.size"> A {{tank.size}}L environment with an </label><br />
+                        <label *ngIf="!tank.size"> With an </label>
+                        <b>Alternative</b> Substrate
+                      </h5>
 
                     </div>
                   </div>
@@ -136,6 +160,16 @@
                  <a (click)="showTankSizesImage()" class="leftSize">Typical Sizes</a>
                 <ion-label position="stacked">Tank Dimensons in Liters</ion-label>
                 <ion-input type="number" [(ngModel)]="tank.size" name="size" required></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label><a (click)="showBrackishAlert()">Brackish?</a></ion-label>
+                <ion-toggle [(ngModel)]="tank.isBrackish" (click)="triggerBrackish()" name="brackish"></ion-toggle>
+              </ion-item>
+
+              <ion-item>
+                <ion-label><a (click)="showSaltwaterAlert()">Saltwater?</a></ion-label>
+                <ion-toggle [(ngModel)]="tank.isSaltwater" (click)="triggerFreshwater()" name="isSaltwater"></ion-toggle>
               </ion-item>
 
               <ion-radio-group [(ngModel)]="tank.substrate" name="substrate" required>

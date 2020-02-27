@@ -28,23 +28,26 @@ export class SpeciesPage implements OnInit {
   showTankListTick: boolean;
   showTankQuanityList: boolean;
   showTankListLoader: boolean;
+  fabSelected: boolean;
 
   speciesVunFloored: number;
   currentQuantity: number;
   currentOrder: number;
   specimensOwend: number = 0;
+  tempSpecimensOwend: number = 0;
 
   activeTankSelect: string;
   selectedTempTank: string;
   amountOfSpecies: string;
 
-  speciesImgArray: any;
+  speciesImgArray: any = [];
   tanks: any = [];
-  species: any;
+  species: any = [];
 
-  visualCollection: any;
   checkIfAlreadyInTankCollection: any;
+  allTankCounterCollection: any;
   linkCollection: any;
+  visualCollection: any;
 
 
   constructor(
@@ -81,22 +84,28 @@ export class SpeciesPage implements OnInit {
           this.speciesVunFloored = Math.floor(species['vulnerability']);
         }
 
-        if(!species['comments'] && !species['locality'] && !species['distribution']){
-          console.log('Hmm, something is wrong with this species, we outta delete it');
-          this.removeSpecies()
-        }else{
-
-          if(species['species'] && species['genus']){
-            this.lookForLinks(species);
-          }
-
+        if(species['species'] && species['genus']){
+          this.lookForLinks(species);
         }
+
+        // if(!species['Pics'][0] && !species['comments'] && !species['locality'] && !species['distribution']){
+        //   console.log('Hmm, something is wrong with this species, we outta delete it');
+        //   this.removeSpecies()
+        // }else{
+        //
+        //   if(species['species'] && species['genus']){
+        //     this.lookForLinks(species);
+        //   }
+        //
+        // }
 
         this.speciesLoaded = true;
 
         setTimeout(()=>{
-          console.log('Link Collecting timed out!')
+          console.log('Link Collecting timed out! This needs to be fixed!!')
           this.linkCollection.unsubscribe();
+          this.allTankCounterCollection.unsubscribe();
+          this.specimensOwend = this.tempSpecimensOwend;
         }, 3000);
 
         this.visualCollection.unsubscribe();
@@ -106,7 +115,7 @@ export class SpeciesPage implements OnInit {
     this.afAuth.authState.subscribe(auth=>{
       if(auth){
         this.loggedIn = true;
-        this.userHasSpecies();
+        this.userHasSpecies()
       }else{
         this.loggedIn = false;
       }
@@ -162,10 +171,35 @@ export class SpeciesPage implements OnInit {
   lookForLinks(species){
     console.log('### Looking for species links ###');
 
+    //remove cat duplicates
+    if(species['catPh'] == species['ph']){
+      this.species['catPh'] = '';
+    }
+
+    if(species['catTemperature'] == species['temperature']){
+      this.species['catTemperature'] = '';
+    }
+
+    if(species['catLocality'] == species['locality']){
+      this.species['catLocality'] = '';
+    }
+    //end cat duplicates
+
     this.linkCollection = this.fireStore.collection('Species').valueChanges().subscribe(
     allFish =>{
+      // 'All species are legal'
+      for(var i in this.species['rules']){
+        //console.log(this.species['rules'][i])
+        if(this.species['rules'][i].includes(this.species['genus'] + ' spp.')){
+          this.species['rules'][i] = 'You can legally own all species in the ' + this.species['rules'][i].replace('spp.', '') + ' genus.'
+        }
+      }
 
       for(var i in species){
+        if(typeof species[species[i]] === 'string'){
+          species[i] = this.urlify(species[i]);
+        }
+
         let currentSpecies = species[i];
 
         if(this.species[i] && currentSpecies && currentSpecies.length >= 3 && typeof currentSpecies === 'string'){
@@ -197,14 +231,16 @@ export class SpeciesPage implements OnInit {
 
   processLinkSpecies(newI, i, dbSpecies, species){
 
+
     let lowercaseSpecies;
     let speciesNickname;
-    let speciesFamily;
 
     if(newI){
         lowercaseSpecies = this.species[i][newI].toLowerCase();
+        this.species[i][newI] = this.species[i][newI].replace('spp.', 'species');
     }else{
         lowercaseSpecies = this.species[i].toLowerCase();
+        this.species[i] = this.species[i].replace('spp.', 'species');
     }
 
     if((dbSpecies['species'] && dbSpecies['species'].length >= 3) && (dbSpecies['genus'] && dbSpecies['genus'].length >= 3)){
@@ -218,101 +254,113 @@ export class SpeciesPage implements OnInit {
         speciesNickname = '';
       }
 
-      if(dbSpecies['family']){
-        speciesFamily = dbSpecies['family'].toLowerCase();
+      if(lowercaseSpecies.includes(speciesName) &&  !lowercaseSpecies.includes(speciesName + "</a>")){
+
+        let dbTrueName = species['genus'].toLowerCase() + ' ' + species['species'].toLowerCase();
+
+        if(dbTrueName != speciesName){
+          console.log('FOUND NAME ' + speciesName);
+          let replaceURL = '<a href="tabs/species?search_query=' + speciesName + '"> ' + speciesName  +'</a>'
+
+          let replace = speciesName;
+          let re = new RegExp(replace,"g");
+
+          if(newI){
+            this.species[i][newI] = this.species[i][newI].replace(re, replaceURL)
+          }else{
+            this.species[i] = lowercaseSpecies.replace(re, replaceURL)
+          }
+        }
       }else{
-        speciesFamily = '';
-      }
+        if(lowercaseSpecies.includes(speciesGenus.charAt(0) + '. ' +  dbSpecies['species']) || lowercaseSpecies.includes(' ' + speciesSpecies + ' ') || lowercaseSpecies.includes(' ' + speciesSpecies + ', ') || lowercaseSpecies.includes(' ' + speciesSpecies + 's ')){
+          if(dbSpecies['species'].toLowerCase() != species['species'].toLowerCase() && (!species['name'] || !species['name'].toLowerCase().includes(speciesSpecies)) && (!species['wikiName'] || !species['wikiName'].toLowerCase().includes(speciesSpecies))){
 
-      if(lowercaseSpecies.includes(speciesGenus.charAt(0) + '. ' +  dbSpecies['species']) || lowercaseSpecies.includes(' ' + speciesSpecies + ' ') || lowercaseSpecies.includes(' ' + speciesSpecies + ', ') || lowercaseSpecies.includes(' ' + speciesSpecies + 's')){
-        if(dbSpecies['species'].toLowerCase() != species['species'].toLowerCase()){
+            console.log('FOUND SPECIES ' + speciesSpecies);
+            let replaceURL = '<a href="species/' + dbSpecies['specCode'] + '"> ' + dbSpecies['species']  +'</a>'
 
-          console.log('FOUND SPECIES ' + speciesSpecies);
-          let replaceURL = '<a href="species/' + dbSpecies['specCode'] + '"> ' + dbSpecies['species']  +'</a>'
+            let replace = ' ' + speciesSpecies;
+            let re = new RegExp(replace,"g");
 
-          let replace = ' ' + speciesSpecies;
-          let re = new RegExp(replace,"g");
+            if(newI){
+              this.species[i][newI] = this.species[i][newI].replace(re, replaceURL)
+            }else{
+              this.species[i] = lowercaseSpecies.replace(re, replaceURL)
+            }
 
-          if(newI){
-            this.species[i][newI] = this.species[i][newI].replace(re, replaceURL)
-          }else{
-            this.species[i] = lowercaseSpecies.replace(re, replaceURL)
+          }
+        }
+
+        if(lowercaseSpecies.includes(' ' + speciesGenus + ' ') || lowercaseSpecies.includes(' ' + speciesGenus + ', ') || lowercaseSpecies.includes(' ' + speciesGenus + 's ')){
+          if(dbSpecies['genus'].toLowerCase() != species['genus'].toLowerCase()){
+
+            console.log('FOUND GENUS ' + speciesGenus);
+            let replaceURL = '<a href="tabs/species?search_query=' + speciesGenus + '"> ' + dbSpecies['genus']  +'</a>'
+
+            let replace = ' ' + speciesGenus;
+            let re = new RegExp(replace,"g");
+
+            if(newI){
+              this.species[i][newI] = this.species[i][newI].replace(re, replaceURL)
+            }else{
+              this.species[i] = lowercaseSpecies.replace(re, replaceURL)
+            }
+
+          }
+        }
+
+
+        if(lowercaseSpecies.includes(' ' + speciesNickname + ' ') || lowercaseSpecies.includes(' ' + speciesNickname + ', ') || lowercaseSpecies.includes(' ' + speciesNickname + 's ')){
+          let eachSpecies = species['name'].toLowerCase().split(' ');
+
+          for (let i in eachSpecies){
+
+              if((!species['name'].includes(eachSpecies[i]) &&  dbSpecies['name'].toLowerCase() != species['name'].toLowerCase()) && (!species['wikiName'] || !species['wikiName'].toLowerCase().includes(speciesNickname))){
+
+                console.log('FOUND TRUE NAME ' + species['name']);
+
+                let replaceURL = '<a href="species/' + dbSpecies['specCode'] + '"> ' + dbSpecies['name']  +'</a>'
+
+                let replace = speciesNickname;
+                let re = new RegExp(replace,"g");
+
+                if(newI){
+                  this.species[i][newI] = this.species[i][newI].replace(re, replaceURL)
+                }else{
+                  this.species[i] = lowercaseSpecies.replace(re, replaceURL)
+                }
+
+              }
           }
 
         }
-      }
 
-      if(lowercaseSpecies.includes(' ' + speciesGenus + ' ') || lowercaseSpecies.includes(' ' + speciesGenus + ', ') || lowercaseSpecies.includes(' ' + speciesGenus + 's')){
-        if(dbSpecies['genus'].toLowerCase() != species['genus'].toLowerCase()){
-
-          console.log('FOUND GENUS ' + speciesGenus);
-          let replaceURL = '<a href="tabs/species?search_query=' + speciesGenus + '"> ' + dbSpecies['genus']  +'</a>'
-
-          let replace = ' ' + speciesGenus;
-          let re = new RegExp(replace,"g");
-
-          if(newI){
-            this.species[i][newI] = this.species[i][newI].replace(re, replaceURL)
-          }else{
-            this.species[i] = lowercaseSpecies.replace(re, replaceURL)
-          }
-
-        }
-
-      }
-
-      if(lowercaseSpecies.includes(' ' + speciesNickname + ' ') || lowercaseSpecies.includes(' ' + speciesNickname + ', ') || lowercaseSpecies.includes(' ' + speciesNickname + 's')){
-        if(dbSpecies['name'].toLowerCase() != species['name'].toLowerCase()){
-
-          console.log('FOUND TRUE NAME ' + speciesNickname);
-
-          let replaceURL = '<a href="tabs/species?search_query=' + speciesNickname + '"> ' + dbSpecies['name']  +'</a>'
-
-          let replace = speciesNickname;
-          let re = new RegExp(replace,"g");
-
-          if(newI){
-            this.species[i][newI] = this.species[i][newI].replace(re, replaceURL)
-          }else{
-            this.species[i] = lowercaseSpecies.replace(re, replaceURL)
-          }
-
-        }
-      }
-
-      if(dbSpecies['family'] && species['family']  && lowercaseSpecies.includes(speciesFamily)){
-        if(dbSpecies['family'].toLowerCase() != species['family'].toLowerCase()){
-
-          console.log('FOUND FAMILY ' + speciesFamily);
-
-          let replaceURL = '<a href="species/' + dbSpecies['specCode'] + '"> ' + speciesFamily  +'</a>'
-
-          let replace = speciesFamily;
-          let re = new RegExp(replace,"g");
-
-          if(newI){
-            this.species[i][newI] = this.species[i][newI].replace(re, replaceURL)
-          }else{
-            this.species[i] = lowercaseSpecies.replace(re, replaceURL)
-          }
-
-        }
       }
 
     }
 
   }
 
-  addFishToWishlist(fish){
-    console.log('Favouriting Fish...')
+  urlify(text) {
+    var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(urlRegex, function(url) {
+        return '<a href="' + url + '">' + url + '</a>';
+    });
+  }
+
+  addFishToWishlist(fish, e){
+    e.stopPropagation()
 
     if(fish && fish['isFavourited']){
+      console.log('Unfavouriting Fish...');
+
       fish['isFavourited'] = false;
 
       let wishlistAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/wishlist/' + fish['specCode']);
       wishlistAddress.delete();
 
     }else{
+      console.log('Favouriting Fish...');
+
       fish['isFavourited'] = true;
 
       let wishlistAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/wishlist/' + fish['specCode']);
@@ -322,11 +370,13 @@ export class SpeciesPage implements OnInit {
         name: fish['name'],
         specCode: fish['specCode'],
         genus: fish['genus'],
+        species: fish['species'],
         order: 0,
       },{
         merge: true
       });
     }
+
 
   }
 
@@ -348,7 +398,7 @@ export class SpeciesPage implements OnInit {
 
     setTimeout(()=>{
       this.doesFishExist(tank);
-    }, 1000);
+    });
   }
 
   cancelAddToTank(){
@@ -404,6 +454,7 @@ export class SpeciesPage implements OnInit {
       name: this.toAddToTankSpecies['name'],
       specCode: this.toAddToTankSpecies['specCode'],
       genus: this.toAddToTankSpecies['genus'],
+      species: this.toAddToTankSpecies['species'],
       order: 0,
       quantity: 1
     };
@@ -466,6 +517,7 @@ export class SpeciesPage implements OnInit {
 
       console.log("Species added to tank!")
 
+      this.userHasSpecies();
       this.hidePopup();
     }, 1000);
   }
@@ -508,44 +560,54 @@ export class SpeciesPage implements OnInit {
   }
 
   userHasSpecies(){
-    let collection1;
-    let collection2;
+    let collectionone;
+    let collectiontwo;
+    let collectionthree;
 
     if(this.loggedIn){
-      this.specimensOwend = 0;
+      let speciesCount = 0;
 
-      collection1 = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
+      collectionone = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/wishlist').valueChanges().subscribe(values => {
+        values.forEach(species => {
+          if(species['specCode'] == this.species['specCode']){
+            console.log('SPECIES IS IN WISHLIST!');
+            this.species['isFavourited'] = true;
+          }
+        });
+      });
+
+      collectiontwo = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(
       tanks =>{
 
         if(!tanks){
           console.log('Can\'t yet populate user tanks...')
         }else{
           tanks.forEach(tank => {
-            collection2 = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['name'].toLowerCase() + '/species').valueChanges().subscribe(
+            this.allTankCounterCollection = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['name'].toLowerCase() + '/species').valueChanges().subscribe(
             species =>{
+              //console.log(species)
               species.forEach(singleSpecies => {
                 if(singleSpecies['specCode'] == this.species['specCode']){
-                  this.specimensOwend++;
+                  speciesCount = +this.specimensOwend + +singleSpecies['quantity'];
                 }
               });
 
-              setTimeout(()=>{
-                collection1.unsubscribe();
-                collection2.unsubscribe();
-              }, 500);
+              this.tempSpecimensOwend = speciesCount;
 
-
-
+              collectionone.unsubscribe();
+              collectiontwo.unsubscribe();
             });
           });
-
 
         }
 
       });
+
     }else{
       console.log('Nobody is logged in!')
     }
+
+
   }
 
   removeSpecies(){
@@ -557,4 +619,34 @@ export class SpeciesPage implements OnInit {
     this.router.navigateByUrl('tabs');
 
   }
+
+  hideFab(){
+    console.log('hiding fab...');
+    this.fabSelected = false;
+
+
+    var fabs = document.querySelectorAll('ion-fab');
+    for (var i = 0; i < fabs.length; i++) {
+      fabs[i].activated = false;
+    }
+
+  }
+
+  toggleDimmer(){
+    if(this.fabSelected){
+      this.fabSelected = false;
+    }else{
+      this.fabSelected = true;
+    }
+  }
+
+  removeDuplicatesBy(keyFn, arr){
+    var mySet = new Set();
+    return arr.filter(function(x) {
+      var key = keyFn(x), isNew = !mySet.has(key);
+      if (isNew) mySet.add(key);
+      return isNew;
+    });
+  }
+
 }

@@ -8,7 +8,6 @@ import { AngularFireStorage } from '@angular/fire/storage';
 
 import { LoadingController } from '@ionic/angular';
 
-import { finalize } from 'rxjs/operators';
 
 import { SelectTankSubstratePage } from '../modal/select-tank-substrate/select-tank-substrate.page';
 
@@ -26,12 +25,12 @@ export class Tab5Page {
   debug: boolean = true;
 
   defaultMode: boolean = true;
+  fullAccountMode: boolean = true;
   addTankMode: boolean;
   tankDetailMode: boolean;
   addChemistryMode: boolean;
   reorderMode: boolean;
   doneLoadingTanks: boolean;
-  loadingImageUpload: boolean;
   trashMode: boolean;
   fishLoaded: boolean;
   commenting: boolean;
@@ -45,8 +44,11 @@ export class Tab5Page {
   colourFound: boolean;
   userOnAndroid: boolean;
   wishlistMode: boolean;
+  dynamicUgh: boolean;
 
-  fullAccountMode: boolean = true;
+  accountScreenVal: string;
+  reverseScroll: number = 445;
+  reverseTop: number = 0;
 
   speciesVunFloored;
   tankChanges: any;
@@ -74,12 +76,13 @@ export class Tab5Page {
   species: any = [];
   speciesImgArray: any = [];
 
-
   tank = {
     name: '',
     ph: 0,
     temp: 0,
     size: 0,
+    isSaltwater: false,
+    isBrackish: false,
     substrate: '',
     average_ph: 0
   };
@@ -163,13 +166,70 @@ export class Tab5Page {
     }
 
     logScrolling($event){
-      if($event.detail['scrollTop'] > 100){
+      // console.log('scroll is ' +  $event.detail['scrollTop']);
+      let scollAmount = 5;
+
+      if($event.detail['scrollTop'] < 19){
+        this.fullAccountMode = true;
+        this.accountScreenVal = '375px';
+      }else{
         this.fullAccountMode = false;
+        this.accountScreenVal = '160px';
       }
 
-      if($event.detail['scrollTop'] < 5){
-        this.fullAccountMode = true;
-      }
+
+
+      // if($event.detail['scrollTop'] != 0){
+      //
+      //   if($event.detail['scrollTop'] < 75){
+      //     // this.dynamicUgh = false;
+      //
+      //     if($event.detail['scrollTop'] < 19){
+      //       this.fullAccountMode = true;
+      //     }else{
+      //       this.fullAccountMode = false;
+      //     }
+      //
+      //     if ($event.detail.deltaY > 0){
+      //       this.reverseScroll = this.reverseScroll - scollAmount;
+      //
+      //       this.accountScreenVal = this.reverseScroll + 'px';
+      //     }else{
+      //       this.reverseScroll = this.reverseScroll + scollAmount;
+      //
+      //       this.accountScreenVal = this.reverseScroll + 'px';
+      //     }
+      //   }else{
+      //     this.dynamicUgh = true;
+      //
+      //     this.fullAccountMode = false;
+      //     this.reverseScroll = 160;
+      //     this.accountScreenVal = '160px';
+      //     // this.reverseTop = 110;
+      //     // this.trueScrollVal = '110px';
+      //   }
+      // }else{
+      //   // this.dynamicUgh = false;
+      //   this.fullAccountMode = true;
+      //
+      //   this.reverseScroll = 375;
+      //   this.accountScreenVal = '375px';
+      // }
+
+
+
+
+      // console.log('should be ' + this.accountScreenVal)
+      // console.log('top is ' + this.trueScrollVal)
+
+
+      // if($event.detail['scrollTop'] > 100){
+      //   this.fullAccountMode = false;
+      // }
+      //
+      // if($event.detail['scrollTop'] < 5){
+      //   this.fullAccountMode = true;
+      // }
     }
 
     reOrderTanks(ev){
@@ -206,6 +266,7 @@ export class Tab5Page {
 
     doRefresh(event){
       this.populateTanks();
+      this.populateWishlist();
 
       setTimeout(() => {
         console.log('Async operation has ended');
@@ -368,18 +429,40 @@ export class Tab5Page {
 
           // Find species count
           values.forEach(tankResult => {
-            this.populateColours(tankResult);
+            this.populateColours(tankResult)
 
-            this.repeatArrayTank = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tankResult['name'].toLowerCase() + '/species').valueChanges().subscribe(
+            console.log(tankResult);
+
+            this.repeatArrayTank = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tankResult['trueName'].toLowerCase() + '/species').valueChanges().subscribe(
             species =>{
 
               species.forEach(speciesSpecific => {
-                //console.log(Number(speciesSpecific['quantity']));
-                this.totalQuanityOfFish = this.totalQuanityOfFish + +Number(speciesSpecific['quantity']);
+
+                if(speciesSpecific['quantity']){
+                  if(tankResult['speciesCount']){
+                    tankResult['speciesCount'] = +tankResult['speciesCount'] + 1;
+                  }else{
+                    tankResult['speciesCount'] = 1;
+                  }
+
+                  if(tankResult['individualCount']){
+                    tankResult['individualCount'] = +tankResult['individualCount'] + +Number(speciesSpecific['quantity']);
+                  }else{
+                    tankResult['individualCount'] = Number(speciesSpecific['quantity']);
+                  }
+
+                  this.totalQuanityOfFish = this.totalQuanityOfFish + +Number(speciesSpecific['quantity']);
+                }
+
               });
 
             });
           });
+
+
+
+
+
 
 
 
@@ -622,6 +705,8 @@ export class Tab5Page {
       ph: this.tank.ph,
       temp: this.tank.temp,
       size: this.tank.size,
+      isSaltwater: this.tank.isSaltwater,
+      isBrackish: this.tank.isBrackish,
       substrate: this.tank.substrate,
       order:  0,
       colourNumber: 1
@@ -640,40 +725,6 @@ export class Tab5Page {
 
   openSpeciesSearch() {
     this.router.navigateByUrl('/tabs/species');
-  }
-
-
-  uploadTankImg(event) {
-    this.loadingImageUpload = true;
-
-    const file = event.target.files[0];
-    let randomID = Math.floor(Math.random() * 1000);
-    const filePath = this.afAuth.auth.currentUser.uid + '/Tank Images/' + randomID;
-    const fileRef = this.storage.ref(filePath)
-    const task = this.storage.upload(filePath, file);
-
-    task.snapshotChanges().pipe(
-        finalize(() => {
-          const downloadURL = fileRef.getDownloadURL();
-
-          downloadURL.subscribe(url=>{
-             if(url){
-               this.loadingImageUpload = false;
-               console.log(url);
-               this.activeTankData['photoURL'] = url;
-
-                this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase())
-                .set({
-                  photoURL: url
-                },{
-                  merge: true
-                });
-             }
-          })
-
-        })
-     )
-    .subscribe()
   }
 
   triggerReorder(){
@@ -785,4 +836,37 @@ export class Tab5Page {
     this.tankFishQuantity = 0;
   }
 
+  async showSaltwaterAlert(){
+    const alert = await this.alertController.create({
+      header: 'An ocean fish.',
+      buttons: [{
+        text: 'Cancel',
+        role: 'cancel',
+        cssClass: 'secondary', }, {
+        text: 'Ok' }]
+    });
+
+    alert.present();
+  }
+
+  async showBrackishAlert(){
+    const alert = await this.alertController.create({
+      header: 'Brackish water is water having more salinity than freshwater, but not as much as seawater. This forms in estuaries. Popular species includes Monos, eyespot puffers, archerfish & many mussels, snails & turtles',
+      buttons: [{
+        text: 'Cancel',
+        role: 'cancel',
+        cssClass: 'secondary', }, {
+        text: 'Ok' }]
+    });
+
+    alert.present();
+  }
+
+  triggerFreshwater(){
+    this.tank.isBrackish = false
+  }
+
+  triggerBrackish(){
+    this.tank.isSaltwater = false
+  }
 }

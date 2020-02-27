@@ -93,7 +93,7 @@
   color: #8e8e8e;
   margin-left: 10%;
   text-overflow: inherit;
-  white-space: normal !important;
+  white-space: pre-wrap !important;
 }
 
 .statsListBottom{
@@ -101,8 +101,11 @@
 }
 
 .specialInput{
+
   input[type="file"] {
-    display: none;
+    position: absolute;
+    margin-top: 4%;
+    opacity: 0;
   }
 
   color: #7dbbe2 !important;
