@@ -36,7 +36,7 @@
 
               <!-- Section 1: ALL TANKS -->
               <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-                <ion-refresher-content pullingIcon="arrow-down" refreshingSpinner="bubbles">
+                <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="bubbles">
                 </ion-refresher-content>
               </ion-refresher>
 
@@ -84,8 +84,11 @@
                       <h3 *ngIf="tank.nickname"  (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
 
                       <h4 (click)="initTankDetail(tank.name)">
-                        <label *ngIf="tank.temp">{{tank.individualCount}} fish, {{tank.speciesCount}} species</label>
-                        <label *ngIf="tank.temp"> &bull; {{tank.temp}}deg</label>
+                        <label *ngIf="tank.temp">
+                          <label *ngIf="tank.individualCount">{{tank.individualCount}}</label><label *ngIf="!tank.individualCount">0</label> fish,
+                          <label *ngIf="tank.speciesCount">{{tank.speciesCount}}</label><label *ngIf="!tank.speciesCount">0</label> species,
+                          <label *ngIf="tank.temp"> &bull; {{tank.temp}}deg</label>
+                        </label>
                       </h4>
 
                       <h5 *ngIf="tank.substrate && tank.substrate !== 'Other'" (click)="initTankDetail(tank.name)">
@@ -127,7 +130,7 @@
 
   <!-- Section 2: ADD TANK -->
   <div class="addTank" *ngIf="addTankMode && !tankSizeImages">
-    <ion-icon name="close" (click)="closeTank()" class="backArrowBlack"></ion-icon>
+    <ion-icon name="close-outline" (click)="closeTank()" class="backArrowBlack"></ion-icon>
 
     <div class="ughAbsouleNoTop">
       <div class="ion-page">
@@ -150,8 +153,8 @@
                 <ion-label position="stacked">Temperature (DEG)</ion-label>
 
                 <ion-range min="15" max="35" step="1" snaps="true" ticks="true" pin="true" [(ngModel)]="tank.temp" name="temp" required>
-                  <ion-icon size="small" slot="start" name="snow"></ion-icon>
-                  <ion-icon slot="end" name="flame"></ion-icon>
+                  <ion-icon size="small" slot="start" name="snow-outline"></ion-icon>
+                  <ion-icon slot="end" name="flame-outline"></ion-icon>
                 </ion-range>
 
               </ion-item>
@@ -225,7 +228,7 @@
 
   <!-- Section 3: TYPICAL TANK SIZES -->
   <div class="tankSizeSelect" *ngIf="tankSizeImages">
-    <ion-icon name="close" (click)="closeTankSizeTrigger()" class="backArrowBlack specialTopArrow"></ion-icon>
+    <ion-icon name="close-outline" (click)="closeTankSizeTrigger()" class="backArrowBlack specialTopArrow"></ion-icon>
 
     <img src="../assets/sizes.png" />
   </div>

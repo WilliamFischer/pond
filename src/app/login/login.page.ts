@@ -83,7 +83,7 @@ export class LoginPage implements OnInit {
 
     setTimeout(() => {
       if(this.loading){ this.dismissLoader() }
-      this.router.navigateByUrl('/tabs/species');
+      this.router.navigateByUrl('/tabs/search');
     }, 500);
 
   }
@@ -99,13 +99,13 @@ export class LoginPage implements OnInit {
   goToSpecies(){
     setTimeout(() => {
       if(this.loading){ this.dismissLoader() }
-      this.router.navigateByUrl('/tabs/species');
+      this.router.navigateByUrl('/tabs/search');
     }, 500);
   }
 
   // Temp solution - route user in without authentication.
   tempLogin(){
-    this.router.navigateByUrl('/tabs/species');
+    this.router.navigateByUrl('/tabs/search');
   }
 
 }

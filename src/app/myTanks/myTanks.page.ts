@@ -8,16 +8,12 @@ import { AngularFireStorage } from '@angular/fire/storage';
 
 import { LoadingController } from '@ionic/angular';
 
-
-import { SelectTankSubstratePage } from '../modal/select-tank-substrate/select-tank-substrate.page';
-
-
 @Component({
-  selector: 'app-tab5',
-  templateUrl: 'tab5.page.html',
-  styleUrls: ['tab5.page.scss']
+  selector: 'myTanks',
+  templateUrl: 'myTanks.page.html',
+  styleUrls: ['myTanks.page.scss']
 })
-export class Tab5Page {
+export class myTanksPage {
 
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
@@ -117,10 +113,6 @@ export class Tab5Page {
   ) { }
 
     ngOnInit() {
-
-      console.clear();
-      console.log('POND v1.0.0 by William Fischer')
-
       //console.log(this.currentUser)
 
       //Populate user
@@ -724,7 +716,7 @@ export class Tab5Page {
   }
 
   openSpeciesSearch() {
-    this.router.navigateByUrl('/tabs/species');
+    this.router.navigateByUrl('/tabs/search');
   }
 
   triggerReorder(){

@@ -33,14 +33,20 @@ export class TankPage implements OnInit {
   reorderMode: boolean;
   commenting: boolean;
   loadingImageUpload: boolean;
+  moveComplete: boolean;
+  showAutoComplete: boolean;
+  confirmedAdd: boolean;
 
   // strings
   tankUser: string;
   tankName: string;
   specComment: string;
+  quanityToMove: string = '';
+  searchQueryController: string = '';
 
   // numbers
   tankFishQuantity: number = 0;
+  quickAddNumber: number = 1;
 
   // collections
   tankDetailChanges: any;
@@ -48,11 +54,18 @@ export class TankPage implements OnInit {
   dividerChanges: any;
   deleteAllSpecies: any;
   deleteAllDividers: any;
+  allTanksCollection: any;
+  localFishAutoCompleteCollection: any;
 
-  // arraysf
+  // arrays
   activeTankData: any = [];
   fish_in_tank: any = [];
   dividers: any = [];
+  fishToMove: any = [];
+  tanks: any = [];
+  allLocalFish: any = [];
+  amountOfFishLength: any = [];
+  selectedSpecies: any = [];
 
 
   constructor(
@@ -129,6 +142,7 @@ export class TankPage implements OnInit {
 
 
   getFish() {
+    this.fish_in_tank = [];
 
     this.tankChanges = this.fireStore.collection('Users/' + this.tankUser + '/tanks/' + this.tankName + '/species').valueChanges().subscribe(values => {
       //console.log(this.fish_in_tank);
@@ -167,7 +181,6 @@ export class TankPage implements OnInit {
           let quantity = fish['quantity'];
           let specCode = fish['specCode'];
           let genus = fish['genus'];
-          let species = fish['species'];
           let order = fish['order'];
 
           let fishObj = {
@@ -181,10 +194,9 @@ export class TankPage implements OnInit {
             'comment': comment
           }
 
-          this.tankFishQuantity = +this.tankFishQuantity + +quantity;
-
           if(comm_name){
             this.fish_in_tank.push(fishObj);
+            this.tankFishQuantity = +this.tankFishQuantity + +quantity;
           }
 
       });
@@ -498,6 +510,100 @@ closeTank() {
     await alert.present();
   }
 
+  moveFish(fish){
+    this.allTanksCollection = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks').valueChanges().subscribe(values => {
+      this.fishToMove = fish;
+      this.tanks = values;
+      console.log(this.tanks)
+      this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
+
+      let quantity = parseInt(fish.quantity);
+
+      for (let i = 0; i < quantity; i++) {
+        this.amountOfFishLength.push((i+1));
+      }
+      console.log(fish.amountOfFishLength);
+
+
+      setTimeout(()=>{
+        var select = document.getElementsByTagName('select');
+        console.log(select);
+
+        if(select){
+          select[0].selectedIndex = select[0].options.length-1;
+        }
+      }, 500);
+
+    });
+
+  }
+
+  dontMoveFish(){
+    this.fishToMove = [];
+  }
+
+  selectTank(tank){
+    let newNum = Number(this.fishToMove['quantity']) - Number(this.quanityToMove);
+    let setList;
+
+    // check if species is already in new tank
+    this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['trueName'].toLowerCase() + '/species/' + this.fishToMove['spec_code']).get().subscribe(docSnapshot => {
+
+      if (docSnapshot.exists) {
+        setList = {
+          dateSet: new Date(),
+          genus: this.fishToMove['genus'],
+          name: this.fishToMove['comm_name'],
+          order: 0,
+          quantity: +docSnapshot.data().quantity +  +Number(this.quanityToMove),
+          specCode: this.fishToMove['spec_code']
+        };
+      }else{
+        setList = {
+          dateSet: new Date(),
+          genus: this.fishToMove['genus'],
+          name: this.fishToMove['comm_name'],
+          order: 0,
+          quantity: Number(this.quanityToMove),
+          specCode: this.fishToMove['spec_code']
+        };
+      }
+
+      // SET
+      let newTankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank['trueName'].toLowerCase() + '/species/' + this.fishToMove['spec_code']);
+      newTankAddress.set(setList, {merge: true});
+
+      if(!this.quanityToMove || this.quanityToMove == this.fishToMove['quantity']){newNum
+        // REMOVE
+        let oldTankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['trueName'].toLowerCase() + '/species/' + this.fishToMove['spec_code']);
+        oldTankAddress.delete();
+
+        this.getFish();
+        this.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
+      }else{
+        for(let i in this.fish_in_tank){
+          console.log(this.fish_in_tank[i].spec_code + ' vs ' + this.fishToMove.spec_code)
+          if(this.fish_in_tank[i].spec_code == this.fishToMove.spec_code){
+            this.fish_in_tank[i].quantity = newNum;
+          }
+        }
+
+        // UPDATE
+        let oldTankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['trueName'].toLowerCase() + '/species/' + this.fishToMove['spec_code']);
+        oldTankAddress.set({quantity: newNum}, {merge: true});
+      }
+
+      this.moveComplete = true;
+
+      setTimeout(()=>{
+        this.fishToMove = [];
+        this.moveComplete = false;
+      }, 1500);
+
+    });
+
+  }
+
   async fishNicknameAlertPrompt(fish) {
       console.log(fish);
 
@@ -688,12 +794,17 @@ closeTank() {
 
             fishAddress.delete()
             .then(function() {
-
+              console.log('recollect species')
               scope.getFish();
               scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
               scope.dismissLoading();
 
             });
+
+            // console.log('recollect species two')
+            // scope.getFish();
+            // scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
+            // scope.dismissLoading();
 
           }
         }
@@ -809,198 +920,458 @@ closeTank() {
     await alert.present();
   }
 
+   // Show susbstrate edit modal
+   async presentSubstrateEditModal() {
+    console.log("creating call type selector");
+    const modal = await this.modalCtrl.create({
+      component: SelectTankSubstratePage
+      // componentProps: { default: user }
+    });
 
- // Show susbstrate edit modal
- async presentSubstrateEditModal() {
-  console.log("creating call type selector");
-  const modal = await this.modalCtrl.create({
-    component: SelectTankSubstratePage
-    // componentProps: { default: user }
-  });
+    modal.onDidDismiss().then(modalData => {
+      // this.updateCallType(modalData.data);
+      console.log("Substrate edit finished");
+      console.log(modalData.data);
+      // Make sure you pass the value object
+      this.updateTankSubstrate(modalData.data["value"]);
+    })
 
-  modal.onDidDismiss().then(modalData => {
-    // this.updateCallType(modalData.data);
-    console.log("Substrate edit finished");
-    console.log(modalData.data);
-    // Make sure you pass the value object
-    this.updateTankSubstrate(modalData.data["value"]);
-  })
+    return await modal.present();
+  }
 
-  return await modal.present();
-}
-
-// Remove tank from database
-deleteTank() {
-  this.confirmTankDelete();
-}
+  // Remove tank from database
+  deleteTank() {
+    this.confirmTankDelete();
+  }
 
 
-uploadTankImg(event) {
-  console.log('UPLOAD AN IMAGE');
-  this.loadingImageUpload = true;
+  uploadTankImg(event) {
+    console.log('UPLOAD AN IMAGE');
+    this.loadingImageUpload = true;
 
-  const file = event.target.files[0];
-  let randomID = Math.floor(Math.random() * 1000);
-  const filePath = this.afAuth.auth.currentUser.uid + '/Tank Images/' + randomID;
-  const fileRef = this.storage.ref(filePath)
-  const task = this.storage.upload(filePath, file);
+    const file = event.target.files[0];
+    let randomID = Math.floor(Math.random() * 1000);
+    const filePath = this.afAuth.auth.currentUser.uid + '/Tank Images/' + randomID;
+    const fileRef = this.storage.ref(filePath)
+    const task = this.storage.upload(filePath, file);
 
-  task.snapshotChanges().pipe(
-      finalize(() => {
-        const downloadURL = fileRef.getDownloadURL();
+    task.snapshotChanges().pipe(
+        finalize(() => {
+          const downloadURL = fileRef.getDownloadURL();
 
-        downloadURL.subscribe(url=>{
-           if(url){
-             this.loadingImageUpload = false;
-             console.log(url);
-             this.activeTankData['photoURL'] = url;
+          downloadURL.subscribe(url=>{
+             if(url){
+               this.loadingImageUpload = false;
+               console.log(url);
+               this.activeTankData['photoURL'] = url;
 
-              this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase())
-              .set({
-                photoURL: url
-              },{
-                merge: true
-              });
-           }
+                this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase())
+                .set({
+                  photoURL: url
+                },{
+                  merge: true
+                });
+             }
+          })
+
         })
-
-      })
-   )
-  .subscribe()
-}
-
-async confirmTankDelete() {
-  const confirmDelete = await this.alertController.create({
-     header: 'Are you sure you want to delete this tank?',
-     buttons: [
-       {
-         text: 'Cancel',
-         role: 'cancel',
-         cssClass: 'secondary',
-         handler: () => {
-           console.log('Confirm Cancel');
-         }
-       }, {
-         text: 'Delete',
-         handler: () => {
-           let scope = this;
-           let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase());
-
-           this.deleteAllSpecies = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/species').valueChanges().subscribe(
-           species =>{
-             species.forEach(result => {
-               console.log(result)
-               let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/species/' + result['specCode']);
-               resultAddress.delete();
-             });
-           });
-
-           this.deleteAllDividers = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/dividers').valueChanges().subscribe(
-           species =>{
-             species.forEach(result => {
-               console.log(result)
-               let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/dividers/' + result['id']);
-               resultAddress.delete();
-             });
-           });
-
-           tankAddress.delete()
-           .then(function() {
-             scope.deleteAllSpecies.unsubscribe();
-             scope.deleteAllDividers.unsubscribe();
-             scope.defaultMode = true;
-             scope.addTankMode = false;
-             scope.tankDetailMode = false;
-             scope.addChemistryMode = false;
-             scope.activeTankData = null;
-           });
-         }
-
-         }
-     ]
-   });
-
-   await confirmDelete.present();
- }
-
-
-renameTank(){
- this.renameTankPrompt();
-}
-
-async renameTankPrompt() {
-  let tankName;
-
-  if(this.activeTankData['nickname']){
-    tankName = this.activeTankData['nickname'];
-  }else if(this.activeTankData['name']){
-    tankName = this.activeTankData['name'].toLowerCase()
-  }else{
-    tankName = ''
+     )
+    .subscribe()
   }
 
-  const alert = await this.alertController.create({
-    header: 'Rename this tank',
-    inputs: [
-      {
-        name: 'tankName',
-        type: 'text',
-        placeholder: 'Tank Name...',
-        value: tankName
-      }
-    ],
-    buttons: [
-      {
-        text: 'Cancel',
-        role: 'cancel',
-        cssClass: 'secondary',
-        handler: () => {
-          console.log('Confirm Cancel');
+  async confirmTankDelete() {
+    const confirmDelete = await this.alertController.create({
+       header: 'Are you sure you want to delete this tank?',
+       buttons: [
+         {
+           text: 'Cancel',
+           role: 'cancel',
+           cssClass: 'secondary',
+           handler: () => {
+             console.log('Confirm Cancel');
+           }
+         }, {
+           text: 'Delete',
+           handler: () => {
+             let scope = this;
+             let tankAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase());
+
+             this.deleteAllSpecies = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/species').valueChanges().subscribe(
+             species =>{
+               species.forEach(result => {
+                 console.log(result)
+                 let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/species/' + result['specCode']);
+                 resultAddress.delete();
+               });
+             });
+
+             this.deleteAllDividers = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/dividers').valueChanges().subscribe(
+             species =>{
+               species.forEach(result => {
+                 console.log(result)
+                 let resultAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + '/dividers/' + result['id']);
+                 resultAddress.delete();
+               });
+             });
+
+             tankAddress.delete()
+             .then(function() {
+               scope.deleteAllSpecies.unsubscribe();
+               scope.deleteAllDividers.unsubscribe();
+               scope.defaultMode = true;
+               scope.addTankMode = false;
+               scope.tankDetailMode = false;
+               scope.addChemistryMode = false;
+               scope.activeTankData = null;
+             });
+           }
+
+           }
+       ]
+     });
+
+     await confirmDelete.present();
+   }
+
+
+  renameTank(){
+   this.renameTankPrompt();
+  }
+
+  async renameTankPrompt() {
+    let tankName;
+
+    if(this.activeTankData['nickname']){
+      tankName = this.activeTankData['nickname'];
+    }else if(this.activeTankData['name']){
+      tankName = this.activeTankData['name'].toLowerCase()
+    }else{
+      tankName = ''
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Rename this tank',
+      inputs: [
+        {
+          name: 'tankName',
+          type: 'text',
+          placeholder: 'Tank Name...',
+          value: tankName
         }
-      }, {
-        text: 'Ok',
-        handler: (data) => {
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Ok',
+          handler: (data) => {
 
-          let newTankName = data.tankName
-          let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase());
-          console.log('setting to ' + ('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase()))
+            let newTankName = data.tankName
+            let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase());
+            console.log('setting to ' + ('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase()))
 
-          tankAddress.set({
-            nickname: String(newTankName)
-          },{
-            merge: true
-          }).then(() => {
-            this.activeTankData['name'] = String(newTankName);
+            tankAddress.set({
+              nickname: String(newTankName)
+            },{
+              merge: true
+            }).then(() => {
+              this.activeTankData['name'] = String(newTankName);
 
-            console.log("Tank name changed to " + String(newTankName));
+              console.log("Tank name changed to " + String(newTankName));
+            });
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  openFishDetailModal(fish){
+    let fishSpecCode;
+
+    if(fish["spec_code"]){
+      fishSpecCode = fish["spec_code"];
+    }else{
+      fishSpecCode = fish['specCode']
+    }
+
+     this.router.navigateByUrl('/species/' + fishSpecCode);
+  }
+
+  closeChemistrySession() {
+    this.defaultMode = false;
+    this.addTankMode = false;
+    this.tankDetailMode = true;
+    this.addChemistryMode = false;
+  }
+
+  triggerAutoComplete(query){
+    console.log(query);
+
+    let canRun = true;
+
+    if(query.length == 0){
+      this.showAutoComplete = false;
+    }else{
+      this.showAutoComplete = true;
+    }
+
+
+    this.allLocalFish = [];
+
+    if(canRun){
+      //console.log(query);
+      let nameCollection = [];
+      let speciesCollection = [];
+      let genusCollection = [];
+      let distributionCollection = [];
+      var habitatCollection = [];
+      let descCollection = [];
+
+      if(query.length >= 3){
+        this.localFishAutoCompleteCollection = this.fireStore.collection('Species').valueChanges().subscribe(
+        values => {
+          let keyword = query.toLowerCase();
+
+          values.filter((object) => {
+            let nameVal;
+            let speciesVal;
+            let genusVal;
+            let destVal;
+            let habitVal;
+            let descVal;
+
+            if(object['name']){
+              nameVal = object['name'].toLowerCase();
+
+              if(nameVal.includes(keyword)){
+                nameCollection.push(object);
+              }
+            }
+
+            if(object['wikiName']){
+              nameVal = object['wikiName'].toLowerCase();
+
+              if(nameVal.includes(keyword)){
+                nameCollection.push(object);
+              }
+            }
+
+            if(object['scotsOtherName']){
+              nameVal = object['scotsOtherName'].toLowerCase();
+
+              if(nameVal.includes(keyword)){
+                nameCollection.push(object);
+              }
+            }
+
+            if(object['altNames']){
+              for(let i in object['altNames']){
+                nameVal = object['altNames'][i].name.toLowerCase();
+
+                if(nameVal.includes(keyword)){
+                  nameCollection.push(object);
+                }
+              }
+            }
+
+            if(object['commonName']){
+              nameVal = object['commonName'].toLowerCase();
+
+              if(nameVal.includes(keyword)){
+                nameCollection.push(object);
+              }
+            }
+
+            if(object['species']){
+              speciesVal = object['species'].toLowerCase();
+
+              if(speciesVal.includes(keyword)){
+                speciesCollection.push(object);
+              }
+            }
+
+
+            if(object['genus']){
+              genusVal = object['genus'].toLowerCase();
+
+              if(genusVal.includes(keyword)){
+                genusCollection.push(object);
+              }
+            }
+
+
+            if(object['distribution']){
+              destVal = object['distribution'].toLowerCase();
+
+              if(destVal.includes(keyword)){
+                distributionCollection.push(object);
+              }
+            }
+
+
+            if(object['habitat']){
+              habitVal = object['habitat'].toLowerCase();
+
+              if(habitVal.includes(keyword)){
+                habitatCollection.push(object);
+              }
+            }
+
+            if(object['wikiDesc']){
+              descVal = object['wikiDesc'].toLowerCase();
+
+              if(descVal.includes(keyword)){
+                descCollection.push(object);
+              }
+            }
+
+            if(object['scotsSummary']){
+              descVal = object['scotsSummary'].toLowerCase();
+
+              if(descVal.includes(keyword)){
+                descCollection.push(object);
+              }
+            }
+
           });
+        });
+      }else{
+        this.allLocalFish = '';
+      }
+
+      setTimeout(()=>{
+        canRun = false;
+
+        //MASTER CONTROLLER
+
+        if(nameCollection.length >= 1){
+          this.allLocalFish.push(nameCollection);
+        }
+
+        if(speciesCollection.length >= 1){
+          this.allLocalFish.push(speciesCollection);
+        }
+
+        if(genusCollection.length >= 1){
+          this.allLocalFish.push(genusCollection);
+        }
+
+        if(distributionCollection.length >= 1){
+          this.allLocalFish.push(distributionCollection);
+        }
+
+        if(habitatCollection.length >= 1){
+          this.allLocalFish.push(habitatCollection);
+        }
+
+        if(descCollection.length >= 1){
+          this.allLocalFish.push(descCollection);
+        }
+
+        if(this.allLocalFish.length >= 1){
+          var merged = [].concat.apply([], this.allLocalFish);
+          var clearOfDups = this.removeDuplicatesBy(x => x.specCode, merged);
+          this.allLocalFish = clearOfDups;
+
+          console.log(this.allLocalFish);
+
+          this.localFishAutoCompleteCollection.unsubscribe();
+        }else{
+          console.log('Nothing found... ');
+        }
+
+        if(this.allLocalFish.length >= 1){
+
+          this.allLocalFish = this.allLocalFish;
+
+          if(this.localFishAutoCompleteCollection){
+            this.localFishAutoCompleteCollection.unsubscribe();
+            console.log('Throttle Subscriber!')
+          }
 
         }
-      }
-    ]
-  });
 
-  await alert.present();
-}
+      }, 200);
 
-openFishDetailModal(fish){
-  let fishSpecCode;
 
-  if(fish["spec_code"]){
-    fishSpecCode = fish["spec_code"];
-  }else{
-    fishSpecCode = fish['specCode']
+    }else{
+      console.log('Cant run');
+    }
+
   }
 
-   this.router.navigateByUrl('/species/' + fishSpecCode);
-}
+  removeDuplicatesBy(keyFn, arr){
+    var mySet = new Set();
+    return arr.filter(function(x) {
+      var key = keyFn(x), isNew = !mySet.has(key);
+      if (isNew) mySet.add(key);
+      return isNew;
+    });
+  }
 
-closeChemistrySession() {
-  this.defaultMode = false;
-  this.addTankMode = false;
-  this.tankDetailMode = true;
-  this.addChemistryMode = false;
-}
+  clearMoreResults(){
+    console.log("BLUR");
+    this.showAutoComplete = false;
+  }
 
+  selectSpecies(species){
+    console.log(species);
+    this.selectedSpecies = species;
+
+    setTimeout(()=>{
+      this.clearMoreResults();
+    }, 300);
+
+  }
+
+  quickAddSpeciesTrigger(){
+
+    this.confirmedAdd = true;
+
+    console.log('ADD ' + this.quickAddNumber + ' OF ' + this.selectedSpecies.name +  ' TO ' + this.activeTankData['name']);
+
+    let setList = {
+      dateSet: new Date(),
+      name: this.selectedSpecies['name'],
+      specCode: this.selectedSpecies['specCode'],
+      genus: this.selectedSpecies['genus'],
+      species: this.selectedSpecies['species'],
+      order: this.selectedSpecies['order'] + +1,
+      quantity: this.quickAddNumber
+    };
+
+    let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase() + '/species/' + this.selectedSpecies['specCode']);
+    let scope = this;
+
+    if (setList) {
+      tankAddress.set(setList,{ merge: true }).then(function(ref) {
+        console.log('Confirming Add, adjusting subchildren...');
+
+        setTimeout(()=>{
+          scope.confirmedAdd = false;
+          //scope.getFish();
+          scope.fish_in_tank.push(setList);
+          scope.getFish();
+          scope.selectedSpecies = ''
+          scope.quickAddNumber = 0
+        });
+
+
+      }).catch(function(error) {
+        console.log('Failed: ' + error);
+      });
+    }
+
+
+
+  }
 
 }

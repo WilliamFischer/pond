@@ -3,15 +3,19 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Tab4Page } from './tab4.page';
+import { myTanksPage } from './myTanks.page';
+
+import { OrderModule } from 'ngx-order-pipe';
+
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: '', component: Tab4Page }])
+    OrderModule,
+    RouterModule.forChild([{ path: '', component: myTanksPage }])
   ],
-  declarations: [Tab4Page]
+  declarations: [myTanksPage]
 })
-export class Tab4PageModule {}
+export class MyTanksPageModule {}

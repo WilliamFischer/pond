@@ -29,6 +29,9 @@ export class SpeciesPage implements OnInit {
   showTankQuanityList: boolean;
   showTankListLoader: boolean;
   fabSelected: boolean;
+  showNamesBox: boolean;
+  newSpeciesName: boolean;
+  hasReported: boolean;
 
   speciesVunFloored: number;
   currentQuantity: number;
@@ -39,6 +42,7 @@ export class SpeciesPage implements OnInit {
   activeTankSelect: string;
   selectedTempTank: string;
   amountOfSpecies: string;
+  altName: string;
 
   speciesImgArray: any = [];
   tanks: any = [];
@@ -48,6 +52,11 @@ export class SpeciesPage implements OnInit {
   allTankCounterCollection: any;
   linkCollection: any;
   visualCollection: any;
+  usercollection: any;
+  wishlistCollection: any;
+  tanksCollection: any;
+  speciesCollection: any;
+  altNames: any;
 
 
   constructor(
@@ -115,7 +124,8 @@ export class SpeciesPage implements OnInit {
     this.afAuth.authState.subscribe(auth=>{
       if(auth){
         this.loggedIn = true;
-        this.userHasSpecies()
+        this.userHasSpecies();
+        this.calculateStats();
       }else{
         this.loggedIn = false;
       }
@@ -358,6 +368,8 @@ export class SpeciesPage implements OnInit {
       let wishlistAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/wishlist/' + fish['specCode']);
       wishlistAddress.delete();
 
+
+      this.species['favourites'] = this.species['favourites'] - 1;
     }else{
       console.log('Favouriting Fish...');
 
@@ -547,7 +559,7 @@ export class SpeciesPage implements OnInit {
 
   showgenus(genus){
     console.log('navigate to search')
-    this.router.navigateByUrl('tabs/species?search_query=' + genus.toLowerCase())
+    this.router.navigateByUrl('tabs/search?search_query=' + genus.toLowerCase())
 
     this.presentLoading();
 
@@ -610,6 +622,55 @@ export class SpeciesPage implements OnInit {
 
   }
 
+  calculateStats(){
+    console.log('### Calculate Stats ###')
+    this.usercollection = this.fireStore.collection('Users').valueChanges().subscribe(values => {
+      values.forEach(user => {
+
+
+        if(user['uid']){
+          this.wishlistCollection = this.fireStore.collection('Users/' + user['uid'] + '/wishlist').valueChanges().subscribe(values => {
+            values.forEach(wishlist => {
+              if(wishlist['name'] == this.species['name']){
+                if(this.species['favourites']){
+                  this.species['favourites'] = this.species['favourites'] + 1
+                }else{
+                  this.species['favourites'] = 1
+                }
+              }
+            });
+          });
+
+          this.tanksCollection = this.fireStore.collection('Users/' + user['uid'] + '/tanks').valueChanges().subscribe(values => {
+            values.forEach(tank => {
+              this.speciesCollection = this.fireStore.collection('Users/' + user['uid'] + '/tanks/' + tank['trueName'].toLowerCase() + '/species').valueChanges().subscribe(values => {
+                values.forEach(species => {
+                  if(species['name'] == this.species['name']){
+                    if(!this.species['owned']){
+                      this.species['owned'] = 0;
+                    }
+
+                    this.species['owned'] = +this.species['owned'] + +species['quantity']
+                  }
+                });
+              });
+            });
+          });
+
+        }
+      });
+    });
+
+    // setTimeout(()=>{
+    //   console.log('Stat calulators out.')
+    //   this.usercollection.unsubscribe();
+    //   this.wishlistCollection.unsubscibe();
+    //   this.tanksCollection.unsubscibe();
+    //   this.speciesCollection.unsubscibe();
+    // }, 3000);
+
+  }
+
   removeSpecies(){
 
     let removeCollection = this.fireStore.doc('Species/' + this.species['specCode']);
@@ -618,6 +679,87 @@ export class SpeciesPage implements OnInit {
     alert('Oh, we had to delete this... Sorry, please readd it by searching for it again. ♡')
     this.router.navigateByUrl('tabs');
 
+  }
+
+  triggerNameSelect(){
+    this.showSelectTank = true;
+    this.showNamesBox = true;
+  }
+
+
+  setSpeciesName(){
+    this.newSpeciesName = true;
+  }
+
+
+  confirmSpeciesName(){
+    console.log(this.altName);
+
+    if(this.altName){
+      if(!this.species['altNames']){
+        this.species['altNames'] = [];
+      }
+
+      this.species['altNames'].push({
+        name: String(this.altName),
+        user: this.afAuth.auth.currentUser.uid,
+        id: this.species['altNames'].length
+      });
+
+      console.log(this.species['altNames']);
+
+      let speciesAddress = this.fireStore.doc('Species/' + this.species['specCode']);
+      speciesAddress.set({
+        altNames: this.species['altNames']
+      },{
+        merge: true
+      });
+
+      this.newSpeciesName = false;
+      this.altName = '';
+    }
+
+  }
+
+  deleteItem(item){
+
+    for(let i in this.species['altNames']){
+      if(this.species['altNames'][i].id == item.id){
+        this.species.altNames.splice(item.id, 1);
+      }
+    }
+
+    console.log(this.species['altNames']);
+
+    let speciesAddress = this.fireStore.doc('Species/' + this.species['specCode']);
+    speciesAddress.set({
+      altNames: this.species['altNames']
+    },{
+      merge: true
+    });
+
+    // console.log('Species/' + this.species['specCode'] + '/altNames/' + item.id);
+    //
+    // let speciesAddress = this.fireStore.doc('Species/' + this.species['specCode'] + '/altNames/' + item.id);
+    // speciesAddress.delete();
+  }
+
+  reportItem(item){
+    let speciesAddress = this.fireStore.doc('Reports/Names/' + item.name + '/' + item.id);
+    speciesAddress.set(item);
+
+    this.hasReported = true;
+  }
+
+  closeSpeciesNameSetter(){
+    this.showSelectTank = false;
+    this.showNamesBox = false;
+    this.newSpeciesName = false;
+    this.hasReported = false;
+  }
+
+  doneReported(){
+    this.hasReported = false;
   }
 
   hideFab(){

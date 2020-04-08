@@ -19,9 +19,9 @@ import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet/ngx'
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
-import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
-import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
-import { AddVariationModelPage} from './add-variation-model/add-variation-model.page'
+// import { AddShopModalPage } from './add-shop-modal/add-shop-modal.page'
+// import { ShopDetailModelPage } from './shop-detail-model/shop-detail-model.page'
+// import { AddVariationModelPage} from './add-variation-model/add-variation-model.page'
 
 import { SelectTankSubstratePage } from './modal/select-tank-substrate/select-tank-substrate.page'
 
@@ -49,16 +49,10 @@ import { ImagePreloadDirectiveDirective } from './image-preload-directive.direct
 @NgModule({
   declarations: [
     AppComponent,
-    AddShopModalPage,
-    ShopDetailModelPage,
-    AddVariationModelPage,
     SelectTankSubstratePage,
     ImagePreloadDirectiveDirective
   ],
   entryComponents: [
-    AddShopModalPage,
-    ShopDetailModelPage,
-    AddVariationModelPage,
     SelectTankSubstratePage,
   ],
   imports: [

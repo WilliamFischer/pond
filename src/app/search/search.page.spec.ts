@@ -1,22 +1,21 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddShopModalPage } from './add-shop-modal.page';
+import { SearchPage } from './search.page';
 
-describe('AddShopModalPage', () => {
-  let component: AddShopModalPage;
-  let fixture: ComponentFixture<AddShopModalPage>;
+describe('Tab3Page', () => {
+  let component: SearchPage;
+  let fixture: ComponentFixture<SearchPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddShopModalPage ],
+      declarations: [SearchPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    })
-    .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddShopModalPage);
+    fixture = TestBed.createComponent(SearchPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -3,7 +3,7 @@
 
   <div class="fabDimmer animated fadeIn" (click)="hideFab()" *ngIf="fabSelected"></div>
 
-  <ion-icon name="arrow-back" (click)="goHome()" class="backArrow animated slideInRight"></ion-icon>
+  <ion-icon name="arrow-back-outline" (click)="goHome()" class="backArrow animated slideInRight"></ion-icon>
 
   <div class="topSlides" *ngIf="speciesLoaded && species.genus">
     <ion-slides pager="false">
@@ -38,25 +38,56 @@
     </h4>
 
     <!-- Etymology -->
-    <h5 *ngIf="species.etymology || species.ausEty || species.SFEtymology">
+    <h5 *ngIf="species.etymology || species.ausEty || species.SFEtymology || pondsUkEtymology">
       <label [innerHTML]="species.etymology"></label>
       <label [innerHTML]="species.ausEty"></label>
       <label [innerHTML]="species.SFEtymology"></label>
+      <label [innerHTML]="species.pondsUkEtymology"></label>
     </h5>
+
+    <div class="optionsGrid">
+      <div class="sideOption" (click)="triggerNameSelect()">
+        <span>
+          <label  *ngIf="species.altNames" class="sideTitle">{{species.altNames.length}}</label>
+          <label  *ngIf="!species.altNames || species.altNames.length == 0" class="sideTitle">0</label>
+          <ion-icon name="text-outline"></ion-icon>
+        </span>
+        names
+      </div>
+      <div class="sideOption greyed">
+        <span>
+          <label  *ngIf="species.owned" class="sideTitle">{{ species.owned }}</label>
+          <label  *ngIf="!species.owned" class="sideTitle">0</label>
+          <ion-icon name="flag-outline"></ion-icon>
+        </span>
+        owend
+      </div>
+      <div class="sideOption greyed" [ngClass]="{'goldenStarShineBright' : this.species.isFavourited}">
+        <span>
+          <label  *ngIf="species.favourites" class="sideTitle">{{ species.favourites }}</label>
+          <label  *ngIf="!species.favourites" class="sideTitle">0</label>
+          <ion-icon name="heart-outline"  *ngIf="!species.isFavourited"></ion-icon>
+          <ion-icon class="goldenStarShineBright" name="heart" *ngIf="species.isFavourited"></ion-icon>
+        </span>
+        like<label *ngIf="!species.favourites || species.favourites <= 1">d</label><label *ngIf="species.favourites > 1">s</label>
+      </div>
+    </div>
 
     <!-- Temp, Ph, Hardness, Vunerability, Conservation & Size -->
     <div class="infoCubes">
 
-      <div class="cube" *ngIf="species.temperature || species.catTemperature">
+      <div class="cube" *ngIf="species.temperature || species.catTemperature || species.pondsUkTemp">
         <span>Temp</span>
         <label [innerHTML]="species.temperature"></label>
         <label [innerHTML]="species.catTemperature"></label>
+        <label [innerHTML]="species.pondsUkTemp"></label>
       </div>
 
-      <div class="cube" *ngIf="species.ph || species.catPh">
+      <div class="cube" *ngIf="species.ph || species.catPh || species.pondsUkPH">
         <span>PH</span>
         <label [innerHTML]="species.ph"></label>
         <label [innerHTML]="species.catPh"></label>
+        <label [innerHTML]="species.pondsUkPH"></label>
       </div>
 
       <div class="cube" *ngIf="species.hardness || species.reefHardiness">
@@ -64,6 +95,12 @@
         <label [innerHTML]="species.hardness"></label>
         <label [innerHTML]="species.reefHardiness"></label>
       </div>
+
+      <div class="cube" *ngIf="species.pondsUkDgh">
+        <span>dGH</span>
+        <label [innerHTML]="species.pondsUkDgh"></label>
+      </div>
+
 
       <div class="cube" *ngIf="species.speciesVunFloored">
         <span>Vunerability</span>
@@ -82,20 +119,28 @@
         <label [innerHTML]="species.order"></label>
       </div>
 
-      <div class="cube fullCube" *ngIf="species.blackWater">
-        <span>Tea-coloured water is recommended</span>
+      <div class="cube" *ngIf="species.aquaticPlants">
+        <span>Aquatic Plants</span>
+        <label>Recommended</label>
       </div>
 
-      <div class="cube fullCube" *ngIf="species.aquaticPlants">
-        <span>Aquatic plants recommended</span>
+      <div class="cube" *ngIf="species.blackWater">
+        <span>Tea-coloured Water</span>
+        <label>Recommended</label>
       </div>
     </div>
 
+    <!-- Classification -->
+    <span *ngIf="species.pondsUkClassification">
+      <p [innerHTML]="species.pondsUkClassification"></p>
+    </span>
+
     <!-- Summary -->
-    <span *ngIf="species.wikiDesc || species.scotsSummary">
+    <span *ngIf="species.wikiDesc || species.scotsSummary  || species.pondsUkSummary">
       <h3>Summary</h3>
       <p [innerHTML]="species.wikiDesc"></p>
       <p [innerHTML]="species.scotsSummary"></p>
+      <p [innerHTML]="species.pondsUkSummary"></p>
     </span>
 
     <!-- Other Names -->
@@ -108,7 +153,7 @@
 
 
     <!-- Species Size -->
-    <span class="cube" *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize || species.SFFishSize || species.scotsSize || species.reefAppSize">
+    <span class="cube" *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize || species.SFFishSize || species.scotsSize || species.reefAppSize || species.pondsUkSize">
       <h3>Species Size</h3>
       <p [innerHTML]="species.size"></p>
       <p [innerHTML]="species.ausRegSize"></p>
@@ -117,21 +162,24 @@
       <p [innerHTML]="species.SFFishSize"></p>
       <p [innerHTML]="species.scotsSize"></p>
       <p [innerHTML]="species.reefAppSize"></p>
+      <p [innerHTML]="species.pondsUkSize"></p>
     </span>
 
     <!-- Recommended Tank Size -->
-    <span *ngIf="species.recommendedTankSize || species.reefTankSize">
+    <span *ngIf="species.recommendedTankSize || species.reefTankSize || species.pondsUkTankSize">
       <h3>Recommended Tank Size</h3>
-      <p [innerHTML]="species.recommendedTankSize"> </p>
-      <p [innerHTML]="species.reefTankSize"> </p>
+      <p [innerHTML]="species.recommendedTankSize"></p>
+      <p [innerHTML]="species.reefTankSize"></p>
+      <p [innerHTML]="species.pondsUkTankSize"></p>
     </span>
 
     <!-- Locality -->
-    <span *ngIf="species.locality || species.catLocality || species.reefAppOrigin">
+    <span *ngIf="species.locality || species.catLocality || species.reefAppOrigin || pondsUkOrigin">
       <h3>Original Locality</h3>
       <p [innerHTML]="species.locality"></p>
       <p [innerHTML]="species.catLocality"></p>
       <p [innerHTML]="species.reefAppOrigin"></p>
+      <p [innerHTML]="species.pondsUkOriginpondsUkOrigin"></p>
     </span>
 
     <!-- Distribution -->
@@ -154,19 +202,22 @@
     </span>
 
     <!-- Feeding -->
-    <span *ngIf="species.diet || species.feeding ||species.feeding || species.ausFeed || species.scotsFeeding">
+    <span *ngIf="species.diet || species.feeding ||species.feeding || species.ausFeed || species.scotsFeeding || species.pondsUkFeeding || species.pondsUkDiet">
       <h3>Feeding</h3>
       <p [innerHTML]="species.diet"></p>
       <p [innerHTML]="species.feeding"></p>
       <p [innerHTML]="species.ausFeed"></p>
       <p [innerHTML]="species.scotsFeeding"></p>
+      <p [innerHTML]="species.pondsUkFeeding"></p>
+      <p [innerHTML]="species.pondsUkDiet"></p>
     </span>
 
     <!-- Compatibility -->
-    <span *ngIf="species.compatibility || species.scotsCompat">
+    <span *ngIf="species.compatibility || species.scotsCompat || species.pondsUkCompatibility">
       <h3>Compatibility</h3>
       <p [innerHTML]="species.compatibility"></p>
       <p [innerHTML]="species.scotsCompat"></p>
+      <p [innerHTML]="species.pondsUkCompatibility"></p>
     </span>
 
     <!-- Recommended Tank Mates -->
@@ -183,12 +234,25 @@
     </span>
 
     <!-- Habitat -->
-    <span *ngIf="species.habitat || species.scotsHabitat || species.ausHabitat || species.reefHabitat">
+    <span *ngIf="species.habitat || species.scotsHabitat || species.ausHabitat || species.reefHabitat || species.pondsUkHabitat">
       <h3>Habitat</h3>
       <p [innerHTML]="species.habitat"></p>
       <p [innerHTML]="species.ausHabitat"></p>
       <p [innerHTML]="species.scotsHabitat"></p>
       <p [innerHTML]="species.reefHabitat"></p>
+      <p [innerHTML]="species.pondsUkHabitat"></p>
+    </span>
+
+    <!-- Aquarium Type -->
+    <span *ngIf="species.pondsUkAquirumType">
+      <h3>Aquarium Type</h3>
+      <p [innerHTML]="species.pondsUkAquirumType"></p>
+    </span>
+
+    <!-- Furniture -->
+    <span *ngIf="species.furniture">
+      <h3>Recommended Tank Decoration</h3>
+      <p [innerHTML]="species.furniture"></p>
     </span>
 
     <!-- Furniture -->
@@ -198,10 +262,11 @@
     </span>
 
     <!-- Sexing -->
-    <span *ngIf="species.sexing || species.scotsSex">
+    <span *ngIf="species.sexing || species.scotsSex || species.pondsUkSexing">
       <h3>Sexing</h3>
       <p [innerHTML]="species.sexing"></p>
       <p [innerHTML]="species.scotsSex"></p>
+      <p [innerHTML]="species.pondsUkSexing"></p>
     </span>
 
     <!-- Identification -->
@@ -210,12 +275,19 @@
       <p [innerHTML]="species.identification"></p>
     </span>
 
+    <!-- Identification -->
+    <span *ngIf="species.pondsUkWildStatus">
+      <h3>Wild Status</h3>
+      <p [innerHTML]="species.pondsUkWildStatus"></p>
+    </span>
+
     <!-- Breeding -->
-    <span *ngIf="species.repoduction || species.breeding || species.scotsBreeding">
+    <span *ngIf="species.repoduction || species.breeding || species.scotsBreeding || species.pondsUkBreeding">
       <h3>Reproduction</h3>
       <p [innerHTML]="species.repoduction"></p>
       <p [innerHTML]="species.breeding"></p>
       <p [innerHTML]="species.scotsBreeding"></p>
+      <p [innerHTML]="species.pondsUkBreeding"></p>
     </span>
 
     <!-- Danger -->
@@ -320,13 +392,14 @@
 
 
     <!-- Additonal Comments -->
-    <span *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc">
+    <span *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc || species.pondsUkComments">
       <h3>Additonal Comments</h3>
       <p [innerHTML]="species.SFComments"></p>
       <p [innerHTML]="species.norChar"></p>
       <p [innerHTML]="species.comments"></p>
       <p [innerHTML]="species.description"></p>
       <p [innerHTML]="species.sharkDesc"></p>
+      <p [innerHTML]="species.pondsUkComments"></p>
     </span>
 
     <div class="space"></div>
@@ -337,17 +410,17 @@
 
     <ion-fab slot="fixed" class="coreFAB">
       <ion-fab-button size="small" (click)="toggleDimmer()">
-        <ion-icon name="menu"></ion-icon>
+        <ion-icon name="menu-outline"></ion-icon>
       </ion-fab-button>
       <ion-fab-list side="top">
         <ion-fab-button (click)="addFishToWishlist(species, $event)">
-            <ion-icon name="star-outline"  *ngIf="!species.isFavourited"></ion-icon>
-            <ion-icon class="goldenStarShineBright" name="star" *ngIf="species.isFavourited"></ion-icon>
+            <ion-icon name="heart-outline"  *ngIf="!species.isFavourited"></ion-icon>
+            <ion-icon class="goldenStarShineBright" name="heart" *ngIf="species.isFavourited"></ion-icon>
         </ion-fab-button>
-        <!-- <ion-fab-button>
-            <ion-icon name="today" ></ion-icon>
-        </ion-fab-button>
-        <ion-fab-button>
+         <!-- <ion-fab-button>
+            <ion-icon name="share-outline"></ion-icon>
+        </ion-fab-button> -->
+        <!--<ion-fab-button>
             <ion-icon name="sync" ></ion-icon>
         </ion-fab-button> -->
       </ion-fab-list>
@@ -372,21 +445,22 @@
     <ion-spinner name="crescent"></ion-spinner>
   </div>
 
-  <ion-icon class="checkIcon" name="checkmark" *ngIf="showTankListTick"></ion-icon>
+  <ion-icon class="checkIcon" name="checkmark-outline" *ngIf="showTankListTick"></ion-icon>
 
-  <div *ngIf="!showTankListLoader && !showTankListTick && !showTankQuanityList">
+  <div *ngIf="!showTankListLoader && !showTankListTick && !showTankQuanityList && !showNamesBox">
     <h1>Add {{toAddToTankSpecies.name}} to Tank?</h1>
 
     <label class="noTanksYet" *ngIf="tanks.length < 1">You have no tanks yet</label>
 
     <ion-list *ngIf="tanks.length >= 1">
       <ion-item *ngFor="let tank of tanks" (click)="selectTank(tank)">
-        <ion-label>{{tank.name}}</ion-label>
+        <ion-label *ngIf="tank.nickname">{{tank.nickname}}</ion-label>
+        <ion-label *ngIf="!tank.nickname">{{tank.name}}</ion-label>
       </ion-item>
     </ion-list>
   </div>
 
-  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity == 0">
+  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity == 0 && !showNamesBox">
     <h1>Number of {{toAddToTankSpecies.name}} in {{activeTankSelect.name}}</h1>
 
     <ion-input class="centerSelectNumber" pattern="[0-9]*" [(ngModel)]="amountOfSpecies" value="1" type="text" placeholder="0"></ion-input>
@@ -397,7 +471,7 @@
     </div>
   </div>
 
-  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity !== 0">
+  <div *ngIf="!showTankListLoader && !showTankListTick && showTankQuanityList && currentQuantity !== 0 && !showNamesBox">
     <h1>Update quantity of {{toAddToTankSpecies.name}}'s in {{activeTankSelect.name}}</h1>
 
     <ion-input class="centerSelectNumber" [(ngModel)]="amountOfSpecies" value="{{currentQuantity}}" pattern="[0-9]*" type="text" placeholder="1"></ion-input>
@@ -405,6 +479,37 @@
     <div class="buttonsLive">
       <div class="block" (click)="cancelAddToTank()">CANCEL</div>
       <div class="block right" (click)="setSpeciesTankQuantity()">ADD</div>
+    </div>
+  </div>
+
+  <div class="altNameBox" *ngIf="!showTankListLoader && !showTankListTick && !showTankQuanityList && showNamesBox">
+    <h1 *ngIf="!newSpeciesName">Alternative names for {{ species.name }}</h1>
+    <h1 *ngIf="newSpeciesName">Set an alternative name for {{ species.name }}</h1>
+
+    <ion-list *ngIf="(species.altNames && !hasReported && species.altNames.length !== 0) && !newSpeciesName">
+      <ion-item-sliding *ngFor="let altName of species.altNames">
+
+        <ion-item>
+          <ion-label>{{ altName.name }}</ion-label>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option class="orangeOptipton" (click)="reportItem(altName)" *ngIf="altName.user == afAuth.auth.currentUser.uid">Report</ion-item-option>
+          <ion-item-option class="redOptipton" (click)="deleteItem(altName)" *ngIf="altName.user !== afAuth.auth.currentUser.uid">Delete</ion-item-option>
+        </ion-item-options>
+
+      </ion-item-sliding>
+    </ion-list>
+
+    <label class="noTanksYet" *ngIf="!newSpeciesName && !hasReported && (!species.altNames || species.altNames < 1)">No other names have been set for {{ species.name }}</label>
+    <label class="noTanksYet" *ngIf="!newSpeciesName && hasReported">Your report has been submitted</label>
+
+    <ion-input class="centerSelectNumber" [(ngModel)]="altName" type="text" autofocus *ngIf="newSpeciesName"></ion-input>
+
+    <div class="buttonsLive">
+      <div class="block" (click)="closeSpeciesNameSetter()">CLOSE</div>
+      <div class="block right" (click)="setSpeciesName()" *ngIf="!newSpeciesName && !hasReported">ADD</div>
+      <div class="block right" (click)="doneReported()" *ngIf="!newSpeciesName && hasReported">OKAY</div>
+      <div class="block right" (click)="confirmSpeciesName()" *ngIf="newSpeciesName">CONFIRM</div>
     </div>
   </div>
 

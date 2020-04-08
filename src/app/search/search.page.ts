@@ -13,18 +13,18 @@ import { AngularFireAuth } from '@angular/fire/auth';
 
 import {HttpClient} from "@angular/common/http";
 import { map } from 'rxjs/operators';
-//import { AddVariationModelPage} from '../add-variation-model/add-variation-model.page';
+//import { AddVariationMo delPage} from '../add-variation-model/add-variation-model.page';
 import { LoadingController } from '@ionic/angular';
 
 import { ApiProvider } from '../providers/api/api'
 
 @Component({
-  selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss']
+  selector: 'search',
+  templateUrl: 'search.page.html',
+  styleUrls: ['search.page.scss']
 })
 
-export class Tab3Page {
+export class SearchPage {
 
   @ViewChild(IonContent) content: IonContent;
 
@@ -983,6 +983,24 @@ export class Tab3Page {
                 }else{
                   if(object['fresh'] == 0){
                     nameCollection.push(object);
+                  }
+                }
+              }
+            }
+
+            if(object['altNames']){
+              for(let i in object['altNames']){
+                nameVal = object['altNames'][i].name.toLowerCase();
+
+                if(nameVal.includes(keyword)){
+                  if(!this.saltwater){
+                    if(object['fresh'] == -1){
+                      nameCollection.push(object);
+                    }
+                  }else{
+                    if(object['fresh'] == 0){
+                      nameCollection.push(object);
+                    }
                   }
                 }
               }
@@ -4898,26 +4916,268 @@ export class Tab3Page {
   howboutFishTanksAndPonds(species){
       console.log('Getting fishtanksandponds.co.uk species');
 
+      let name;
+
       if(species['Species']){
-        let name = species['Genus'].toLowerCase() + '-' + species['Species'].toLowerCase();
+        name = species['Genus'].toLowerCase() + '-' + species['Species'].toLowerCase();
       }else{
-        let name = species['genus'].toLowerCase() + '-' + species['species'].toLowerCase();
+        name = species['genus'].toLowerCase() + '-' + species['species'].toLowerCase();
       }
 
       var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-      var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_right]/p#vws');
+      var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_right]/p[0#vws');
+
+      console.log('Running on http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_right]/p[0#vws')
+      console.log('or http://www.fishtanksandponds.co.uk/profiles/'+name+'.html');
 
       this.http.get(corsFix + scraperURL).subscribe(
       result => {
 
         console.log(result);
 
-        this.maybePlanetCatfish(this.sfSpecies);
+        let speciesAddress;
+
+        if(species['specCode']){
+          speciesAddress = this.fireStore.doc<any>('Species/' + species['specCode']);
+        }else{
+          speciesAddress = this.fireStore.doc<any>('Species/' + species['SpecCode']);
+        }
+
+        for(let i in result){
+
+          if(result[i].html && result[i].html == 'pH'){
+            speciesAddress.set({
+              pondsUkPH:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkPH'] = result[+i+1].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'dGH'){
+            speciesAddress.set({
+              pondsUkDgh:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkDgh'] = result[(+i+1)].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'Temperature'){
+            speciesAddress.set({
+              pondsUkTemp:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkTemp'] = result[(+i+1)].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'Diet'){
+            speciesAddress.set({
+              pondsUkDiet:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkDiet'] = result[(+i+1)].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'Size'){
+            speciesAddress.set({
+              pondsUkSize:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkSize'] = result[(+i+1)].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'Min tank size'){
+            speciesAddress.set({
+              pondsUkTankSize:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkTankSize'] = result[(+i+1)].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'Min tank size'){
+            speciesAddress.set({
+              pondsUkTankSize:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkTankSize'] = result[(+i+1)].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'Aquarium type'){
+            speciesAddress.set({
+              pondsUkAquirumType:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkAquirumType'] = result[(+i+1)].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'Origin'){
+            speciesAddress.set({
+              pondsUkOrigin:result[(+i+2)].text
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkOrigin'] = result[(+i+2)].text
+          }
+
+          if(result[i].html && result[i].html == 'Habitat'){
+            speciesAddress.set({
+              pondsUkHabitat:result[(+i+1)].html.replace(': ', '')
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkHabitat'] = result[(+i+1)].html.replace(': ', '')
+          }
+
+          if(result[i].html && result[i].html == 'Classification'){
+            speciesAddress.set({
+              pondsUkClassification:result[(+i+1)].html
+            },{
+              merge: true
+            });
+
+            this.species['pondsUkClassification'] = result[(+i+1)].html
+          }
+
+
+        }
+
+        console.log(this.species)
+
+        this.getMoreFromPondsUK(name, species)
       }, error => {
         console.log(error);
 
         this.maybePlanetCatfish(this.sfSpecies);
       });
+  }
+
+  getMoreFromPondsUK(name, species){
+
+    var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
+    var scraperURL = encodeURIComponent('http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_left]/table/tbody/tr[4]/td[0#vws');
+
+    console.log('Running on http://motyar.info/webscrapemaster/api/?key=williamfische20&url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_left]/table/tbody/tr[4]/td[0#vws')
+    console.log('or http://www.fishtanksandponds.co.uk/profiles/'+name+'.html');
+
+    this.http.get(corsFix + scraperURL).subscribe(
+    result => {
+
+      console.log(result);
+
+      let speciesAddress;
+
+      if(species['specCode']){
+        speciesAddress = this.fireStore.doc<any>('Species/' + species['specCode']);
+      }else{
+        speciesAddress = this.fireStore.doc<any>('Species/' + species['SpecCode']);
+      }
+
+      for(let i in result){
+
+        if(result[i].html && result[i].html == 'Etymology:'){
+          speciesAddress.set({
+            pondsUkEtymology:result[(+i+1)].text
+          },{
+            merge: true
+          });
+
+          this.species['pondsUkEtymology'] = result[+i+1].text;
+        }
+
+        if(result[i].html && result[i].html == 'General Notes:'){
+          speciesAddress.set({
+            pondsUkSummary:result[(+i+1)].text
+          },{
+            merge: true
+          });
+
+          this.species['pondsUkSummary'] = result[+i+1].text;
+        }
+
+        if(result[i].html && result[i].html == 'Feeding'){
+          speciesAddress.set({
+            pondsUkFeeding:result[(+i+1)].text
+          },{
+            merge: true
+          });
+
+          this.species['pondsUkFeeding'] = result[+i+1].text;
+        }
+
+        if(result[i].html && result[i].html == 'Sexing'){
+          speciesAddress.set({
+            pondsUkSexing:result[(+i+1)].text
+          },{
+            merge: true
+          });
+
+          this.species['pondsUkSexing'] = result[+i+1].text;
+        }
+
+        if(result[i].html && result[i].html == 'Breeding'){
+          speciesAddress.set({
+            pondsUkBreeding:result[(+i+1)].text
+          },{
+            merge: true
+          });
+
+          this.species['pondsUkBreeding'] = result[+i+1].text;
+        }
+
+        if(result[i].html && result[i].html == 'Wild status'){
+          speciesAddress.set({
+            pondsUkWildStatus:result[(+i+1)].text
+          },{
+            merge: true
+          });
+
+          this.species['pondsUkWildStatus'] = result[+i+1].text;
+        }
+
+        if(result[i].html && result[i].html == 'Compatibility'){
+          speciesAddress.set({
+            pondsUkCompatibility:result[(+i+1)].text
+          },{
+            merge: true
+          });
+
+          this.species['pondsUkCompatibility'] = result[+i+1].text;
+        }
+
+        if(result[i].html && result[i].html == 'Additional information'){
+          speciesAddress.set({
+            pondsUkComments:result[(+i+1)].text
+          },{
+            merge: true
+          });
+
+          this.species['pondsUkComments'] = result[+i+1].text;
+        }
+      }
+
+      this.maybePlanetCatfish(this.sfSpecies);
+    }, error => {
+      console.log(error);
+
+      this.maybePlanetCatfish(this.sfSpecies);
+    });
   }
 
   switchSalt(){
@@ -5224,6 +5484,8 @@ export class Tab3Page {
           this.presentUpdating();
           this.perhapsReefApp(fish);
         }
+
+        this.howboutFishTanksAndPonds(fish);
 
       }else{
         console.log('Species up to date!');

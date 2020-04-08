@@ -10,7 +10,7 @@
 
     <div class="listSpace">
 
-      <ion-icon name="close" (click)="closeTank()" class="backArrow"></ion-icon>
+      <ion-icon name="close-outline" (click)="closeTank()" class="backArrow"></ion-icon>
 
       <h1 class="coreName" *ngIf="activeTankData">
         <label *ngIf="!activeTankData.nickname">{{activeTankData.name}}</label>
@@ -31,9 +31,12 @@
       <ion-list class="speciesList animated fadeIn" *ngIf="fishLoaded">
         <ion-list-header *ngIf="fish_in_tank != null">
           <ion-label>
-            <label *ngIf="fish_in_tank.length >= 1">Contains {{ tankFishQuantity }} fish</label>
+
+            <label *ngIf="fish_in_tank.length >= 1 && tankFishQuantity">{{ tankFishQuantity }} Species</label>
+
             <label class="textNoneCenter" *ngIf="fish_in_tank.length < 1">Add fish to this tank via the search tab</label>
-            <br /><br />
+            <br />
+
             <label *ngIf="!trashMode && !reorderMode && !commenting && fish_in_tank.length >= 1">
               <!-- <a (click)="triggerReorder()" *ngIf="fish_in_tank.length > 1">REORDER &bull; </a> -->
               <a (click)="triggerTrash()">EDIT &bull; </a>
@@ -41,7 +44,7 @@
               <a (click)="addDivider()">NEW DIVIDER</a>
             </label>
 
-            <label *ngIf="trashMode || reorderMode || commenting">
+            <label *ngIf="(trashMode || reorderMode || commenting)  && fish_in_tank.length !== 0">
               <a (click)="unTriggerTrash()">DONE</a>
             </label>
 
@@ -75,17 +78,18 @@
                   {{fish.name | titlecase}}
                 </ion-label>
 
-                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="editDivider(fish)" slot="end" name="brush"></ion-icon>
-                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="deleteDivider(fish)" slot="end" name="trash"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="editDivider(fish)" slot="end" name="text-outline"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="deleteDivider(fish)" slot="end" name="trash-outline"></ion-icon>
 
                 <ion-reorder slot="end" *ngIf="trashMode && fish_in_tank.length > 1">
-                  <ion-icon name="menu"></ion-icon>
+                  <ion-icon name="menu-outline"></ion-icon>
                 </ion-reorder>
 
               </ion-item-divider>
 
               <ion-item lines="none" class="whiteSpaceWraper" *ngIf="fish.type == 'fish'">
-                <ion-note *ngIf="fish['quantity']" slot="start">{{fish['quantity']}}x</ion-note>
+                <ion-note *ngIf="fish['quantity'] && !trashMode" slot="start">{{fish['quantity']}}x</ion-note>
+                <ion-note *ngIf="fish['quantity'] && trashMode" slot="start" (click)="adjustQuantity(fish)">{{fish['quantity']}}x</ion-note>
 
                 <b (click)="openFishDetailModal(fish)">
                   <label *ngIf="fish.nickname">{{fish.nickname | titlecase}}</label>
@@ -94,14 +98,14 @@
                 </b>
 
 
-                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="adjustQuantity(fish)" slot="end" name="apps"></ion-icon>
-                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="editFishNickname(fish)" slot="end" name="brush"></ion-icon>
-                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="deleteFishFromTank(fish)" slot="end" name="trash"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="moveFish(fish)" slot="end" name="move-outline"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="editFishNickname(fish)" slot="end" name="text-outline"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="trashMode" (click)="deleteFishFromTank(fish)" slot="end" name="trash-outline"></ion-icon>
 
-                <ion-icon class="trashIcons" *ngIf="commenting && !fish.comment" (click)="addFishComment(fish)" slot="end" name="add"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="commenting && !fish.comment" (click)="addFishComment(fish)" slot="end" name="add-outline"></ion-icon>
 
                 <ion-reorder slot="end" *ngIf="trashMode && fish_in_tank.length > 1">
-                  <ion-icon name="menu"></ion-icon>
+                  <ion-icon name="menu-outline"></ion-icon>
                 </ion-reorder>
 
               </ion-item>
@@ -109,8 +113,8 @@
               <ion-item lines="none" *ngIf="fish.type == 'fish' && fish.comment">
                 <ion-label class="greyedLines">{{fish.comment}}</ion-label>
 
-                <ion-icon class="trashIcons" *ngIf="commenting && fish.comment" (click)="editCommentFromFish(fish)" slot="end" name="brush"></ion-icon>
-                <ion-icon class="trashIcons" *ngIf="commenting && fish.comment" (click)="deleteCommentFromFish(fish)" slot="end" name="trash"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="commenting && fish.comment" (click)="editCommentFromFish(fish)" slot="end" name="text-outline"></ion-icon>
+                <ion-icon class="trashIcons" *ngIf="commenting && fish.comment" (click)="deleteCommentFromFish(fish)" slot="end" name="trash-outline"></ion-icon>
 
               </ion-item>
               <!-- <ion-item-options side="end">
@@ -123,11 +127,38 @@
             </div>
           </ion-reorder-group>
 
+          <br /><br />
+
+          <h2 class="quickAddTitle">Quick Add Species</h2>
+
+          <ion-item lines="none" class="whiteSpaceWraper">
+            <ion-note slot="start">
+              <input placeholder="0" size="2" maxlength="2" type="tel" class="quickAddNum" [(ngModel)]="quickAddNumber" [ngModelOptions]="{standalone: true}"/>x
+            </ion-note>
+
+            <b>
+              <label>
+                <form action=".">
+                  <ion-searchbar placeholder="Search Species..." type="text" value="{{selectedSpecies.name}}" (ionChange)='triggerAutoComplete($event.target.value)' class="quickAddSpecies" [(ngModel)]="searchQueryController" [ngModelOptions]="{standalone: true}" ></ion-searchbar>
+                </form>
+              </label>
+            </b>
+
+            <button class="quickAddBtn" *ngIf="selectedSpecies.length !== 0" (click)="quickAddSpeciesTrigger()">
+              <ion-icon name="checkmark-outline" *ngIf="!confirmedAdd"></ion-icon>
+              <ion-icon name="refresh-circle-outline" *ngIf="confirmedAdd"></ion-icon>
+            </button>
+          </ion-item>
+
+
         <!-- <ion-item (click)="selectSpecies('Butterflyfish')">1x c <b> Butterflyfish </b> &nbsp; <i>(Pantodon Buchholzi)</i></ion-item>
         <ion-item (click)="selectSpecies('Pinoy Blue Angelfish')">2x &nbsp; <b> Pinoy Blue Angelfish </b> &nbsp; <i>(Pterophyllum)</i></ion-item>
         <ion-item (click)="selectSpecies('Kuhli Loach')">4x &nbsp; <b> Kuhli Loach </b> &nbsp; <i>(Actinopterygii)</i></ion-item>
         <ion-item (click)="selectSpecies('Otocinclus')">1x &nbsp; <b> Otocinclus </b> &nbsp; <i>(Hypoptopomatinae)</i></ion-item> -->
       </ion-list>
+
+
+
 
       <ion-list class="speciesList statsListBottom">
         <ion-list-header>
@@ -136,7 +167,7 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-icon name="flask" slot="start"></ion-icon>
+          <ion-icon name="flask-outline" slot="start"></ion-icon>
           <ion-label>
             <b> average pH </b> &nbsp;
             <i>{{activeTankData.ph}}</i>
@@ -144,7 +175,7 @@
         </ion-item>
 
         <ion-item>
-          <ion-icon name="flame" slot="start"></ion-icon>
+          <ion-icon name="flame-outline" slot="start"></ion-icon>
           <ion-label>
             <b> Temp (Celcius &deg;) </b> &nbsp;
           </ion-label>
@@ -152,7 +183,7 @@
         </ion-item>
 
         <ion-item>
-          <ion-icon name="cube" slot="start"></ion-icon>
+          <ion-icon name="cube-outline" slot="start"></ion-icon>
           <ion-label>
             <b> Size (Litres) </b> &nbsp;
           </ion-label>
@@ -160,12 +191,73 @@
         </ion-item>
 
         <ion-item>
-          <ion-icon name="funnel" slot="start"></ion-icon>
+          <ion-icon name="funnel-outline" slot="start"></ion-icon>
           <ion-label (click)="presentSubstrateEditModal()">
             <b> Substrate </b> &nbsp; <i>{{activeTankData.substrate}}</i>
           </ion-label>
         </ion-item>
       </ion-list>
     </div>
+
   </div>
+
+
+  <div class="selectTankPopup animated bounceIn" *ngIf="fishToMove.length !== 0">
+    <div class="loadingSpinner lessTopSpinner" *ngIf="!tanks">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <div class="loadingSpinner lessTopSpinner" *ngIf="!tanks && !moveComplete"></div>
+
+    <ion-icon class="checkIcon" name="checkmark-outline" *ngIf="moveComplete"></ion-icon>
+
+    <div *ngIf="tanks && !moveComplete">
+      <h1>Move <select [(ngModel)]="quanityToMove" [ngModelOptions]="{standalone: true}" ><option *ngFor="let i of amountOfFishLength">{{i}}</option></select> {{fishToMove.comm_name}}?</h1>
+
+      <label class="noTanksYet" *ngIf="tanks.length < 1">You have no tanks yet</label>
+
+      <ion-list *ngIf="tanks.length >= 1">
+        <ion-item *ngFor="let tank of tanks" (click)="selectTank(tank)">
+          <ion-label *ngIf="tank.nickname">{{tank.nickname}}</ion-label>
+          <ion-label *ngIf="!tank.nickname">{{tank.name}}</ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+
+  <!-- AUTOCOMPLETE RESULTS -->
+  <ion-list class="autocompleteResults" *ngIf="showAutoComplete" [ngClass]="{'littleAutoComplete' : littleSearchbar}">
+    <div *ngIf="allLocalFish.length < 1">
+      <h1>Nothing Found...</h1>
+    </div>
+    <div *ngIf="allLocalFish.length >= 1">
+      <h1>{{allLocalFish.length}} Potentially Related Results</h1>
+      <ion-item *ngFor="let fish of allLocalFish" (click)="selectSpecies(fish)">
+        <div class="autoCompleteContentBlock" *ngIf="fish">
+
+          <span class="overhauler" *ngIf="fish.Pics">
+            <img [src]="fish.Pics[0]" *ngIf="fish.Pics[0]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
+            <img [src]="fish.Pics[1]" *ngIf="fish.Pics[1]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
+            <img [src]="fish.Pics[2]" *ngIf="fish.Pics[2]"  src="../assets/noImg.png" onerror="this.style.display = 'none'" class="leftImage" />
+          </span>
+
+          <span class="overhauler" *ngIf="!fish.Pics">
+            <img src="../assets/noImg.png" class="leftImage" />
+          </span>
+
+          <div class="smallSpace">
+            <b *ngIf="fish.name">{{fish.name}}</b> <br /><br />
+            <i>(<a (click)="showGenus(fish.genus)">{{fish.genus}}</a> {{fish.species}})</i>
+          </div>
+
+        </div>
+      </ion-item>
+    </div>
+  </ion-list>
+
+  <div class="backgroundDimmer" (click)="dontMoveFish()" *ngIf="fishToMove.length !== 0"></div>
+
+  <!-- Autocomplete Dimmer -->
+  <div class="autocompleteDimmer" *ngIf="showAutoComplete" (click)="clearMoreResults()"></div>
+
 </ion-content>

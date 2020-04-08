@@ -2,7 +2,7 @@
   <ion-header [ngClass]="{'androidHeader' : userOnAndroid }">
     <ion-toolbar>
       <ion-item class="toggle backArrowTop animated fadeIn" (click)="unSelectSpecies()" *ngIf="speciesSelected">
-        <ion-icon name="arrow-back" class="backArrow"></ion-icon>
+        <ion-icon name="arrow-back-outline" class="backArrow"></ion-icon>
       </ion-item>
 
       <form action="." (ngSubmit)="checkAPI($event, false)">
@@ -129,7 +129,7 @@
       <!-- REFRESHER -->
       <div class="refreshWrapper" *ngIf="doneLoading && (ourFish.length !== 0 || fbSpecies.length !== 0 || relatedSpecies.length !== 0)">
         <ion-refresher slot="fixed" (ionRefresh)="refreshSituation($event)">
-          <ion-refresher-content pullingIcon="arrow-down" refreshingSpinner="bubbles">
+          <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="bubbles">
           </ion-refresher-content>
         </ion-refresher>
       </div>
@@ -279,10 +279,10 @@
       <!-- PONDS SPECIES -->
       <div *ngIf="doneLoading && ourFish.length >= 1 && searchQuery.length > 2" class="theResults" [ngClass]="{'thinResults' : showPondSpecies}">
 
-        <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('local')" *ngIf="minSpeciesLocalReturn >= 10"></ion-icon>
-        <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('local')" *ngIf="ourFish.length > 10" ></ion-icon>
+        <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft-outline" (click)="previousPage('local')" *ngIf="minSpeciesLocalReturn >= 10"></ion-icon>
+        <ion-icon class="seeMoreIco rightArr" name="arrow-dropright-outline" (click)="nextPage('local')" *ngIf="ourFish.length > 10" ></ion-icon>
 
-        <ion-icon class="seeMoreIco" name="more" (click)="collpasePondSpecies()" [ngClass]="{'rotate' : !showPondSpecies}"></ion-icon>
+        <ion-icon class="seeMoreIco" name="more-outline" (click)="collpasePondSpecies()" [ngClass]="{'rotate' : !showPondSpecies}"></ion-icon>
 
         <div class="topTitle" *ngIf="ourFish.length >= 1"><label *ngIf="ourFish.length >= 10">{{ maxSpeciesLocalReturn }} / </label> {{ ourFish.length }} Species Found from Pond</div>
 
@@ -327,11 +327,11 @@
 
         <div *ngIf="showPondSpecies" class="bottomTools">
           <span *ngIf="ourFish.length > 10">
-            <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('local')" *ngIf="minSpeciesLocalReturn >= 10"></ion-icon>
-            <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('local')" *ngIf="ourFish.length > 10" ></ion-icon>
+            <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft-outline" (click)="previousPage('local')" *ngIf="minSpeciesLocalReturn >= 10"></ion-icon>
+            <ion-icon class="seeMoreIco rightArr" name="arrow-dropright-outline" (click)="nextPage('local')" *ngIf="ourFish.length > 10" ></ion-icon>
           </span>
 
-          <ion-icon *ngIf="ourFish.length > 3" class="seeMoreIco" name="more" (click)="collpasePondSpecies()" [ngClass]="{'rotate' : !showPondSpecies}"></ion-icon>
+          <ion-icon *ngIf="ourFish.length > 3" class="seeMoreIco" name="more-outline" (click)="collpasePondSpecies()" [ngClass]="{'rotate' : !showPondSpecies}"></ion-icon>
         </div>
 
 
@@ -340,10 +340,10 @@
       <!-- FISHBASE SPECIES -->
       <div *ngIf="doneLoading && fbSpecies.length >= 1 && searchQuery.length > 2" class="theResults" [ngClass]="{'thinResults' : showFishbaseSpecies}">
 
-        <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('fishbase')" *ngIf="minSpeciesReturn >= 10"></ion-icon>
-        <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('fishbase')" *ngIf="fbSpecies.length > 10"></ion-icon>
+        <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft-outline" (click)="previousPage('fishbase')" *ngIf="minSpeciesReturn >= 10"></ion-icon>
+        <ion-icon class="seeMoreIco rightArr" name="arrow-dropright-outline" (click)="nextPage('fishbase')" *ngIf="fbSpecies.length > 10"></ion-icon>
 
-        <ion-icon class="seeMoreIco" name="more" (click)="collpaseFishbaseSpecies()" [ngClass]="{'rotate' : !showFishbaseSpecies}"></ion-icon>
+        <ion-icon class="seeMoreIco" name="more-outline" (click)="collpaseFishbaseSpecies()" [ngClass]="{'rotate' : !showFishbaseSpecies}"></ion-icon>
 
         <div class="topTitle" *ngIf="fbSpecies.length >= 1"><label *ngIf="fbSpecies.length >= 10">{{ maxSpeciesReturn }} / </label>{{ fbSpecies.length }} Species Found from Fishbase</div>
 
@@ -373,11 +373,11 @@
         <div *ngIf="showFishbaseSpecies" class="bottomTools">
 
           <span *ngIf="fbSpecies.length > 10">
-            <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft" (click)="previousPage('fishbase')" *ngIf="minSpeciesReturn >= 10"></ion-icon>
-            <ion-icon class="seeMoreIco rightArr" name="arrow-dropright" (click)="nextPage('fishbase')" *ngIf="fbSpecies.length > 10"></ion-icon>
+            <ion-icon class="seeMoreIco leftArr" name="arrow-dropleft-outline" (click)="previousPage('fishbase')" *ngIf="minSpeciesReturn >= 10"></ion-icon>
+            <ion-icon class="seeMoreIco rightArr" name="arrow-dropright-outline" (click)="nextPage('fishbase')" *ngIf="fbSpecies.length > 10"></ion-icon>
           </span>
 
-          <ion-icon *ngIf="fbSpecies.length > 3" class="seeMoreIco" name="more" (click)="collpaseFishbaseSpecies()" [ngClass]="{'rotate' : !showFishbaseSpecies}"></ion-icon>
+          <ion-icon *ngIf="fbSpecies.length > 3" class="seeMoreIco-outline" name="more" (click)="collpaseFishbaseSpecies()" [ngClass]="{'rotate' : !showFishbaseSpecies}"></ion-icon>
         </div>
 
       </div>
@@ -385,10 +385,10 @@
       <!-- FISHBASE RELATED SPECIES -->
       <div *ngIf="doneLoading && relatedSpecies.length >= 1 && searchQuery.length > 2" class="theResults" [ngClass]="{'thinResults' : showFishbaseRelatedSpecies}">
 
-        <ion-icon class="seeMoreIco leftArr" name="arrow-left" (click)="previousPage('related')" *ngIf="minSpeciesRelatedReturn >= 10"></ion-icon>
-        <ion-icon class="seeMoreIco rightArr" name="arrow-right" (click)="nextPage('related')" *ngIf="relatedSpecies.length > 10"></ion-icon>
+        <ion-icon class="seeMoreIco leftArr" name="arrow-left-outline" (click)="previousPage('related')" *ngIf="minSpeciesRelatedReturn >= 10"></ion-icon>
+        <ion-icon class="seeMoreIco rightArr" name="arrow-right-outline" (click)="nextPage('related')" *ngIf="relatedSpecies.length > 10"></ion-icon>
 
-        <ion-icon class="seeMoreIco" name="more" (click)="collpaseFishbaseRelatedSpecies()" [ngClass]="{'rotate' : !showFishbaseRelatedSpecies}"></ion-icon>
+        <ion-icon class="seeMoreIco" name="more-outline" (click)="collpaseFishbaseRelatedSpecies()" [ngClass]="{'rotate' : !showFishbaseRelatedSpecies}"></ion-icon>
 
         <div class="topTitle" *ngIf="relatedSpecies.length >= 1"><label *ngIf="relatedSpecies.length >= 10">{{ maxSpeciesRelatedReturn }} / </label> {{ relatedSpecies.length }} Species Related</div>
 
@@ -420,11 +420,11 @@
       <div *ngIf="showFishbaseRelatedSpecies" class="bottomTools">
 
         <span *ngIf="relatedSpecies.length > 10">
-          <ion-icon class="seeMoreIco leftArr" name="arrow-left" (click)="previousPage('related')" *ngIf="minSpeciesRelatedReturn >= 10"></ion-icon>
-          <ion-icon class="seeMoreIco rightArr" name="arrow-right" (click)="nextPage('related')" *ngIf="relatedSpecies.length > 10"></ion-icon>
+          <ion-icon class="seeMoreIco leftArr" name="arrow-left-outline" (click)="previousPage('related')" *ngIf="minSpeciesRelatedReturn >= 10"></ion-icon>
+          <ion-icon class="seeMoreIco rightArr" name="arrow-right-outline" (click)="nextPage('related')" *ngIf="relatedSpecies.length > 10"></ion-icon>
         </span>
 
-        <ion-icon *ngIf="relatedSpecies.length > 3" class="seeMoreIco" name="more" (click)="collpaseFishbaseRelatedSpecies()" [ngClass]="{'rotate' : !showFishbaseRelatedSpecies}"></ion-icon>
+        <ion-icon *ngIf="relatedSpecies.length > 3" class="seeMoreIco-outline" name="more" (click)="collpaseFishbaseRelatedSpecies()" [ngClass]="{'rotate' : !showFishbaseRelatedSpecies}"></ion-icon>
       </div>
 
     </div>

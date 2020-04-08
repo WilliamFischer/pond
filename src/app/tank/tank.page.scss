@@ -29,6 +29,86 @@
     display: inline-flex;
 }
 
+
+.backgroundDimmer{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: rgba(0,0,0,0.15);
+  z-index: 1;
+}
+
+
+
+.selectTankPopup{
+  position: fixed;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: #fff;
+  width: 80%;
+  min-height: 180px;
+  max-height: 400px;
+  margin-top: 35%;
+  z-index: 1000000;
+  padding: 5%;
+  box-shadow: 0px 0px 10px #8e8e8e;
+  font-family: 'Crimson Text', serif !important;
+  border-radius: 10px;
+
+  h1{
+    text-align: center;
+    font-size: 14px !important;
+    text-transform: capitalize !important;
+
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10%;
+  }
+
+  select{
+    background: none;
+    border: none;
+    padding-right: 13px;
+  }
+
+  .checkIcon{
+      display: block;
+      width: 100%;
+      font-size: 36px !important;
+      text-align: center;
+      margin-top: 15%;
+      color: #00b35a;
+  }
+
+}
+
+.selectTankPopup ion-list{
+  max-height: 250px;
+  overflow: scroll;
+
+  border: 1px dotted #e2e2e2;
+}
+
+.noTanksYet{
+  text-align: center;
+  width: 100%;
+  display: block;
+  color: #8e8e8e;
+  margin-top: 10%;
+}
+
+.totalItem ion-note{
+  color: #747474;
+  border-top: 2px solid #e3e3e3;
+  padding-top: 3%;
+}
+
 .wishlistPill{
   min-width: 250px;
   height: 100%;
@@ -97,6 +177,7 @@
 }
 
 .statsListBottom{
+  margin-top: 5vh !important;
   margin-bottom: 10vh !important;
 }
 
@@ -486,6 +567,12 @@
   overflow: hidden;
 }
 
+.whiteSpaceWraper ion-note{
+  width: 30px !important;
+  margin-right: 8px;
+  text-align: right;
+}
+
 .whiteSpaceWraper ion-icon{
   font-size: 21px;
 }
@@ -715,6 +802,13 @@ h1{
     }
 }
 
+.speciesList{
+  a{
+    font-size: 12px !important;
+    font-weight: 400;
+  }
+}
+
 
 
 .wikiDescription{
@@ -909,4 +1003,129 @@ h1{
   margin-top: 0%;
   padding-top: 5%;
   display: block;
+}
+
+.quickAddNum{
+  text-align: center;
+  border: none;
+  width: 73%;
+}
+
+.quickAddSpecies{
+  font-size: 12px;
+  width: 110%;
+  padding: 5%;
+  margin-top: 0% !important;
+  margin-left: -5%;
+  border: none;
+}
+
+.quickAddBtn{
+  background: none;
+
+  ion-icon{
+    color: #8da88d;
+  }
+
+}
+
+.quickAddTitle{
+  font-size: 16px;
+  margin-left: 7%;
+  color: #b9b9b9;
+
+  border-bottom: 1px solid #f4f4f4;
+  padding-bottom: 3%;
+  width: 80%;
+}
+
+
+.autocompleteResults{
+  width: 75%;
+  position: relative;
+  z-index: 1000000;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: 10%;
+  margin-top: -85%;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  max-height: 300px;
+  box-shadow: 0px 0px 10px #bcbcbc;
+  border-radius: 5px;
+
+  *{
+    --inner-border-width: 0px 0px 0px 0px !important;
+    text-transform: capitalize;
+    font-size: 12px;
+  }
+
+  .smallSpace{
+    b{
+      padding-right: 1%;
+      font-size: 14px;
+    }
+
+    i{
+      margin-top: -5%;
+      display: block;
+    }
+  }
+
+  .fixedWhitespace{
+    white-space: nowrap;
+    width: 100% !important;
+    padding: 5% !important;
+    padding-bottom: 10% !important;
+    padding-top: 0% !important;
+  }
+
+  .aLittleBitOfDistance{
+    margin-top: 0%;
+  }
+
+  .item:first-child .aLittleBitOfDistance{
+    margin-top: 15%;
+  }
+
+  .leftImage{
+    width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  h1{
+    margin: 5%;
+    margin-left: 10%;
+    margin-top: 10%;
+    font-size: 16px !important;
+    color: #8e8e8e;
+    font-family: 'Crimson Text', serif !important;
+  }
+}
+
+.overhauler{
+  display: inline-flex;
+  width: 140px;
+  min-width: 140px;
+  overflow: hidden;
+  margin: 5%;
+  margin-left: 0%;
+}
+
+.autocompleteDimmer{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: rgba(0,0,0,0.15);
+  z-index: 1;
+}
+
+.autoCompleteContentBlock{
+  width: 100%;
+  display: contents;
 }

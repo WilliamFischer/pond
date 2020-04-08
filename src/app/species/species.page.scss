@@ -33,6 +33,55 @@ ion-content{
   margin-left: 0% !important;
 }
 
+.optionsGrid{
+  width: fit-content;
+  display: inline-flex;
+  /* float: right; */
+  margin-top: 5%;
+  padding-right: 8%;
+  margin-bottom: 0%;
+
+  .sideOption{
+    display: block;
+    text-align: center;
+    margin-right: 25%;
+    font-size: 10px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    color: #a3dafb;
+    height: 25px;
+
+    span{
+      font-size: 14px;
+      display: block;
+      width: 100%;
+      color: #a3dafb
+    }
+  }
+
+  ion-icon{
+    height: 19px;
+    width: 25px !important;
+    margin-left: 35%;
+  }
+
+  .sideTitle{
+    margin-top: -1px;
+    position: absolute;
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  .greyed{
+    color: #9e9e9e;
+    span{color: #9e9e9e}
+  }
+}
+
+.sideOption{
+
+}
+
 .ownedTxt{
   font-size: 14px;
   text-align: left;
@@ -150,6 +199,7 @@ ion-content{
     display: block;
     width: 100%;
     margin-top: 10%;
+    // margin-bottom: 20%;
 
     .cube{
       text-align: left;
@@ -194,7 +244,7 @@ ion-content{
   left: 0;
   right: 0;
   background: #fff;
-  box-shadow: 0px 0px 20px #8e8e8e;
+  box-shadow: 0px 0px 20px #dcdcdc;
   top: 88%;
   padding: 5%;
   display: inline-flex;
@@ -300,12 +350,30 @@ ion-content{
   }
 }
 
+.noTanksYet{
+  text-align: center;
+  width: 70%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 10%;
+  padding-bottom: 10%;
+  color: #c1c1c1;
+}
+
 .selectTankPopup ion-list{
-  max-height: 250px !important;
+  max-height: 250px;
   overflow: scroll;
 
   border: 1px dotted #e2e2e2;
-  padding-right: 5%;
+}
+
+.redOptipton{
+  background:  #ee6363
+}
+
+.orangeOptipton{
+  background: #ffbd6b;
 }
 
 .variationsBrick{
@@ -335,7 +403,8 @@ ion-fab-list{
 }
 
 .goldenStarShineBright{
-  color: #e0b500;
+  color: #f6805d !important;
+  span{color: #f6805d !important}
 }
 
 .buttonsLive {
@@ -361,6 +430,7 @@ ion-fab-list{
     width: 100%;
     padding: 0px !important;
     margin-top: 10%;
+    min-height: fit-content !important;
 
     span{
       color: #787878 !important;

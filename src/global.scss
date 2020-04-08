@@ -20,7 +20,20 @@
   overflow-y: scroll !important;
 }
 
+ion-slide{
+  background: black !important;
+}
+
 button:focus {outline:0 !important;}
+
+ion-icon{
+  width: 20px !important;
+}
+
+ion-list-header:first-child ion-label{
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
 
 .broswerText{
   display: none;
@@ -75,6 +88,10 @@ ion-searchbar{
 //   color: #78CBE5 !important;
 // }
 
+ion-item{
+  --border-color: #fff !important;
+}
+
 .ughAbsoule ion-content{
   background: transparent !important;
   --background: transparent !important;
@@ -84,6 +101,11 @@ ion-searchbar{
   background: transparent !important;
   --background: transparent !important;
 }
+
+.altNameBox ion-list{
+  max-height: 180px !important;
+}
+
 
 // .spinner-bubbles{
 //   color: #78CBE5 !important;

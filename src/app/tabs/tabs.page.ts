@@ -12,7 +12,7 @@ export class TabsPage {
   constructor(public apiService: ApiProvider){}
 
   forceHome(){
-    if(window.location.pathname == '/tabs/species'){
+    if(window.location.pathname == '/tabs/search'){
       this.apiService.clearSearch();
     }
   }

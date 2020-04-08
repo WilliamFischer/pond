@@ -1,22 +1,21 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddVariationModelPage } from './add-variation-model.page';
+import { myTanksPage } from './myTanks.page';
 
-describe('AddVariationModelPage', () => {
-  let component: AddVariationModelPage;
-  let fixture: ComponentFixture<AddVariationModelPage>;
+describe('Tab5Page', () => {
+  let component: myTanksPage;
+  let fixture: ComponentFixture<myTanksPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddVariationModelPage ],
+      declarations: [myTanksPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    })
-    .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddVariationModelPage);
+    fixture = TestBed.createComponent(myTanksPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

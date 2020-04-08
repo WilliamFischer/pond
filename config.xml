@@ -148,7 +148,7 @@
         <variable name="FACEBOOK_HYBRID_APP_EVENTS" value="false" />
         <variable name="FACEBOOK_ANDROID_SDK_VERSION" value="5.0.2" />
     </plugin>
-    <engine name="ios" spec="^4.5.5" />
-    <engine name="android" spec="^7.1.4" />
-    <engine name="browser" spec="^5.0.4" />
+    <engine name="ios" spec="^5.1.1" />
+    <engine name="android" spec="^8.1.0" />
+    <engine name="browser" spec="^6.0.0" />
 </widget>
