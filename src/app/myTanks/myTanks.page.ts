@@ -41,6 +41,7 @@ export class myTanksPage {
   userOnAndroid: boolean;
   wishlistMode: boolean;
   dynamicUgh: boolean;
+  showWishlist: boolean = true;
 
   accountScreenVal: string;
   reverseScroll: number = 445;
@@ -114,6 +115,10 @@ export class myTanksPage {
 
     ngOnInit() {
       //console.log(this.currentUser)
+
+      if(localStorage.getItem('showWishlist') && String(localStorage.getItem('showWishlist')).includes('false')){
+        this.showWishlist = false;
+      }
 
       //Populate user
       this.afAuth.authState.subscribe(auth=>{
@@ -287,6 +292,18 @@ export class myTanksPage {
 
 
 
+    }
+
+    hideWishlist(){
+      if(this.showWishlist){
+        this.showWishlist = false;
+
+        localStorage.setItem('showWishlist', 'false');
+      }else{
+        this.showWishlist = true;
+
+        localStorage.setItem('showWishlist', 'true');
+      }
     }
 
     populateWishlist(){

@@ -41,10 +41,10 @@
               </ion-refresher>
 
               <!-- Section 1: WISHLIST -->
-              <div class="animated bounceIn"  *ngIf="wishlist && wishlist.length >= 1">
-                <label class="leftTitle topTitle2">Your Wishlist</label>
+              <div class="titleWithSpace animated bounceIn"  *ngIf="wishlist && wishlist.length >= 1">
+                <label class="leftTitle topTitle2" (click)="hideWishlist()">Your Wishlist <ion-icon class="circIco" name="remove-circle-outline"></ion-icon></label>
 
-                <div class="wishlistPillScroller">
+                <div class="wishlistPillScroller" *ngIf="showWishlist">
 
                   <div class="wishlistPill" *ngFor="let fish of wishlistItems" (click)="openFishDetailModal(fish)">
                     <img [src]="fish.Pics[0]" onerror="this.src='../assets/noImg.png'" />

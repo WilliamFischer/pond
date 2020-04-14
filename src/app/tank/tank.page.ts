@@ -282,30 +282,48 @@ export class TankPage implements OnInit {
       }, {
         text: 'Ok',
         handler: (data) => {
-          this.presentLoading();
-          this.fish_in_tank = []
+          //this.presentLoading();
+          // this.fish_in_tank = []
 
           let count = Math.floor(Math.random() * 1000);
 
           let dividerName = data.divider_name
           let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase() + '/dividers/' + count);
+          let scope = this;
 
-          tankAddress.set({
+          let dataToSet = {
             dateSet: new Date(),
             name: dividerName,
             order: 0,
             id: count
-          },{
+          };
+
+
+          let localDataToSet = {
+            id: count,
+            name: dividerName,
+            order: 0,
+            type: 'divider',
+          }
+
+          tankAddress.set(dataToSet ,{
             merge: true
           }).then(() => {
             console.log("Divider added to tank!");
 
-            this.getFish();
-            this.getDividers();
+            // this.getFish();
+            // this.getDividers();
 
-            this.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
 
-            this.dismissLoading();
+            console.log(scope.fish_in_tank)
+
+            setTimeout(()=>{
+              scope.fish_in_tank.push(localDataToSet)
+              //scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
+
+              //this.dismissLoading();
+            });
+
           });
 
 
@@ -387,26 +405,35 @@ closeTank() {
 
 
 
-    deleteDivider(divider){
-      this.presentLoading();
-      this.fish_in_tank = [];
-      console.log('deleteing divider...')
+  deleteDivider(divider){
+    //this.presentLoading();
+    // this.fish_in_tank = [];
+    console.log('deleting divider...')
 
-      let dividerAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + "/dividers/" + divider['id']);
-      let scope = this;
-      //this.fish_in_tank = []
+    let dividerAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + "/dividers/" + divider['id']);
+    let scope = this;
+    //this.fish_in_tank = []
 
-      dividerAddress.delete()
-      .then(function() {
+    dividerAddress.delete()
+    .then(function() {
+      // scope.getFish();
+      // scope.getDividers();
 
-        scope.getFish();
-        scope.getDividers();
+      for( let i in scope.fish_in_tank){
+        if(scope.fish_in_tank[i]['id'] == divider['id']){
+          let deleteNum = Number(i);
 
-        scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
-        scope.dismissLoading();
-      });
+          console.log('deleting #' + deleteNum)
+          scope.fish_in_tank.splice(deleteNum , 1)
+        }
+      }
 
-    }
+      scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1);
+
+      //scope.dismissLoading();
+    });
+
+  }
 
 
     async dividerAlertPrompt(fish) {
@@ -579,6 +606,7 @@ closeTank() {
         oldTankAddress.delete();
 
         this.getFish();
+
         this.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
       }else{
         for(let i in this.fish_in_tank){
@@ -784,7 +812,7 @@ closeTank() {
           text: 'Remove',
           cssClass: 'warning',
           handler: (data) => {
-            this.presentLoading();
+            //this.presentLoading();
 
             this.tankFishQuantity = 0;
 
@@ -795,9 +823,20 @@ closeTank() {
             fishAddress.delete()
             .then(function() {
               console.log('recollect species')
-              scope.getFish();
-              scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1)
-              scope.dismissLoading();
+
+              for( let i in scope.fish_in_tank){
+                console.log(scope.fish_in_tank[i]['spec_code'] + ' vs ' + fish['spec_code'])
+                if(scope.fish_in_tank[i]['spec_code'] == fish['spec_code']){
+                  let deleteNum = Number(i);
+
+                  console.log('deleting #' + deleteNum)
+                  scope.fish_in_tank.splice(deleteNum , 1)
+                }
+              }
+
+              scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1);
+
+              //scope.dismissLoading();
 
             });
 
@@ -1335,8 +1374,9 @@ closeTank() {
   quickAddSpeciesTrigger(){
 
     this.confirmedAdd = true;
+    let order = this.fish_in_tank.length + +1;
 
-    console.log('ADD ' + this.quickAddNumber + ' OF ' + this.selectedSpecies.name +  ' TO ' + this.activeTankData['name']);
+    console.log('ADD ' + this.quickAddNumber + ' OF ' + this.selectedSpecies.name + ' AT ' + order + ' TO ' + this.activeTankData['name']);
 
     let setList = {
       dateSet: new Date(),
@@ -1344,26 +1384,38 @@ closeTank() {
       specCode: this.selectedSpecies['specCode'],
       genus: this.selectedSpecies['genus'],
       species: this.selectedSpecies['species'],
-      order: this.selectedSpecies['order'] + +1,
+      order: order,
       quantity: this.quickAddNumber
     };
+
+
+    let fishObj = {
+      'comm_name': this.selectedSpecies['name'],
+      'genus': this.selectedSpecies['genus'],
+      'spec_code': this.selectedSpecies['specCode'],
+      'quantity': this.quickAddNumber,
+      'nickname': '',
+      'type': 'fish',
+      'order': order,
+      'comment': ''
+    }
+
 
     let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase() + '/species/' + this.selectedSpecies['specCode']);
     let scope = this;
 
     if (setList) {
-      tankAddress.set(setList,{ merge: true }).then(function(ref) {
+      tankAddress.set(setList ,{ merge: true }).then(function(ref) {
         console.log('Confirming Add, adjusting subchildren...');
 
         setTimeout(()=>{
           scope.confirmedAdd = false;
-          //scope.getFish();
-          scope.fish_in_tank.push(setList);
-          scope.getFish();
-          scope.selectedSpecies = ''
-          scope.quickAddNumber = 0
-        });
+          scope.fish_in_tank.push(fishObj);
+          scope.selectedSpecies = '';
+          scope.quickAddNumber = 0;
 
+          console.log(scope.fish_in_tank);
+        });
 
       }).catch(function(error) {
         console.log('Failed: ' + error);

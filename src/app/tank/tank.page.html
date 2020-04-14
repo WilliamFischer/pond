@@ -8,11 +8,11 @@
 
   <div class="tankWrapper animated fadeIn" *ngIf="tankDetailMode && activeTankData">
 
-    <div class="listSpace">
+    <div class="listSpace" *ngIf="activeTankData">
 
       <ion-icon name="close-outline" (click)="closeTank()" class="backArrow"></ion-icon>
 
-      <h1 class="coreName" *ngIf="activeTankData">
+      <h1 class="coreName">
         <label *ngIf="!activeTankData.nickname">{{activeTankData.name}}</label>
         <label *ngIf="activeTankData.nickname">{{activeTankData.nickname}}</label>
 
@@ -247,7 +247,7 @@
 
           <div class="smallSpace">
             <b *ngIf="fish.name">{{fish.name}}</b> <br /><br />
-            <i>(<a (click)="showGenus(fish.genus)">{{fish.genus}}</a> {{fish.species}})</i>
+            <i>({{fish.genus}} {{fish.species}})</i>
           </div>
 
         </div>
