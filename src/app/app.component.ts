@@ -8,6 +8,7 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
 import { Router } from '@angular/router';
+import {HttpClient} from "@angular/common/http";
 
 // Firebase
 import { AngularFireAuth } from '@angular/fire/auth'
@@ -26,7 +27,9 @@ export class AppComponent {
     private afAuth: AngularFireAuth,
     private navigationBar: NavigationBar,
     private keyboard: Keyboard,
-    private screenOrientation: ScreenOrientation
+    private screenOrientation: ScreenOrientation,
+    private http:HttpClient,
+    // private wtj : Wtj
   ) {
     this.initializeApp();
   }
@@ -37,6 +40,8 @@ export class AppComponent {
     this.platform.ready().then(() => {
       let autoHide: boolean = true;
       this.navigationBar.setUp(autoHide);
+
+      console.log(window.innerWidth);
 
       this.statusBar.styleDefault();
       this.splashScreen.hide();
@@ -60,4 +65,5 @@ export class AppComponent {
       console.log('%c POND v1.0.0 by William Fischer. For Chestnut.', 'color: #add8e6');
     });
   }
+
 }

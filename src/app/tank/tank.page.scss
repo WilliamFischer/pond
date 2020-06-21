@@ -25,7 +25,8 @@
     padding-left: 0%;
     margin-top: 10%;
     margin-bottom: 10%;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
     display: inline-flex;
 }
 
@@ -177,7 +178,6 @@
 }
 
 .statsListBottom{
-  margin-top: 5vh !important;
   margin-bottom: 10vh !important;
 }
 
@@ -283,7 +283,7 @@
 .viewProfBtn{
   background: #7eb3ff;
   border: none;
-  padding: 5%;
+  padding: 2%;
   width: 100px;
   border-radius: 50px;
   font-size: 10px;
@@ -294,11 +294,11 @@
   position: absolute;
   white-space: nowrap;
   display: block;
-  margin-top: 10%;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
+  margin-top: 3%;
+  margin-left: 26px;
+  /* margin-right: auto; */
+  /* left: 0; */
+  /* right: 0; */
 }
 
 .splittingLine{
@@ -497,15 +497,15 @@
 
 .textNoneCenter{
   text-align: center;
-  color: #8e8e8e;
-  font-size: 10px;
-  width: 170px;
+  width: 90%;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  position: absolute;
+  background: #f1f1f1;
+  padding-top: 8%;
+  padding-bottom: 8%;
+  border-radius: 3px;
+  margin-top: -10%;
+  color: darkgrey;
+  font-size: 12px;
 }
 
 .backArrow{
@@ -561,20 +561,37 @@
     background: #ff7979 !important;
 }
 
+.whiteSpaceWraper, ion-item-divider{
+  margin-top: 5%;
+  width: 100%;
+  background: none;
+  border-radius: 4px;
+  padding: 0%;
+}
+
 .whiteSpaceWraper *{
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
-.whiteSpaceWraper ion-note{
-  width: 30px !important;
-  margin-right: 8px;
+// .whiteSpaceWraper ion-note{
+//   width: 40px !important;
+//   height: 30px !important;
+//   margin-right: 8px;
+// }
+
+.quickAddNum{
+  border: none;
+  width: 100%;
+  height: 100%;
   text-align: center;
+  padding-right: 15%;
 }
 
 .whiteSpaceWraper ion-icon{
   font-size: 21px;
+  margin: 2%;
 }
 
 
@@ -586,8 +603,13 @@
 
 .whiteSpaceWraper b{
   width: 100% !important;
+  color: #aaaaaa;
+  font-size: 14px;
 }
 
+.whiteSpaceWraper ion-note{
+  margin-right: 10px;
+}
 
 .splittingLine{
   .paddingSpace{
@@ -605,6 +627,22 @@ h1{
   font-size: 34px !important;
   padding-bottom: 10%;
   text-align: center;
+  font-family: 'Crimson Text', serif !important;
+}
+
+ion-item-divider{
+  padding: 2%;
+  padding-left: 5%;
+  font-weight: 600;
+  font-size: 14px;
+  background: #eaeaea;
+  color: #bdbdbd;
+  margin-top: 15%;
+}
+
+ion-list-header{
+  margin-top: 5%;
+  color: #d1d1d1;
   font-family: 'Crimson Text', serif !important;
 }
 
@@ -803,9 +841,14 @@ h1{
 }
 
 .speciesList{
+
+  background: #FAFAFA;
+  padding: 5%;
+  margin-bottom: 10%;
+
   a{
     font-size: 12px !important;
-    font-weight: 400;
+    font-weight: 600;
   }
 }
 
@@ -1006,18 +1049,52 @@ h1{
 }
 
 .quickAddNum{
-  text-align: center;
-  border: none;
-  width: 73%;
+  // text-align: right;
+  // border: none;
+  // position: absolute;
+  // overflow: auto !important;
+  // margin-left: -27px;
+  // width: fit-content;
+  // padding: 2%;
+  // margin-top: -7.5%;
+}
+
+.quantityIndictor{
+  position: absolute;
+  top: 19px;
+  left: 45px;
 }
 
 .quickAddSpecies{
   font-size: 12px;
-  width: 110%;
+  width: 105%;
   padding: 5%;
   margin-top: 0% !important;
-  margin-left: -5%;
+  margin-left: -3%;
   border: none;
+}
+
+.autoCompleteControls{
+  padding: 10%;
+  display: inline-flex;
+  width: 100%;
+
+  div{
+    width: 50%;
+    text-align: center;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-family: 'Crimson Text', serif !important;
+    font-weight: bold;
+  }
+
+  .previous{
+    float: left;
+  }
+
+  .next{
+    float: right;
+  }
 }
 
 .quickAddBtn{
@@ -1037,18 +1114,26 @@ h1{
   border-bottom: 1px solid #f4f4f4;
   padding-bottom: 3%;
   width: 80%;
+
+  a{
+    color: #8e8e8e;
+    text-decoration: none;
+  }
 }
 
+.statsTitle{
+  margin-top: 15%;
+}
 
 .autocompleteResults{
-  width: 75%;
+  width: 65%;
   position: relative;
   z-index: 1000000;
   left: 0;
   right: 0;
   margin-left: auto;
-  margin-right: 10%;
-  margin-top: -85%;
+  margin-right: 11.9%;
+  margin-top: -320px;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
   max-height: 300px;
@@ -1106,13 +1191,89 @@ h1{
   }
 }
 
+.littleAutoCompleteResults{
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  max-height: 300px;
+  border-radius: 5px;
+  border: 1px solid #f6f6f6;
+
+  h1{
+    margin: 5%;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    font-size: 16px !important;
+    color: #8e8e8e;
+    font-family: "Crimson Text", serif !important;
+    text-align: left;
+    padding: 0;
+  }
+
+  *{
+    --inner-border-width: 0px 0px 0px 0px !important;
+    text-transform: capitalize;
+    font-size: 12px;
+  }
+
+  .smallSpace{
+    b{
+      padding-right: 1%;
+      font-size: 14px;
+    }
+
+    i{
+      margin-top: -5%;
+      display: block;
+    }
+  }
+
+  .fixedWhitespace{
+    white-space: nowrap;
+    width: 100% !important;
+    padding: 5% !important;
+    padding-bottom: 10% !important;
+    padding-top: 0% !important;
+  }
+
+  .aLittleBitOfDistance{
+    margin-top: 0%;
+  }
+
+  .item:first-child .aLittleBitOfDistance{
+    margin-top: 15%;
+  }
+
+  .leftImage{
+    width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  .smallSpace{
+    b{
+      padding-right: 1%;
+      font-size: 14px;
+    }
+
+    i{
+      margin-top: -5%;
+      display: block;
+    }
+  }
+}
+
 .overhauler{
   display: inline-flex;
-  width: 140px;
-  min-width: 140px;
+  width: 130px;
+  max-width: 130px;
+  min-width: 130px;
+  height: 100px;
   overflow: hidden;
   margin: 5%;
   margin-left: 0%;
+  background: black;
+  object-fit: contain;
 }
 
 .autocompleteDimmer{

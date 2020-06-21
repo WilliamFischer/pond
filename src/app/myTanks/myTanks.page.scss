@@ -17,7 +17,7 @@
 }
 
 .titleWithSpace{
-  margin-bottom: 5% !important;
+  margin-top: 10% !important;
 }
 
 .leftTitle{
@@ -37,7 +37,8 @@
     padding-left: 0%;
     margin-top: 10%;
     margin-bottom: 10%;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
     display: inline-flex;
 }
 
@@ -105,6 +106,7 @@
   background: none;
   box-shadow: none;
   min-width: 5px;
+  height: 550px;
 }
 
 .greyedLines{
@@ -214,12 +216,12 @@
 }
 
 .viewProfBtn{
-  background: #7eb3ff;
+  background: #00B4DB;
   border: none;
-  padding: 5%;
+  padding: 2%;
   width: 100px;
   border-radius: 50px;
-  font-size: 10px;
+  font-size: 8px;
   color: #fff;
   font-weight: 900;
   text-transform: uppercase;
@@ -228,10 +230,10 @@
   white-space: nowrap;
   display: block;
   margin-top: 3%;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
+  margin-left: 26px;
+  /* margin-right: auto; */
+  /* left: 0; */
+  /* right: 0; */
 }
 
 .splittingLine{

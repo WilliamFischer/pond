@@ -202,7 +202,7 @@
     </span>
 
     <!-- Feeding -->
-    <span *ngIf="species.diet || species.feeding ||species.feeding || species.ausFeed || species.scotsFeeding || species.pondsUkFeeding || species.pondsUkDiet">
+    <span *ngIf="species.diet || species.feeding ||species.feeding || species.ausFeed || species.scotsFeeding || species.pondsUkFeeding || species.pondsUkDiet || species.reefRecommendedFood">
       <h3>Feeding</h3>
       <p [innerHTML]="species.diet"></p>
       <p [innerHTML]="species.feeding"></p>
@@ -210,6 +210,13 @@
       <p [innerHTML]="species.scotsFeeding"></p>
       <p [innerHTML]="species.pondsUkFeeding"></p>
       <p [innerHTML]="species.pondsUkDiet"></p>
+      <p [innerHTML]="species.reefRecommendedFood"></p>
+    </span>
+
+    <!-- Wild Diet -->
+    <span *ngIf="species.reefMainFood">
+      <h3>Wild Diet</h3>
+      <p [innerHTML]="species.reefMainFood"></p>
     </span>
 
     <!-- Compatibility -->
@@ -256,10 +263,10 @@
     </span>
 
     <!-- Furniture -->
-    <span *ngIf="species.furniture">
+    <!-- <span *ngIf="species.furniture">
       <h3>Recommended Tank Decoration</h3>
       <p [innerHTML]="species.furniture"></p>
-    </span>
+    </span> -->
 
     <!-- Sexing -->
     <span *ngIf="species.sexing || species.scotsSex || species.pondsUkSexing">
@@ -275,7 +282,7 @@
       <p [innerHTML]="species.identification"></p>
     </span>
 
-    <!-- Identification -->
+    <!-- Wild Status -->
     <span *ngIf="species.pondsUkWildStatus">
       <h3>Wild Status</h3>
       <p [innerHTML]="species.pondsUkWildStatus"></p>
@@ -342,10 +349,11 @@
       <p [innerHTML]="species.ausRemarks"></p>
     </span>
 
-    <!-- Remarks -->
-    <span *ngIf="species.ausFishing">
+    <!-- Fishing Status -->
+    <span *ngIf="species.ausFishing || species.reefInAquaria">
       <h3>Fishing / Hobby Status</h3>
       <p [innerHTML]="species.ausFishing"></p>
+      <p [innerHTML]="species.reefInAquaria"></p>
     </span>
 
     <!-- Similar Species -->
@@ -360,36 +368,17 @@
       <p [innerHTML]="species.reefAggressiveness"></p>
     </span>
 
-    <!-- Aggressiveness -->
-    <span *ngIf="species.reefInAquaria">
-      <h3>Seen in Aquaria? </h3>
-      <p [innerHTML]="species.reefInAquaria"></p>
-    </span>
-
-    <!-- Aggressiveness -->
+    <!-- Sutible for keeping -->
     <span *ngIf="species.reefAquriumSutible">
       <h3>Sutible For Aquaria? </h3>
       <p [innerHTML]="species.reefAquriumSutible"></p>
     </span>
 
-    <!-- Aggressiveness -->
+    <!-- Reef Safe -->
     <span *ngIf="species.reefReefSafereefReefSafe">
       <h3>Reef Safe? </h3>
       <p [innerHTML]="species.reefReefSafe"></p>
     </span>
-
-    <!-- Aggressiveness -->
-    <span *ngIf="species.reefRecommendedFood">
-      <h3>Recommended Food</h3>
-      <p [innerHTML]="species.reefRecommendedFood"></p>
-    </span>
-
-    <!-- Aggressiveness -->
-    <span *ngIf="species.reefMainFood">
-      <h3>Wild Diet</h3>
-      <p [innerHTML]="species.reefMainFood"></p>
-    </span>
-
 
     <!-- Additonal Comments -->
     <span *ngIf="species.SFComments || species.norChar || species.comments || species.description || species.sharkDesc || species.pondsUkComments">

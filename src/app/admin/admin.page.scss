@@ -1,0 +1,48 @@
+form{
+  padding: 5%;
+}
+
+.toggleItem{
+  padding-top: 40px !important;
+}
+
+ion-textarea, ion-input{
+  border: 1px solid #e8e8e8 !important;
+  padding-left: 5% !important;
+  border-radius: 4px;
+}
+
+ion-label{
+  margin-left: 5%;
+  color: #8e8e8e !important;
+}
+
+button{
+  background: #00B4DB;
+  width: 80%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  padding: 5%;
+  border-radius: 4px;
+  color: #fff;
+  margin-top: 10%;
+  margin-bottom: 30%;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pondLogo{
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  display: block;
+  margin-top: 10%;
+  margin-bottom: 5%;
+}

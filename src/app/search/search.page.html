@@ -244,7 +244,7 @@
       <!-- RANDOM SPECIES -->
       <div *ngIf="randomMode" class="theResults">
         <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh == -1">Freshwater species generated</h1>
-        <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh != -1">Saltwater species generated</h1>
+        <h1 class="fishGeneratedType" *ngIf="randomSpecies.fresh && randomSpecies.fresh == 0">Saltwater species generated</h1>
 
         <div  class="loadingSpinner" *ngIf="!randomSpecies.genus">
           <ion-spinner name="crescent"></ion-spinner>

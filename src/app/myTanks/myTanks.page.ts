@@ -6,7 +6,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
 
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, ActionSheetController } from '@ionic/angular';
 
 @Component({
   selector: 'myTanks',
@@ -42,6 +42,7 @@ export class myTanksPage {
   wishlistMode: boolean;
   dynamicUgh: boolean;
   showWishlist: boolean = true;
+  showTanks: boolean = true;
 
   accountScreenVal: string;
   reverseScroll: number = 445;
@@ -110,7 +111,8 @@ export class myTanksPage {
     private router: Router,
     public plt: Platform,
     public loadingController: LoadingController,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public actionSheetController: ActionSheetController
   ) { }
 
     ngOnInit() {
@@ -166,14 +168,15 @@ export class myTanksPage {
       // console.log('scroll is ' +  $event.detail['scrollTop']);
       let scollAmount = 5;
 
-      if($event.detail['scrollTop'] < 19){
-        this.fullAccountMode = true;
-        this.accountScreenVal = '375px';
-      }else{
-        this.fullAccountMode = false;
-        this.accountScreenVal = '160px';
+      if(this.tanks.length > 5){
+        if($event.detail['scrollTop'] < 19){
+          this.fullAccountMode = true;
+          this.accountScreenVal = '375px';
+        }else{
+          this.fullAccountMode = false;
+          this.accountScreenVal = '160px';
+        }
       }
-
 
 
       // if($event.detail['scrollTop'] != 0){
@@ -247,12 +250,14 @@ export class myTanksPage {
       setTimeout(()=>{
 
         this.tanks.forEach(function(value, key) {
-          scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + value['trueName'].toLowerCase())
-          .set({
-            order: key
-          },{
-            merge: true
-          });
+          if(value['trueName']){
+            scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + value['trueName'].toLowerCase())
+            .set({
+              order: key
+            },{
+              merge: true
+            });
+          }
         });
 
         console.log('After complete tanks:', this.tanks);
@@ -268,7 +273,7 @@ export class myTanksPage {
       setTimeout(() => {
         console.log('Async operation has ended');
         event.target.complete();
-      }, 1500);
+      }, 1000);
 
 
     }
@@ -304,6 +309,10 @@ export class myTanksPage {
 
         localStorage.setItem('showWishlist', 'true');
       }
+    }
+
+    hideTanks(){
+      this.showTanks = !this.showTanks;
     }
 
     populateWishlist(){
@@ -440,7 +449,7 @@ export class myTanksPage {
           values.forEach(tankResult => {
             this.populateColours(tankResult)
 
-            console.log(tankResult);
+            //console.log(tankResult);
 
             this.repeatArrayTank = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tankResult['trueName'].toLowerCase() + '/species').valueChanges().subscribe(
             species =>{
@@ -468,40 +477,34 @@ export class myTanksPage {
             });
           });
 
-
-
-
-
-
-
-
           // THIS IS SEPERATLY POPULATING FISH COUNT :)
-          setTimeout(()=>{
-            let fishCount;
-
+          let wishlistLoop = setInterval(()=>{
             if(this.totalQuanityOfFish){
-              fishCount = this.totalQuanityOfFish
-            }else{
-              fishCount = 0
+              clearInterval(wishlistLoop)
+
+              let fishCount;
+
+              if(this.totalQuanityOfFish){
+                fishCount = this.totalQuanityOfFish
+              }else{
+                fishCount = 0
+              }
+
+              this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid)
+              .set({
+                fishCount: fishCount,
+                following: this.totalQuanityOfFollows,
+                followers:  this.totalQuanityOfFollowers
+              },{
+                merge: true
+              }).then(() => {
+                this.populateWishlist();
+
+                this.userTankChanges.unsubscribe();
+                this.checkCollection.unsubscribe();
+              });
             }
-
-            this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid)
-            .set({
-              fishCount: fishCount,
-              following: this.totalQuanityOfFollows,
-              followers:  this.totalQuanityOfFollowers
-            },{
-              merge: true
-            }).then(() => {
-              this.populateWishlist();
-
-              this.userTankChanges.unsubscribe();
-              this.checkCollection.unsubscribe();
-            });
-
-          }, 2000);
-
-
+          }, 300);
 
         });
 
@@ -740,6 +743,10 @@ export class myTanksPage {
     this.reorderMode = true;
   }
 
+  triggerAdmin(){
+    this.router.navigateByUrl('admin');
+  }
+
   // Route the user back to the login page
   logout(){
     console.log('Logging out...')
@@ -749,6 +756,29 @@ export class myTanksPage {
        location.reload();
     });
   }
+
+  async presentActionSheet() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Settings',
+      buttons: [{
+        text: 'Manually Add Species',
+        icon: 'plus-outline',
+        handler: () => {
+          this.triggerAdmin();
+        }
+      },{
+        text: 'Logout',
+        role: 'destructive',
+        icon: 'log-out-outline',
+        handler: () => {
+          this.logout();
+        }
+      }]
+    });
+    await actionSheet.present();
+  }
+
+
 
   changeColour(tank, index){
     this.canLoadTank = true;
@@ -793,7 +823,7 @@ export class myTanksPage {
             this.colourFound = true;
 
             this.tanks = this.tanks;
-            this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
+            //this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
             this.colourDoc.unsubscribe();
           });
         }

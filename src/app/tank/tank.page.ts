@@ -19,7 +19,7 @@ import { finalize } from 'rxjs/operators';
 })
 export class TankPage implements OnInit {
 
-  @ViewChild(IonContent) content: IonContent;
+  @ViewChild(IonContent, {static: false}) content: IonContent;
 
   // switches
   debug: boolean = false;
@@ -32,10 +32,13 @@ export class TankPage implements OnInit {
   trashMode: boolean;
   reorderMode: boolean;
   commenting: boolean;
+  reordring: boolean;
   loadingImageUpload: boolean;
   moveComplete: boolean;
   showAutoComplete: boolean;
   confirmedAdd: boolean;
+  forceToTop: boolean;
+  hideQuickAdd: boolean;
 
   // strings
   tankUser: string;
@@ -46,7 +49,9 @@ export class TankPage implements OnInit {
 
   // numbers
   tankFishQuantity: number = 0;
-  quickAddNumber: number = 1;
+  quickAddNumber: number;
+  quickAddPage: number = 1;
+  scrollAmount: number;
 
   // collections
   tankDetailChanges: any;
@@ -64,6 +69,7 @@ export class TankPage implements OnInit {
   fishToMove: any = [];
   tanks: any = [];
   allLocalFish: any = [];
+  fullLocalFishResult: any = [];
   amountOfFishLength: any = [];
   selectedSpecies: any = [];
 
@@ -835,6 +841,7 @@ closeTank() {
               }
 
               scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1);
+              scope.tankFishQuantity = -scope.tankFishQuantity - -fish['quantity'];
 
               //scope.dismissLoading();
 
@@ -856,6 +863,10 @@ closeTank() {
 
   commentMode(){
     this.commenting = true;
+  }
+
+  reorderTrigger(){
+    this.reorderMode = true;
   }
 
   addFishComment(fish){
@@ -1151,8 +1162,27 @@ closeTank() {
     this.addChemistryMode = false;
   }
 
+  logScrolling(e){
+    this.scrollAmount = e.detail.scrollTop
+  }
+
   triggerAutoComplete(query){
     console.log(query);
+
+    //console.log(this.scrollAmount);
+
+    // if(this.scrollAmount <= 600){
+    //   console.log('Show at top')
+    //   this.forceToTop = true;
+    // }else{
+    //   console.log('Show at bottom')
+    //   this.forceToTop = false;
+    // }
+
+
+    if(this.scrollAmount <= 200){
+      this.content.scrollToPoint(0, 500);
+    }
 
     let canRun = true;
 
@@ -1164,6 +1194,7 @@ closeTank() {
 
 
     this.allLocalFish = [];
+    this.fullLocalFishResult = [];
 
     if(canRun){
       //console.log(query);
@@ -1282,69 +1313,118 @@ closeTank() {
 
           });
         });
+
+        let crazedInterval = setInterval(()=>{
+
+          //MASTER CONTROLLER
+
+
+
+          if(nameCollection.length >= 1){
+            this.allLocalFish.push(nameCollection);
+          }
+
+          if(speciesCollection.length >= 1){
+            this.allLocalFish.push(speciesCollection);
+          }
+
+          if(genusCollection.length >= 1){
+            this.allLocalFish.push(genusCollection);
+          }
+
+          if(distributionCollection.length >= 1){
+            this.allLocalFish.push(distributionCollection);
+          }
+
+          if(habitatCollection.length >= 1){
+            this.allLocalFish.push(habitatCollection);
+          }
+
+          if(descCollection.length >= 1){
+            this.allLocalFish.push(descCollection);
+          }
+
+
+          if(this.allLocalFish.length >= 1){
+
+            canRun = false;
+            clearInterval(crazedInterval);
+
+            this.masterController();
+          }
+
+        }, 100);
+
       }else{
         this.allLocalFish = '';
       }
-
-      setTimeout(()=>{
-        canRun = false;
-
-        //MASTER CONTROLLER
-
-        if(nameCollection.length >= 1){
-          this.allLocalFish.push(nameCollection);
-        }
-
-        if(speciesCollection.length >= 1){
-          this.allLocalFish.push(speciesCollection);
-        }
-
-        if(genusCollection.length >= 1){
-          this.allLocalFish.push(genusCollection);
-        }
-
-        if(distributionCollection.length >= 1){
-          this.allLocalFish.push(distributionCollection);
-        }
-
-        if(habitatCollection.length >= 1){
-          this.allLocalFish.push(habitatCollection);
-        }
-
-        if(descCollection.length >= 1){
-          this.allLocalFish.push(descCollection);
-        }
-
-        if(this.allLocalFish.length >= 1){
-          var merged = [].concat.apply([], this.allLocalFish);
-          var clearOfDups = this.removeDuplicatesBy(x => x.specCode, merged);
-          this.allLocalFish = clearOfDups;
-
-          console.log(this.allLocalFish);
-
-          this.localFishAutoCompleteCollection.unsubscribe();
-        }else{
-          console.log('Nothing found... ');
-        }
-
-        if(this.allLocalFish.length >= 1){
-
-          this.allLocalFish = this.allLocalFish;
-
-          if(this.localFishAutoCompleteCollection){
-            this.localFishAutoCompleteCollection.unsubscribe();
-            console.log('Throttle Subscriber!')
-          }
-
-        }
-
-      }, 200);
 
 
     }else{
       console.log('Cant run');
     }
 
+  }
+
+  masterController(){
+    if(this.allLocalFish.length >= 1){
+      var merged = [].concat.apply([], this.allLocalFish);
+      var clearOfDups = this.removeDuplicatesBy(x => x.specCode, merged);
+
+      if(clearOfDups.length >= 10){
+        this.fullLocalFishResult = clearOfDups;
+        this.allLocalFish = clearOfDups.slice(0, 10);
+      }else{
+        this.allLocalFish = clearOfDups;
+      }
+
+      console.log(this.allLocalFish);
+
+      this.localFishAutoCompleteCollection.unsubscribe();
+    }else{
+      console.log('Nothing found... ');
+    }
+
+    if(this.allLocalFish.length >= 1){
+
+      this.allLocalFish = this.allLocalFish;
+
+      if(this.localFishAutoCompleteCollection){
+        this.localFishAutoCompleteCollection.unsubscribe();
+        console.log('Throttle Subscriber!')
+      }
+
+    }
+  }
+
+  quickAddPrevious(){
+    console.log('at ' + this.quickAddPage)
+
+    let oldAdd = (this.quickAddPage * 10) - 20
+    let newAdd = (this.quickAddPage * 10) - 10;
+    let newQuickAdd = this.quickAddPage - 1;
+
+    // let oldAdd =  Math.floor(this.quickAddPage / 10);
+    console.log('show results from ' + oldAdd + ' to ' + newAdd)
+
+    this.allLocalFish = this.fullLocalFishResult.slice(oldAdd, newAdd);
+    this.quickAddPage = newQuickAdd;
+
+    document.getElementById('autoCompleteResults').scrollTo(0, 0);
+  }
+
+  quickAddNext(){
+    let newQuickAdd = +this.quickAddPage + 1;
+    console.log('show results from ' + (this.quickAddPage * 10) + ' to ' + (newQuickAdd * 10))
+
+    this.allLocalFish = this.fullLocalFishResult.slice((this.quickAddPage * 10), (newQuickAdd * 10));
+    this.quickAddPage = newQuickAdd;
+
+    document.getElementById('autoCompleteResults').scrollTo(0, 0);
+  }
+
+  toggleQuickAdd(){
+    this.hideQuickAdd = !this.hideQuickAdd;
   }
 
   removeDuplicatesBy(keyFn, arr){
@@ -1411,8 +1491,10 @@ closeTank() {
         setTimeout(()=>{
           scope.confirmedAdd = false;
           scope.fish_in_tank.push(fishObj);
+          scope.tankFishQuantity = +scope.tankFishQuantity + +scope.quickAddNumber;
           scope.selectedSpecies = '';
           scope.quickAddNumber = 0;
+
 
           console.log(scope.fish_in_tank);
         });

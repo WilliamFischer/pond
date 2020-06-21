@@ -1,0 +1,204 @@
+<ion-content>
+
+  <img class="pondLogo" src="assets/whiteKoiClear.png" (click)="goHome()"/>
+
+  <form (ngSubmit)="logForm()">
+    <ion-item>
+      <ion-label position="floating">Password *</ion-label>
+      <ion-input type="text" [(ngModel)]="password" name="title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Genus *</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.genus" name="genus"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Species *</ion-label>
+      <ion-input type="text" [(ngModel)]="speciesToAdd.species" name="species"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Family *</ion-label>
+      <ion-input type="text" [(ngModel)]="speciesToAdd.family" name="family"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Order</ion-label>
+      <ion-input type="text" [(ngModel)]="speciesToAdd.order" name="order"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Class</ion-label>
+      <ion-input type="text" [(ngModel)]="speciesToAdd.class" name="class"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Common Name</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.name" name="name"></ion-input>
+    </ion-item>
+    <ion-item class="toggleItem">
+      <ion-label>Freshwater?</ion-label>
+      <ion-toggle [(ngModel)]="speciesToAdd.fresh" name="fresh" (value)="true"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Etymology</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.etymology" name="etymology"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating"></ion-label>
+      <ion-input placeholder="Picture #1" [(ngModel)]="pics[0]" name="PicsZero"></ion-input><br />
+      <ion-input placeholder="Picture #2" [(ngModel)]="pics[1]" name="PicsOne"></ion-input><br />
+      <ion-input placeholder="Picture #3" [(ngModel)]="pics[2]" name="PicsTwo"></ion-input><br />
+      <ion-input placeholder="Picture #4" [(ngModel)]="pics[3]" name="PicsThree"></ion-input><br />
+      <ion-input placeholder="Picture #5" [(ngModel)]="pics[4]" name="PicsFour"></ion-input><br />
+      <ion-input placeholder="Picture #6" [(ngModel)]="pics[5]" name="PicsFive"></ion-input><br />
+      <ion-input placeholder="Picture #7" [(ngModel)]="pics[6]" name="PicsSix"></ion-input><br />
+      <ion-input placeholder="Picture #8" [(ngModel)]="pics[7]" name="PicsSeven"></ion-input><br />
+      <ion-input placeholder="Picture #9" [(ngModel)]="pics[8]" name="PicsEight"></ion-input><br />
+      <ion-input placeholder="Picture #10" [(ngModel)]="pics[9]" name="PicsNine"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Temp *</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.temperature" name="temperature"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">PH *</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.ph" name="ph"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Hardness</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.hardness" name="hardness"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">dGH</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.pondsUkDgh" name="pondsUkDgh"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Depth (for ocean fish)</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.depth" name="depth"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Vunerability (out of 100)</ion-label>
+      <ion-input type="number" maxLength="2" [(ngModel)]="speciesToAdd.vulnerability" name="vulnerability"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Dangerous?</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.dangerous" name="dangerous" (value)="harmless"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item class="toggleItem">
+      <ion-label>Aquatic Plants Recommended?</ion-label>
+      <ion-toggle [(ngModel)]="speciesToAdd.aquaticPlants" name="aquaticPlants"></ion-toggle>
+    </ion-item>
+    <ion-item class="toggleItem">
+      <ion-label>Blackwater?</ion-label>
+      <ion-toggle [(ngModel)]="speciesToAdd.blackWater" name="blackWater"></ion-toggle>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Wikipedia Summary</ion-label>
+      <ion-textarea [(ngModel)]="speciesToAdd.wikiDesc" name="wikiDesc"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Alternative Name</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.commonName" name="commonName"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Species Size</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.size" name="size"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Tank Size</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.recommendedTankSize" name="recommendedTankSize"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Locality</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.locality" name="locality"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Distribution</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.distribution" name="distribution"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Diet</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.diet" name="diet"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Compatibility</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.compatibility" name="compatibility"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Recommended Tank Mates</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.tankMates" name="tankMates"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Enviroment</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.enviroment" name="enviroment"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Habitat</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.habitat" name="habitat"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Recommended Tank Decoration</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.furniture" name="furniture"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Sex Identification</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.sexing" name="sexing"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Reproduction</ion-label>
+      <ion-textarea [(ngModel)]="speciesToAdd.reproduction" name="reproduction"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Characteristics</ion-label>
+      <ion-input [(ngModel)]="speciesToAdd.characteristics" name="characteristics"></ion-input>
+    </ion-item>
+
+    <br /><br />
+
+    <ion-item>
+      <ion-label position="floating">Disease</ion-label>
+      <ion-textarea [(ngModel)]="speciesToAdd.disease" name="disease"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Comments</ion-label>
+      <ion-textarea [(ngModel)]="speciesToAdd.comments" name="comments"></ion-textarea>
+    </ion-item>
+
+
+
+    <button ion-button type="submit" block>Add Species</button>
+  </form>
+</ion-content>

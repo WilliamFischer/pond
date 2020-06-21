@@ -30,6 +30,10 @@ ion-icon{
   width: 20px !important;
 }
 
+body{
+  background: black;
+}
+
 ion-list-header:first-child ion-label{
   margin-top: 0 !important;
   margin-bottom: 0 !important;
@@ -58,10 +62,11 @@ ion-list-header:first-child ion-label{
   padding: 3%;
 }
 
-.searchbar-search-icon.sc-ion-searchbar-ios{
+.searchbar-search-icon .sc-ion-searchbar-ios{
   width: 16px !important;
   padding-left: 1% !important;
 }
+
 
 ion-searchbar{
   margin-top: 5% !important;
@@ -73,11 +78,11 @@ ion-searchbar{
 
 .rightStuff{
   width: 200px;
-  height: 180px;
+  height: auto;
   padding: 5%;
   /* padding-top: 0%; */
   /* height: 80%; */
-  margin-top: -5%;
+  margin-top: -7%;
   margin-left: 5%;
   background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -133,8 +138,10 @@ ion-item{
     margin-bottom: 3%;
   }
 
-  ion-app{
-    background: #88b9c9 !important;
+  ion-app, html{
+    background: #00B4DB;
+    background: -webkit-linear-gradient(to right, #0083B0, #00B4DB);
+    background: linear-gradient(to right, #0083B0, #00B4DB);
   }
 
   // ion-backdrop{
@@ -153,8 +160,10 @@ ion-item{
     text-align: center;
     font-size: 42px;
     margin-top: 1%;
-    color: #3e8196;
-    font-family: 'Crimson Text', serif !important;
+    color: #019dc6;
+    font-family: "Crimson Text", serif !important;
+    text-shadow: 1px 1px 3px #0084b1;
+
   }
 
   .footerTxt{
@@ -196,9 +205,9 @@ ion-item{
 }
 
 //NO TITLE MODE
-@media (max-height: 750px) {
-  ion-router-outlet{
-    margin-bottom: 0%;
+@media (max-height: 750px) and (min-width : 500px) {
+  body{
+    margin-top: 3% !important;
   }
 
   .broswerText{
@@ -206,13 +215,24 @@ ion-item{
   }
 }
 
-//IPAD MODE
-@media (min-width: 768px) and (max-width: 1024px) and (orientation:portrait) {
-  ion-router-outlet{
-    width: 500px !important;
-    height: 900px !important;
+@media (min-height : 800px) {
+  // body{
+  //   margin-top: 5% !important;
+  // }
+
+  .broswerText{
+    display: none;
   }
 }
+
+
+//IPAD MODE
+// @media (min-width: 768px) and (max-width: 1024px) and (orientation:portrait) {
+//   ion-router-outlet{
+//     width: 500px !important;
+//     height: 900px !important;
+//   }
+// }
 
 //TALL MODE (IPHONE X, 11, etc.)
 @media (max-width: 450px) and (min-height : 600px) and (min-height : 800px){
@@ -227,19 +247,17 @@ ion-item{
   }
 
 
-}
-
-// SMALL MODE
-@media (max-height: 480px){
-
+  // .autocompleteResults{
+  //   margin-top: -340px !important;
+  // }
 
 }
 
 //GIGANTIC MODE
-@media (min-width: 1920px) {
-  ion-router-outlet{
-    width: 500px !important;
-    height: 867px !important;
-    margin-bottom: 5%;
-  }
-}
+// @media (min-width: 1920px) {
+//   ion-router-outlet{
+//     width: 500px !important;
+//     height: 867px !important;
+//     margin-bottom: 5%;
+//   }
+// }

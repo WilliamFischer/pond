@@ -6,6 +6,7 @@ import { TabsPageModule } from './tabs/tabs.module'
 const routes: Routes = [
   { path: '', loadChildren: './tabs/tabs.module#TabsPageModule' },
   { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
+  { path: 'admin', loadChildren: './admin/admin.module#AdminPageModule' },
   { path: 'species/:id', loadChildren: './species/species.module#SpeciesPageModule' },
   { path: 'users/:id', loadChildren: './user/user.module#UserPageModule' },
   { path: 'tanks/:id/:id', loadChildren: './tank/tank.module#TankPageModule' },

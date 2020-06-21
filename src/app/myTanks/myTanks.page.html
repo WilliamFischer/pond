@@ -12,16 +12,20 @@
       <div class="rightStuff animated bounceIn" [ngClass]="{'hideLowOpacity' : !fullAccountMode }">
         <label class="topTitle2">{{user.name}}</label>
         <label class="topTitle3">
-          <b>Keeps {{totalQuanityOfFish}} Species</b> <br />
+          <b *ngIf="totalQuanityOfFish">{{totalQuanityOfFish}} Fish</b> <br />
           <i *ngIf="fullAccountMode">
-            <b>{{totalQuanityOfFollows}}</b> Follower<label *ngIf="totalQuanityOfFollows > 1">s</label>
+            <b>{{totalQuanityOfFollows}}</b> Follower<label *ngIf="totalQuanityOfFollows !== 1">s</label>
             <br />
-            Following <b>{{totalQuanityOfFollowers}}</b>
+            <b>{{totalQuanityOfFollowers}}</b> Following
           </i>
         </label>
         <!-- <button class="viewProfBtn">View Profile</button><br /> -->
-        <button class="viewProfBtn" *ngIf="user.name && fullAccountMode" (click)="logout()">Logout</button>
+        <button class="viewProfBtn" *ngIf="user.name && fullAccountMode" (click)="presentActionSheet()">Settings</button>
         <button class="viewProfBtn" *ngIf="!user.name && fullAccountMode" (click)="login()">Login</button>
+
+        <br />
+        <br />
+
       </div>
     </div>
 
@@ -40,37 +44,24 @@
                 </ion-refresher-content>
               </ion-refresher>
 
-              <!-- Section 1: WISHLIST -->
-              <div class="titleWithSpace animated bounceIn"  *ngIf="wishlist && wishlist.length >= 1">
-                <label class="leftTitle topTitle2" (click)="hideWishlist()">Your Wishlist <ion-icon class="circIco" name="remove-circle-outline"></ion-icon></label>
+              <label class="leftTitle topTitle2" (click)="hideTanks()">
+                Tanks
+                <ion-icon class="circIco" *ngIf="showTanks" name="remove-circle-outline"></ion-icon>
+                <ion-icon class="circIco" *ngIf="!showTanks" name="add-circle-outline"></ion-icon>
+              </label>
 
-                <div class="wishlistPillScroller" *ngIf="showWishlist">
-
-                  <div class="wishlistPill" *ngFor="let fish of wishlistItems" (click)="openFishDetailModal(fish)">
-                    <img [src]="fish.Pics[0]" onerror="this.src='../assets/noImg.png'" />
-                    <span class="triangle"></span>
-                    <h1>{{fish.name}}</h1>
-                    <h2>{{fish.genus}} &bull; {{fish.species}}</h2>
-                  </div>
-
-                  <div class="wishlistPill emptyPill"></div>
-
-                </div>
-              </div>
-
-              <label class="leftTitle topTitle2">Your Tanks</label>
               <h4 class="notLoggedIn" *ngIf="!user.name">Login to create tanks & store species</h4>
 
-              <h3 class="addTankTxt" *ngIf="tanks && tanks.length >= 1" (click)="addTank()">+ Begin New Tank</h3>
+              <h3 class="addTankTxt" *ngIf="tanks && tanks.length >= 1 && showTanks" (click)="addTank()">+ Begin New Tank</h3>
               <!-- <h3 class="wishlistTxt" *ngIf="wishlist && wishlist.length >= 1" (click)="triggerWishlist()">Wishlist</h3> -->
 
-              <h4 class="noFishYetTxt" *ngIf="tanks && tanks.length < 1">
+              <h4 class="noFishYetTxt" *ngIf="tanks && tanks.length < 1 && showTanks">
                 <a (click)="addTank()">Start your first tank</a> to begin
               </h4>
 
               <div *ngIf="tanks">
 
-                <ion-reorder-group (ionItemReorder)="reOrderTanks($event)" disabled="false">
+                <ion-reorder-group (ionItemReorder)="reOrderTanks($event)" disabled="false" *ngIf="showTanks">
                   <div *ngFor="let tank of tanks; let i = index">
                     <div class="tankSpace animated bounceIn" [ngStyle]="{'background' : tank.fullColour}">
 
@@ -85,8 +76,13 @@
 
                       <h4 (click)="initTankDetail(tank.name)">
                         <label *ngIf="tank.temp">
-                          <label *ngIf="tank.individualCount">{{tank.individualCount}}</label><label *ngIf="!tank.individualCount">0</label> fish,
-                          <label *ngIf="tank.speciesCount">{{tank.speciesCount}}</label><label *ngIf="!tank.speciesCount">0</label> species,
+
+                          <label *ngIf="tank.individualCount">{{tank.individualCount}}</label>
+                          <label *ngIf="!tank.individualCount || tank.individualCount == 0">0</label> fish,
+
+                          <label *ngIf="tank.speciesCount">{{tank.speciesCount}}</label>
+                          <label *ngIf="!tank.speciesCount || tank.speciesCount == 0">0</label> species,
+
                           <label *ngIf="tank.temp"> &bull; {{tank.temp}}deg</label>
                         </label>
                       </h4>
@@ -114,12 +110,36 @@
                   </div>
                 </ion-reorder-group>
 
+                <!-- Section 3: WISHLIST -->
+                <div class="titleWithSpace animated bounceIn" *ngIf="wishlist && wishlist.length >= 1">
+                  <label class="leftTitle topTitle2" (click)="hideWishlist()">
+                    Favourites
+                    <ion-icon class="circIco" *ngIf="showWishlist" name="remove-circle-outline"></ion-icon>
+                    <ion-icon class="circIco" *ngIf="!showWishlist" name="add-circle-outline"></ion-icon>
+                  </label>
 
-                <div class="forcedSpace"></div>
+                  <div class="wishlistPillScroller" *ngIf="showWishlist">
 
-                <ion-spinner name="bubbles" color="primary" class="mySpinner" *ngIf="!doneLoadingTanks && user.name"></ion-spinner>
+                    <div class="wishlistPill" *ngFor="let fish of wishlistItems" (click)="openFishDetailModal(fish)">
+                      <img [src]="fish.Pics[0]" onerror="this.src='../assets/noImg.png'" />
+                      <span class="triangle"></span>
+                      <h1>{{fish.name}}</h1>
+                      <h2>{{fish.genus}} &bull; {{fish.species}}</h2>
+                    </div>
+
+                    <div class="wishlistPill emptyPill"></div>
+
+                  </div>
+                </div>
 
               </div>
+
+
+              <div class="forcedSpace"></div>
+
+              <ion-spinner name="bubbles" color="primary" class="mySpinner" *ngIf="!doneLoadingTanks && user.name"></ion-spinner>
+
+
             </div>
           </ion-content>
         </div>
@@ -180,6 +200,10 @@
                   <ion-label>Substrate</ion-label>
                 </ion-list-header>
 
+                <ion-item>
+                  <ion-label>No Substrate</ion-label>
+                  <ion-radio slot="start" value="Coral Sand"></ion-radio>
+                </ion-item>
                 <ion-item>
                   <ion-label>Coral Sand</ion-label>
                   <ion-radio slot="start" value="Coral Sand"></ion-radio>
