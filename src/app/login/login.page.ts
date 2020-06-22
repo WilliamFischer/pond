@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoadingController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 // Providers
 import { AuthProvider } from '../providers/auth/auth';
@@ -19,10 +20,16 @@ export class LoginPage implements OnInit {
     public loadingController: LoadingController,
     private authService: AuthProvider,
     public plt: Platform,
-    private location: Location
+    private location: Location,
+    public afAuth: AngularFireAuth,
   ) { }
 
   ngOnInit() {
+    this.afAuth.authState.subscribe(auth=>{
+      if(auth){
+        this.router.navigateByUrl('/tabs/tanks');
+      }
+    });
   }
 
   async presentLoading() {
@@ -33,7 +40,7 @@ export class LoginPage implements OnInit {
   }
 
   async dismissLoader() {
-    return await this.loadingController.dismiss().then(() => console.log('dismissed'));
+    // return await this.loadingController.dismiss().then(() => console.log('dismissed'));
   }
 
   facebookLogin(){
@@ -43,16 +50,17 @@ export class LoginPage implements OnInit {
 
     if (this.plt.url().includes('pondtheapp.com')  || this.plt.url().includes('localhost:8100')) {
       this.authService.loginWithLegacyFacebook().then(res=>{
-        this.successfulLogin(res)
+        this.router.navigateByUrl('/tabs/tanks');
       }).catch(err=>{
-        this.loginFailure(err)
+        alert(err);
+        if(this.loading){ this.dismissLoader() }
       })
     }else{
       this.authService.loginWithFacebook().then(res=>{
-        console.log("SUCCESS");
-        console.log(res);
+        this.router.navigateByUrl('/tabs/tanks');
       }).catch(err=>{
-        this.loginFailure(err)
+        alert(err);
+        if(this.loading){ this.dismissLoader() }
       })
     }
   }
@@ -63,49 +71,36 @@ export class LoginPage implements OnInit {
 
     if(this.plt.url().includes('pondtheapp.com') || this.plt.url().includes('localhost:8100')){
       this.authService.loginWithLegacyGoogle().then(res=>{
-        this.successfulLogin(res);
+        this.router.navigateByUrl('/tabs/tanks');
       }).catch(err=>{
-        this.loginFailure(err)
+        alert(err);
+        if(this.loading){ this.dismissLoader() }
       })
     }else{
       this.authService.loginWithGoogle().then(res=>{
-        this.successfulLogin(res);
+        this.router.navigateByUrl('/tabs/tanks');
       }).catch(err=>{
-        this.loginFailure(err)
+        alert(err);
+        if(this.loading){ this.dismissLoader() }
       })
     }
 
   }
 
-
-  successfulLogin(res){
-    console.log(res);
-
-    setTimeout(() => {
-      if(this.loading){ this.dismissLoader() }
-      this.router.navigateByUrl('/tabs/search');
-    }, 500);
-
-  }
-
-  loginFailure(error){
-    alert(error);
-
-    setTimeout(() => {
-      if(this.loading){ this.dismissLoader() }
-    }, 500);
-  }
-
   goToSpecies(){
     setTimeout(() => {
       if(this.loading){ this.dismissLoader() }
-      this.router.navigateByUrl('/tabs/search');
+      this.location.back();
     }, 500);
   }
 
   // Temp solution - route user in without authentication.
   tempLogin(){
     this.router.navigateByUrl('/tabs/search');
+  }
+
+  tac(){
+
   }
 
 }

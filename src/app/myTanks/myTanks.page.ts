@@ -166,18 +166,15 @@ export class myTanksPage {
 
     logScrolling($event){
       // console.log('scroll is ' +  $event.detail['scrollTop']);
-      let scollAmount = 5;
+      let scollAmount = 20;
 
-      if(this.tanks.length > 5){
-        if($event.detail['scrollTop'] < 19){
-          this.fullAccountMode = true;
-          this.accountScreenVal = '375px';
-        }else{
-          this.fullAccountMode = false;
-          this.accountScreenVal = '160px';
-        }
+      if($event.detail['scrollTop'] < scollAmount){
+        this.fullAccountMode = true;
+        this.accountScreenVal = '50vh';
+      }else{
+        this.fullAccountMode = false;
+        this.accountScreenVal = '160px';
       }
-
 
       // if($event.detail['scrollTop'] != 0){
       //

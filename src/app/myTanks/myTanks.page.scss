@@ -188,7 +188,7 @@
 
 .paddingSpace{
   padding: 10% !important;
-  background: #FEFFFF;
+  background: transparent;
   font-family: 'Crimson Text', serif !important;
 }
 
@@ -248,7 +248,7 @@
 
 .fadedBack{
   width: 100%;
-  height: 370px;
+  height: 50vh;
   margin-top: -15%;
   position: absolute;
   z-index: 90000;
@@ -263,7 +263,7 @@
 
 .fadedImg{
   width: 100%;
-  height: 370px;
+  height: 50vh;
   margin-top: -15%;
   z-index: 0;
   position: absolute;
@@ -502,18 +502,6 @@
   background: #fff !important;
 }
 
-.aLittlePadding{
-  width: 90%;
-  height: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  display: block;
-  position: relative;
-  transition: all 500ms ease-in-out;
-}
-
 .ughAbsoule{
   width: 100%;
   height: 100%;
@@ -528,6 +516,55 @@
   margin-top: -19%;
   height: 100vh;
   position: relative !important;
+}
+
+.headSection{
+  max-height: 50vh;
+  min-height: 50vh;
+  height: 50vh;
+  width: 100%;
+  display: block;
+  background: transparent;
+  overflow: hidden;
+  position: relative;
+
+  transition: all 500ms ease-in-out;
+
+
+}
+
+.bodySection{
+  height: 50vh;
+  width: 100%;
+  display: block;
+  padding-left: 10%;
+  padding-right: 10%;
+  transition: all 500ms ease-in-out;
+
+}
+
+ion-content{
+  background: transparent;
+  --background: transparent;
+}
+
+.aLittlePadding{
+  height: 100%;
+}
+
+.dynamicBox{
+  margin-top: -5%;
+  height: 85vh;
+  background: transparent;
+}
+
+
+// .dynamicBox{
+//   height: 80vh;
+// }
+
+.flexBack{
+  display: flex;
 }
 
 .dynamicUghBox{
@@ -581,7 +618,13 @@
 }
 
 .forcedSpace{
-  height: 150px;
+  height: 100px;
+  width: 100%;
+  display: block;
+}
+
+.massiveForcedSpace{
+  height: 800px;
   width: 100%;
   display: block;
 }
@@ -674,10 +717,10 @@ h1{
 }
 
 .paddingSpace{
-    padding: 5% !important;
-    background: #FEFFFF;
-    font-family: 'Crimson Text', serif !important;
-    transition: all 500ms ease-in-out;
+  padding: 5% !important;
+  font-family: 'Crimson Text', serif !important;
+  transition: all 500ms ease-in-out;
+  height: 100%;
 }
 
 .tankSpace{

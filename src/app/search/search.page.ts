@@ -9,7 +9,7 @@ import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 import { AngularFirestore } from 'angularfire2/firestore';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 import {HttpClient} from "@angular/common/http";
 import { map } from 'rxjs/operators';
