@@ -49,7 +49,7 @@
 
           <ion-spinner name="bubbles" color="primary" class="mySpinner" *ngIf="!doneLoadingTanks && user.name"></ion-spinner>
 
-          <label class="leftTitle topTitle2" (click)="hideTanks()" *ngIf="user.name && tanks && tanks.length >= 1 && showTanks">
+          <label class="leftTitle topTitle2" (click)="hideTanks()" *ngIf="user.name && tanks && tanks.length >= 1">
             Tanks
             <ion-icon class="circIco" *ngIf="showTanks" name="remove-circle-outline"></ion-icon>
             <ion-icon class="circIco" *ngIf="!showTanks" name="add-circle-outline"></ion-icon>

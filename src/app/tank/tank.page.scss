@@ -608,7 +608,7 @@
 
 .whiteSpaceWraper ion-note{
   display: inline-flex;
-  width: 20%;
+  width: 15%;
   margin-right: 2%;
 }
 
@@ -637,12 +637,13 @@ ion-item-divider{
   font-weight: 600;
   font-size: 14px;
   background: #eaeaea;
-  color: #bdbdbd;
-  margin-top: 15%;
+  color: #737373;
+  margin-top: 10%;
 }
 
 ion-list-header{
   margin-top: 5%;
+  margin-bottom: 20%;
   color: #d1d1d1;
   font-family: 'Crimson Text', serif !important;
 }
