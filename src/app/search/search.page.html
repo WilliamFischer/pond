@@ -46,6 +46,7 @@
 
       <ion-item *ngIf="doneLoading">
         <ul class="alphabet animated fadeIn">
+          <li class="letter" (click)="clearSwitcher()" *ngIf="selectedLetter">all</li>
           <li class="letter" (click)="newLetterSwitcher('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
           <li class="letter" (click)="newLetterSwitcher('b')" [ngClass]="{'litLetter' : selectedLetter == 'b'}">b</li>
           <li class="letter" (click)="newLetterSwitcher('c')" [ngClass]="{'litLetter' : selectedLetter == 'c'}">c</li>
@@ -122,7 +123,6 @@
   </div>
 
   <ion-content class="coreContentMinimal">
-    <ion-icon class="clearSearchTxt" *ngIf="selectedLetter" (click)="clearSwitcher()" name="close-circle-outline"></ion-icon>
 
     <div *ngIf="!speciesSelected">
 
@@ -134,6 +134,8 @@
         </ion-refresher>
       </div>
 
+      <!-- CLEAR SEARCH ICO -->
+      <!-- <ion-icon class="clearSearchTxt" *ngIf="selectLetter" (click)="clearSwitcher()" name="close-circle-outline"></ion-icon> -->
 
       <!-- LOGOS -->
       <div *ngIf="searchQuery.length <= 2 && !popularMode && !randomMode">

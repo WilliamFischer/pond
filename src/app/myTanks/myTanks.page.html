@@ -1,9 +1,9 @@
 <ion-app class="whiteBackground flexBack">
 
-  <div class="headSection" [ngStyle]="{'height' : accountScreenVal, 'min-height': accountScreenVal }">
-      <div *ngIf="defaultMode" class="fadedBack" [ngStyle]="{'height' : accountScreenVal }"></div>
-      <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenVal }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
-      <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenVal }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+  <div class="headSection" [ngStyle]="{'height' : accountScreenVal }">
+      <div *ngIf="defaultMode" class="fadedBack" [ngStyle]="{'height' : accountScreenValBack }"></div>
+      <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenValBack }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+      <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenValBack }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
 
       <div class="paddingSpace" [ngClass]="{'androidHeader' : userOnAndroid }">
         <label class="topTitle1 animated fadeIn" *ngIf="defaultMode && fullAccountMode">Account</label>
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <div class="bodySection"  [ngClass]="{'dynamicBox' : !fullAccountMode }">
+    <div class="bodySection">
       <ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)">
 
 
@@ -200,7 +200,7 @@
 
                 <ion-item>
                   <ion-label>No Substrate</ion-label>
-                  <ion-radio slot="start" value="Coral Sand"></ion-radio>
+                  <ion-radio slot="start" value="No Substrate"></ion-radio>
                 </ion-item>
                 <ion-item>
                   <ion-label>Coral Sand</ion-label>

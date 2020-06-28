@@ -229,7 +229,7 @@
   position: absolute;
   white-space: nowrap;
   display: block;
-  margin-top: 3%;
+  margin-top: 7%;
   margin-left: 26px;
   /* margin-right: auto; */
   /* left: 0; */
@@ -248,7 +248,7 @@
 
 .fadedBack{
   width: 100%;
-  height: 50vh;
+  height: 400px;
   margin-top: -15%;
   position: absolute;
   z-index: 90000;
@@ -256,21 +256,21 @@
   // box-shadow: inset 0px -20px 20px -2px white;
   box-shadow: inset 0px 50px 50px 3px white;
   pointer-events: none;
-  transition: all 300ms ease-in-out;
+  transition: all 500ms ease-in-out;
   //background: rgba(0,0,0,0.5);
   box-shadow: 0px -1px 10px #aaaaaa;
 }
 
 .fadedImg{
   width: 100%;
-  height: 50vh;
+  height: 400px;
   margin-top: -15%;
   z-index: 0;
   position: absolute;
   display: block;
   object-fit: cover;
   opacity: 0.1;
-  transition: all 300ms ease-in-out;
+  transition: all 500ms ease-in-out;
 }
 
 .heartBox{
@@ -519,28 +519,23 @@
 }
 
 .headSection{
-  max-height: 50vh;
-  min-height: 50vh;
-  height: 50vh;
+  height: 900px;
   width: 100%;
   display: block;
   background: transparent;
   overflow: hidden;
-  position: relative;
-
+  position: initial;
   transition: all 500ms ease-in-out;
-
-
 }
 
 .bodySection{
-  height: 50vh;
+  height: 100%;
   width: 100%;
   display: block;
   padding-left: 10%;
   padding-right: 10%;
   transition: all 500ms ease-in-out;
-
+  background: transparent;
 }
 
 ion-content{
@@ -552,11 +547,12 @@ ion-content{
   height: 100%;
 }
 
-.dynamicBox{
-  margin-top: -5%;
-  height: 85vh;
-  background: transparent;
-}
+// .dynamicBox{
+//   height: 85vh;
+//   position: absolute;
+//   top: 16vh;
+//   background: transparent;
+// }
 
 
 // .dynamicBox{
@@ -614,7 +610,7 @@ ion-content{
 
 .hideLowOpacity{
   background: none;
-  padding-top: 10%;
+  padding-top: 21%;
 }
 
 .forcedSpace{
