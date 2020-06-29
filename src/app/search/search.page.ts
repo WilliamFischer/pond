@@ -373,7 +373,7 @@ export class SearchPage {
 
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { search_query: null, letter: null },
+      queryParams: { search_query: null, letter: null, saltwater: null },
       queryParamsHandling: 'merge'
     });
 
@@ -3615,7 +3615,7 @@ export class SearchPage {
 
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { search_query: this.searchQuery.toLowerCase() },
+      queryParams: { search_query: this.searchQuery.toLowerCase(), saltwater: this.saltwater, letter: this.selectedLetter },
       queryParamsHandling: 'merge'
     });
 
@@ -4909,15 +4909,16 @@ export class SearchPage {
       this.typeofTrigger = 'freshwater';
     }
 
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { saltwater: this.saltwater },
-      queryParamsHandling: 'merge'
-    });
-
     if(this.popularMode){
       this.loadPopular();
     }
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { saltwater: !this.saltwater },
+      queryParamsHandling: 'merge'
+    });
+
   }
 
   howboutFishTanksAndPonds(species){
@@ -5188,21 +5189,28 @@ export class SearchPage {
   }
 
   switchSalt(){
+
+
     if(!this.saltwater){
       this.typeofTrigger = 'saltwater';
     }else{
       this.typeofTrigger = 'freshwater';
     }
 
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { saltwater: this.saltwater },
-      queryParamsHandling: 'merge'
-    });
-
 
     console.log(this.typeofTrigger);
     this.checkAPI(false, this.searchQuery);
+
+    setTimeout(() => {
+
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { search_query: this.searchQuery.toLowerCase(), saltwater: this.saltwater },
+        queryParamsHandling: 'merge'
+      });
+
+    }, 500)
+
   }
 
   loadRandom(){

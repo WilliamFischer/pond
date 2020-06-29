@@ -502,12 +502,19 @@ closeTank() {
       placeholderValue = ''
     }
 
+    let quanInputType;
+    if (window.location.host.includes('pondtheapp') || window.location.host.includes('8100')) {
+      quanInputType = 'number'
+    }else{
+      quanInputType = 'tel'
+    }
+
     const alert = await this.alertController.create({
       header: 'Change Quantity',
       inputs: [
         {
           name: 'fishQuan',
-          type: 'tel',
+          type: quanInputType,
           placeholder: 'Fish Quantity...',
           value: placeholderValue
         }
