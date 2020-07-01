@@ -14,6 +14,7 @@
   text-align: center;
   width: 100%;
   display: block;
+  margin-top: 15%;
 }
 
 .titleWithSpace{
@@ -248,7 +249,7 @@
 
 .fadedBack{
   width: 100%;
-  height: 400px;
+  height: 350px;
   margin-top: -15%;
   position: absolute;
   z-index: 90000;
@@ -263,7 +264,7 @@
 
 .fadedImg{
   width: 100%;
-  height: 400px;
+  height: 350px;
   margin-top: -15%;
   z-index: 0;
   position: absolute;
@@ -519,7 +520,7 @@
 }
 
 .headSection{
-  height: 900px;
+  height: 600px;
   width: 100%;
   display: block;
   background: transparent;
@@ -533,15 +534,15 @@
   width: 100%;
   display: block;
   padding: 10%;
+  padding-top: 0%;
   padding-bottom: 0%;
   transition: all 500ms ease-in-out;
-  margin-top: -15%;
   background: transparent;
 }
 
 ion-content{
-  background: transparent;
-  --background: transparent;
+  background: transparent !important;
+  --background: transparent !important;
 }
 
 .aLittlePadding{
@@ -610,7 +611,7 @@ ion-content{
 
 .hideLowOpacity{
   background: none;
-  padding-top: 21%;
+  padding-top: 13%;
 }
 
 .forcedSpace{

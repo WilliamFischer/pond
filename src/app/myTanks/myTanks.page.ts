@@ -171,8 +171,8 @@ export class myTanksPage {
 
       if($event.detail['scrollTop'] <= scollAmount){
         this.fullAccountMode = true;
-        this.accountScreenVal = '900px';
-        this.accountScreenValBack = '400px';
+        this.accountScreenVal = '600px';
+        this.accountScreenValBack = '350px';
       }else{
         this.fullAccountMode = false;
         this.accountScreenVal = '112px';

@@ -20,6 +20,36 @@
   overflow-y: scroll !important;
 }
 
+// :root * {
+//   &::-webkit-scrollbar {
+//     width: 12px;
+//   }
+//
+//   &::-webkit-scrollbar-track {
+//     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+//     -webkit-border-radius: 10px;
+//     border-radius: 10px;
+//   }
+//
+//   &::-webkit-scrollbar-thumb {
+//     -webkit-border-radius: 10px;
+//     border-radius: 10px;
+//     background: rgba(255, 0, 0, 0.8);
+//     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+//   }
+//
+//   &::-webkit-scrollbar-thumb:window-inactive {
+//     background: rgba(255, 0, 0, 0.4);
+//   }
+// }
+// ion-app {
+//     .scroll-content {
+//         // prevent scrollbars from showing up in desktop browsers
+//         // in the side-menu and in the main content window
+//         overflow-y: auto;
+//     }
+// }
+
 ion-slide{
   background: black !important;
 }
@@ -216,9 +246,9 @@ ion-item{
 }
 
 @media (min-height : 800px) {
-  // body{
-  //   margin-top: 5% !important;
-  // }
+  body{
+    margin-top: 10% !important;
+  }
 
   .broswerText{
     display: none;
