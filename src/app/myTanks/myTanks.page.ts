@@ -46,6 +46,7 @@ export class myTanksPage {
 
   accountScreenVal: string;
   accountScreenValBack: string;
+  accountScreenValMinHeightBack: string;
   reverseScroll: number = 445;
   reverseTop: number = 0;
 
@@ -171,11 +172,13 @@ export class myTanksPage {
 
       if($event.detail['scrollTop'] <= scollAmount){
         this.fullAccountMode = true;
-        this.accountScreenVal = '600px';
-        this.accountScreenValBack = '350px';
+        this.accountScreenVal = '900px';
+        this.accountScreenValMinHeightBack = '350px';
+        this.accountScreenValBack = '400px';
       }else{
         this.fullAccountMode = false;
         this.accountScreenVal = '112px';
+        this.accountScreenValMinHeightBack = '0px';
         this.accountScreenValBack = '150px';
       }
 
