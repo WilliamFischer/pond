@@ -168,9 +168,9 @@ export class myTanksPage {
 
     logScrolling($event){
       // console.log('scroll is ' +  $event.detail['scrollTop']);
-      let scollAmount = 20;
+      let scollAmount = 100;
 
-      if($event.detail['scrollTop'] < scollAmount){
+      if($event.detail['scrollTop'] <= scollAmount){
         this.fullAccountMode = true;
         this.accountScreenVal = '900px';
         this.accountScreenValMinHeightBack = '350px';

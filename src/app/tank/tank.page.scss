@@ -611,7 +611,11 @@
 
 .whiteSpaceWraper ion-note{
   display: inline-flex;
+<<<<<<< HEAD
   width: 20px;
+=======
+  width: 15%;
+>>>>>>> 85755c03e5e14e5e3744369db6aa23018f4296ea
   margin-right: 2%;
 }
 
@@ -648,13 +652,17 @@ ion-item-divider{
   font-weight: 600;
   font-size: 14px;
   background: #eaeaea;
-  color: #bdbdbd;
-  margin-top: 15%;
+  color: #737373;
+  margin-top: 10%;
 }
 
 ion-list-header{
   margin-top: 5%;
+<<<<<<< HEAD
   margin-bottom: 5%;
+=======
+  margin-bottom: 20%;
+>>>>>>> 85755c03e5e14e5e3744369db6aa23018f4296ea
   color: #d1d1d1;
   font-family: 'Crimson Text', serif !important;
 }
