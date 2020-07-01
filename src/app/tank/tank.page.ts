@@ -30,7 +30,7 @@ export class TankPage implements OnInit {
   addChemistryMode: boolean;
   fishLoaded: boolean;
   trashMode: boolean;
-  reorderMode: boolean;
+  reorderMode: boolean = true;
   commenting: boolean;
   reordring: boolean;
   loadingImageUpload: boolean;
@@ -796,11 +796,12 @@ closeTank() {
 
   triggerTrash(){
     this.trashMode = true;
+    this.reorderMode = false;
   }
 
   unTriggerTrash(){
     this.trashMode = false;
-    this.reorderMode = false;
+    this.reorderMode = true;
     this.commenting = false;
   }
 

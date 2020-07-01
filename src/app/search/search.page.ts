@@ -1126,6 +1126,8 @@ export class SearchPage {
 
           });
         });
+        
+        this.showAutoComplete = true;
 
         let crazedInterval = setInterval(()=>{
 
@@ -1190,7 +1192,6 @@ export class SearchPage {
       console.log(this.allLocalFish);
 
       this.localFishAutoCompleteCollection.unsubscribe();
-      this.showAutoComplete = true;
       this.showPreviousResults = false;
     }
 

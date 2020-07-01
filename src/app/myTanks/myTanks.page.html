@@ -1,6 +1,6 @@
 <ion-app class="whiteBackground flexBack">
 
-  <div class="headSection" [ngStyle]="{'height' : accountScreenVal }">
+  <div class="headSection" [ngStyle]="{'height' : accountScreenVal, 'min-height' : accountScreenValMinHeightBack }">
       <div *ngIf="defaultMode" class="fadedBack" [ngStyle]="{'height' : accountScreenValBack }"></div>
       <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenValBack }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
       <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenValBack }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
