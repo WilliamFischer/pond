@@ -485,20 +485,6 @@
   margin-top: -10%;
 }
 
-.tankImageBack{
-  width: 100vw;
-  height: 300px;
-  display: block;
-  object-fit: cover;
-
-  position: absolute;
-  z-index: 9000;
-  left: 0;
-  top: 0;
-
-  box-shadow: 0px 0px 10px black;
-}
-
 .textNoneCenter{
   text-align: center;
   width: 90%;
@@ -513,7 +499,7 @@
 }
 
 .backArrow{
-  margin-left: 75%;
+  margin-left: 90%;
   margin-top: 3%;
   position: absolute;
   color: #8da9ce;
@@ -543,15 +529,22 @@
 
 
 .coreName{
-  margin-top: 320px !important;
   margin-left: 5%;
+  margin-top: 15%;
   text-align: left;
 
   label{
-    width: 80%;
+    width: 90%;
     display: block;
   }
 }
+
+.forcedSpace{
+  height: 190px;
+  width: 100%;
+  display: block;
+}
+
 
 .deleteTitle{
   font-size: 14px;
@@ -1055,10 +1048,42 @@ ion-list-header{
 }
 
 .tankWrapper{
-  margin: 7%;
-  margin-top: 0%;
-  padding-top: 5%;
+  // margin: 7%;
+  // margin-top: 0%;
+  // padding-top: 5%;
+  // display: block;
+
+  width: 100%;
   display: block;
+  padding: 10%;
+  padding-top: 0%;
+  padding-bottom: 0%;
+
+  background: #fff;
+  z-index: inherit;
+
+  height: 385px;
+  box-shadow: 0px -1px 15px #000000;
+}
+
+.parallax-container{
+  display: flex;
+  background: #fff;
+}
+
+.backgroundImg{
+  height: 300px;
+  width: 100%;
+  display: block;
+  background: black;
+  overflow: hidden;
+  position: initial;
+}
+
+.tankImageBack{
+  width: 100%;
+  object-fit: contain;
+  object-position: top;
 }
 
 // .quickAddNum{

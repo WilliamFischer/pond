@@ -1,29 +1,29 @@
 <ion-app class="whiteBackground flexBack">
 
-  <div class="headSection" [ngStyle]="{'height' : accountScreenVal, 'min-height' : accountScreenValMinHeightBack }">
-      <div *ngIf="defaultMode" class="fadedBack" [ngStyle]="{'height' : accountScreenValBack }"></div>
-      <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenValBack }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
-      <img *ngIf="defaultMode" class="fadedImg" [ngStyle]="{'height' : accountScreenValBack }" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+  <div class="headSection">
+      <div *ngIf="defaultMode" class="fadedBack"></div>
+      <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+      <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
 
-      <div class="paddingSpace" [ngClass]="{'androidHeader' : userOnAndroid }">
-        <label class="topTitle1 animated fadeIn" *ngIf="defaultMode && fullAccountMode">Account</label>
+      <div class="paddingSpace">
+        <label class="topTitle1 animated fadeIn" *ngIf="defaultMode">Account</label>
 
-        <div class="infoSection" *ngIf="defaultMode" [ngClass]="{'noBottomMargin' : !fullAccountMode }">
-          <img class="profileImg" [src]="user.photoURL" [ngClass]="{'smallImage' : !fullAccountMode }" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
-          <div class="rightStuff animated bounceIn" [ngClass]="{'hideLowOpacity' : !fullAccountMode }">
+        <div class="infoSection" *ngIf="defaultMode">
+          <img class="profileImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+          <div class="rightStuff animated bounceIn">
             <label class="topTitle2" *ngIf="user.name">{{user.name}}</label>
             <label class="topTitle2" *ngIf="!user.name">Unknown User</label>
             <label class="topTitle3">
               <b *ngIf="totalQuanityOfFish">{{totalQuanityOfFish}} Fish</b> <br />
-              <i *ngIf="fullAccountMode">
+              <i>
                 <b>{{totalQuanityOfFollows}}</b> Follower<label *ngIf="totalQuanityOfFollows !== 1">s</label>
                 <br />
                 <b>{{totalQuanityOfFollowers}}</b> Following
               </i>
             </label>
             <!-- <button class="viewProfBtn">View Profile</button><br /> -->
-            <button class="viewProfBtn" *ngIf="user.name && fullAccountMode" (click)="presentActionSheet()">Settings</button>
-            <button class="viewProfBtn" *ngIf="!user.name && fullAccountMode" (click)="login()">Login</button>
+            <button class="viewProfBtn" *ngIf="user.name" (click)="presentActionSheet()">Settings</button>
+            <button class="viewProfBtn" *ngIf="!user.name" (click)="login()">Login</button>
 
             <br />
             <br />
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <div class="bodySection">
+    <div class="bodySection" [ngStyle]="{'height' : accountScreenVal}">
       <ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)">
 
 

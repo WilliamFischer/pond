@@ -168,19 +168,28 @@ export class myTanksPage {
 
     logScrolling($event){
       // console.log('scroll is ' +  $event.detail['scrollTop']);
-      let scollAmount = 100;
 
-      if($event.detail['scrollTop'] <= scollAmount){
-        this.fullAccountMode = true;
-        this.accountScreenVal = '900px';
-        this.accountScreenValMinHeightBack = '350px';
-        this.accountScreenValBack = '400px';
+      let originalAmount = 51;
+
+      originalAmount = originalAmount + +($event.detail['scrollTop'] / 30);
+
+      if(originalAmount >= 100){
+        this.accountScreenVal = '100vh'
       }else{
-        this.fullAccountMode = false;
-        this.accountScreenVal = '112px';
-        this.accountScreenValMinHeightBack = '0px';
-        this.accountScreenValBack = '150px';
+        this.accountScreenVal = originalAmount + 'vh';
       }
+
+      // if($event.detail['scrollTop'] <= scollAmount){
+      //   this.fullAccountMode = true;
+      //   this.accountScreenVal = '900px';
+      //   this.accountScreenValMinHeightBack = '350px';
+      //   this.accountScreenValBack = '400px';
+      // }else{
+      //   this.fullAccountMode = false;
+      //   this.accountScreenVal = '112px';
+      //   this.accountScreenValMinHeightBack = '0px';
+      //   this.accountScreenValBack = '150px';
+      // }
 
       // if($event.detail['scrollTop'] != 0){
       //

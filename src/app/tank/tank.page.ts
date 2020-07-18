@@ -46,6 +46,7 @@ export class TankPage implements OnInit {
   specComment: string;
   quanityToMove: string = '';
   searchQueryController: string = '';
+  accountScreenVal: string = '';
 
   // numbers
   tankFishQuantity: number = 0;
@@ -1171,7 +1172,17 @@ closeTank() {
   }
 
   logScrolling(e){
-    this.scrollAmount = e.detail.scrollTop
+    this.scrollAmount = e.detail.scrollTop;
+
+    let originalAmount = 385;
+
+    originalAmount = originalAmount + +(e.detail.scrollTop / 3);
+
+    if(originalAmount >= 660){
+      this.accountScreenVal = '100vh'
+    }else{
+      this.accountScreenVal = originalAmount + 'px';
+    }
   }
 
   triggerAutoComplete(query){

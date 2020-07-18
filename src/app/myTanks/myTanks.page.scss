@@ -14,6 +14,8 @@
   text-align: center;
   width: 100%;
   display: block;
+
+  margin-top: 10%;
 }
 
 .titleWithSpace{
@@ -22,6 +24,7 @@
 
 .leftTitle{
   text-align: left;
+  margin-top: 15%;
 }
 
 .circIco{
@@ -225,11 +228,11 @@
   color: #fff;
   font-weight: 900;
   text-transform: uppercase;
-  z-index: 9000;
+  z-index: inherit;
   position: absolute;
   white-space: nowrap;
   display: block;
-  margin-top: 7%;
+  margin-top: 5%;
   margin-left: 26px;
   /* margin-right: auto; */
   /* left: 0; */
@@ -248,7 +251,6 @@
 
 .fadedBack{
   width: 100%;
-  height: 400px;
   margin-top: -15%;
   position: absolute;
   z-index: 90000;
@@ -258,7 +260,6 @@
   pointer-events: none;
   transition: all 500ms ease-in-out;
   //background: rgba(0,0,0,0.5);
-  box-shadow: 0px -1px 10px #aaaaaa;
 }
 
 .fadedImg{
@@ -519,30 +520,38 @@
 }
 
 .headSection{
-  height: 900px;
+  height: 710px;
   width: 100%;
   display: block;
   background: #fff;
   overflow: hidden;
   position: initial;
-  transition: all 500ms ease-in-out;
 }
 
 .bodySection{
-  height: 100%;
   width: 100%;
   display: block;
   padding: 10%;
+  padding-top: 0%;
   padding-bottom: 0%;
-  transition: all 500ms ease-in-out;
-  margin-top: -15%;
-  background: transparent;
+
+  background: #fff;
+  z-index: inherit;
+
+  height: 51vh;
+  box-shadow: 0px -1px 10px #aaaaaa;
 }
 
 ion-content{
   background: transparent;
   --background: transparent;
 }
+
+.bodySection ion-content{
+  background: #fff;
+  --background: #fff;
+}
+
 
 .aLittlePadding{
   height: 100%;
@@ -614,7 +623,7 @@ ion-content{
 }
 
 .forcedSpace{
-  height: 100px;
+  height: 190px;
   width: 100%;
   display: block;
 }
