@@ -22,6 +22,9 @@ export class myTanksPage {
 
   defaultMode: boolean = true;
   fullAccountMode: boolean = true;
+  showWishlist: boolean = true;
+  showTanks: boolean = true;
+
   addTankMode: boolean;
   tankDetailMode: boolean;
   addChemistryMode: boolean;
@@ -41,8 +44,7 @@ export class myTanksPage {
   userOnAndroid: boolean;
   wishlistMode: boolean;
   dynamicUgh: boolean;
-  showWishlist: boolean = true;
-  showTanks: boolean = true;
+  showHead: boolean;
 
   accountScreenVal: string;
   accountScreenValBack: string;
@@ -166,18 +168,22 @@ export class myTanksPage {
       this.router.navigateByUrl('/login');
     }
 
+    triggerHead(){
+      this.showHead = !this.showHead;
+    }
+
     logScrolling($event){
       // console.log('scroll is ' +  $event.detail['scrollTop']);
 
-      let originalAmount = 51;
-
-      originalAmount = originalAmount + +($event.detail['scrollTop'] / 30);
-
-      if(originalAmount >= 100){
-        this.accountScreenVal = '100vh'
-      }else{
-        this.accountScreenVal = originalAmount + 'vh';
-      }
+      // let originalAmount = 51;
+      //
+      // originalAmount = originalAmount + +($event.detail['scrollTop'] / 30);
+      //
+      // if(originalAmount >= 100){
+      //   this.accountScreenVal = '100vh'
+      // }else{
+      //   this.accountScreenVal = originalAmount + 'vh';
+      // }
 
       // if($event.detail['scrollTop'] <= scollAmount){
       //   this.fullAccountMode = true;

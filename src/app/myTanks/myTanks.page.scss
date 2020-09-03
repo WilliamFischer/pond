@@ -538,7 +538,7 @@
   background: #fff;
   z-index: inherit;
 
-  height: 51vh;
+  height: 100%;
   box-shadow: 0px -1px 10px #aaaaaa;
 }
 
@@ -601,6 +601,15 @@ ion-content{
 .ughSmallAbsoulte{
   top: 104px;
   transition: all 600ms ease-in-out;
+}
+
+.personOutline{
+  width: 47px !important;
+  font-size: 33px;
+  position: absolute;
+  right: 0;
+  top: 7%;
+  color: #737373;
 }
 
 .smallBack{
