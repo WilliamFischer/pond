@@ -247,7 +247,7 @@ ion-item{
 
 @media (min-height : 800px) {
   body{
-    margin-top: 10% !important;
+    margin-top: 10%;
   }
 
   .broswerText{
@@ -265,7 +265,7 @@ ion-item{
 // }
 
 //TALL MODE (IPHONE X, 11, etc.)
-@media (max-width: 450px) and (min-height : 600px) and (min-height : 800px){
+@media (max-width: 450px) and (min-height : 600px) and (min-height : 812px){
   .centerStuff{
     h1{
       margin-top: 13vh !important;
@@ -276,6 +276,13 @@ ion-item{
     }
   }
 
+  body{
+    margin-top: 0% !important;
+  }
+
+  ion-toolbar form{
+    margin-top: 5%;
+  }
 
   // .autocompleteResults{
   //   margin-top: -340px !important;
