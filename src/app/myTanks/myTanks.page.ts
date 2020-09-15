@@ -49,6 +49,7 @@ export class myTanksPage {
   accountScreenVal: string;
   accountScreenValBack: string;
   accountScreenValMinHeightBack: string;
+  tankSearchController: string = '';
   reverseScroll: number = 445;
   reverseTop: number = 0;
 
@@ -68,6 +69,7 @@ export class myTanksPage {
   colourCollection: any;
   colourDoc: any;
   tanks: any;
+  tanksHold: any;
   wishlist: any;
   wishlistItems: any;
   checkCollection: any;
@@ -172,6 +174,30 @@ export class myTanksPage {
       this.showHead = !this.showHead;
     }
 
+    triggerAutoComplete(query){
+      console.log('Search tanks for ' + query);
+
+      if(query.length !== 0){
+        let filterdTanks = [];
+        for (let i = 0; i < this.tanksHold.length; i++) {
+          if (this.tanksHold[i].trueName.toLowerCase().includes(query)) {
+            filterdTanks.push(this.tanksHold[i]);
+          }
+        }
+
+        this.tanks = filterdTanks;
+      }else{
+        this.clearSearch();
+      }
+
+    }
+
+    clearSearch(){
+      this.tankSearchController = '';
+      console.log(this.tanksHold)
+      this.tanks = this.tanksHold;
+    }
+
     logScrolling($event){
       // console.log('scroll is ' +  $event.detail['scrollTop']);
 
@@ -264,6 +290,7 @@ export class myTanksPage {
       //console.log(this.fish_in_tank[ev.detail['to']])
 
       this.tanks = ev.detail.complete(this.tanks);
+      this.tanksHold = this.tanks
 
       setTimeout(()=>{
 
@@ -452,6 +479,7 @@ export class myTanksPage {
 
           this.totalQuanityOfFish = 0;
           this.tanks = values;
+          this.tanksHold = values;
           this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
 
 
@@ -841,6 +869,7 @@ export class myTanksPage {
             this.colourFound = true;
 
             this.tanks = this.tanks;
+            this.tanksHold = this.tanks;
             //this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
             this.colourDoc.unsubscribe();
           });

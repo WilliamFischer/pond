@@ -1171,20 +1171,6 @@ closeTank() {
     this.addChemistryMode = false;
   }
 
-  logScrolling(e){
-    this.scrollAmount = e.detail.scrollTop;
-
-    let originalAmount = 385;
-
-    originalAmount = originalAmount + +(e.detail.scrollTop / 3);
-
-    if(originalAmount >= 660){
-      this.accountScreenVal = '100vh'
-    }else{
-      this.accountScreenVal = originalAmount + 'px';
-    }
-  }
-
   triggerAutoComplete(query){
     console.log(query);
 

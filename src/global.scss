@@ -237,7 +237,7 @@ ion-item{
 //NO TITLE MODE
 @media (max-height: 750px) and (min-width : 500px) {
   body{
-    margin-top: 3% !important;
+    margin-top: 3%;
   }
 
   .broswerText{
@@ -275,6 +275,16 @@ ion-item{
       margin-top: 15% !important;
     }
   }
+
+  body{
+    margin-top: 0% !important;
+  }
+
+  ion-toolbar form{
+    margin-top: 5%;
+  }
+
+
 
 
   // .autocompleteResults{

@@ -34,17 +34,14 @@ export class AppComponent {
     this.initializeApp();
   }
 
-
-
   initializeApp() {
     this.platform.ready().then(() => {
       let autoHide: boolean = true;
       this.navigationBar.setUp(autoHide);
 
       console.log(window.innerWidth);
-
-      this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.statusBar.styleDefault();
       this.keyboard.hideFormAccessoryBar(false);
 
       if (window.location.host.includes('pondtheapp') || window.location.host.includes('8100')) {

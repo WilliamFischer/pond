@@ -22,6 +22,8 @@
     <preference name="SplashScreen" value="none" />
     <preference name="SplashScreenDelay" value="0" />
     <preference name="ShowSplashScreenSpinner" value="false" />
+    <preference name="StatusBarStyle" value="default" />
+    <preference name="StatusBarOverlaysWebView" value="true" />
     <preference name="OverrideUserAgent" value="Mozilla/5.0 Google" />
     <preference name="android-manifest/application/activity/@android:theme" value="@android:style/Theme.Light.NoTitleBar.Fullscreen" />
     <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />

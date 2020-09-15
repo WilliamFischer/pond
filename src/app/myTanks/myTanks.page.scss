@@ -22,6 +22,75 @@
   margin-top: 10% !important;
 }
 
+ion-toolbar{
+  box-shadow: 0 4px 10px -2px #e8e8e8 !important;
+  --background: #F5F7F9 !important;
+--border-width: 0 0 0px !important;
+  padding-bottom: 0px !important;
+}
+
+
+ion-searchbar{
+  font-family: 'Crimson Text', serif !important;
+}
+
+
+.saltSwitch{
+  // height: 40px;
+
+  *{
+    --inner-border-width: 0px 0px 0px 0px !important;
+      --background: #F5F7F9 !important;
+  }
+
+  ion-label{
+    font-family: 'Crimson Text', serif !important;
+    font-size: 18px;
+    color: #8e8e8e;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .pondTitleVersion{
+    text-align: left;
+    font-family: "Crimson Text", serif !important;
+    font-size: 16px !important;
+    color: #7dbbe2;
+    padding-left: 5%;
+    padding-right: 0%;
+    white-space: nowrap;
+
+    width: 50%;
+    height: 0px;
+    padding-top: 0%;
+    margin-top: 0%;
+    margin-bottom: 0%;
+  }
+
+  .rightTitle{
+    float: right;
+    color: #8e8e8e;
+    text-align: right;
+    width: 50%;
+    padding-left: 0%;
+    padding-right: 5%;
+  }
+
+  .loadMoreIco{
+    color: #7dbbe2;
+    font-size: 26px;
+    position: absolute;
+    display: block;
+    margin-top: 2%;
+  }
+
+  .toggle{
+    margin-top: -1%;
+    padding-right: 5%;
+    --background: #F5F7F9 !important;
+  }
+}
+
 .leftTitle{
   text-align: left;
   margin-top: 15%;
@@ -351,8 +420,9 @@
 
 .noFishYetTxt{
   text-align: center;
-  margin-top: 20%;
+  margin-top: 30%;
   color: #d3d3d3;
+  font-size: 16px !important;
 }
 
 .notLoggedIn{
@@ -732,6 +802,7 @@ h1{
 
 .paddingSpace{
   padding: 5% !important;
+    padding-top: 10% !important;
   font-family: 'Crimson Text', serif !important;
   transition: all 500ms ease-in-out;
   height: 100%;
@@ -1119,4 +1190,9 @@ h1{
     color:	#EEE8AA;
   }
 
+}
+
+.fullMode{
+  margin-top: 20% !important;
+  background: green !important;
 }

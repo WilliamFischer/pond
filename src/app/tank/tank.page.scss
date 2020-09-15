@@ -499,7 +499,7 @@
 }
 
 .backArrow{
-  margin-left: 90%;
+  right: 20px;
   margin-top: 3%;
   position: absolute;
   color: #8da9ce;
@@ -1048,22 +1048,14 @@ ion-list-header{
 }
 
 .tankWrapper{
-  // margin: 7%;
-  // margin-top: 0%;
-  // padding-top: 5%;
-  // display: block;
-
   width: 100%;
   display: block;
   padding: 10%;
-  padding-top: 0%;
+  padding-top: 5%;
   padding-bottom: 0%;
-
   background: #fff;
   z-index: inherit;
-
-  height: 385px;
-  box-shadow: 0px -1px 15px #000000;
+  box-shadow: -4px -3px 17px 8px #313131;
 }
 
 .parallax-container{
@@ -1077,7 +1069,12 @@ ion-list-header{
   display: block;
   background: black;
   overflow: hidden;
-  position: initial;
+  position: sticky;
+
+  background-attachment: fixed;
+  background-size: 400px 400px;
+  background-repeat: no-repeat;
+  background-position: center 5%;
 }
 
 .tankImageBack{
