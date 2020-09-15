@@ -13,10 +13,10 @@
   box-shadow: 0px 0px 20px #cbcbcb;
 }
 
-ion-content{
-  background: black !important;
-  --background: black !important;
-}
+// ion-content{
+//   background: black !important;
+//   --background: black !important;
+// }
 
 .smallerFooterBtn{
   width: 100% !important;
@@ -97,20 +97,18 @@ ion-content{
 
 .topSlides{
   width: 100%;
-  height: 350px;
-  box-shadow: 0px 0px 50px #323232;
+  height: 291px;
   background: black;
-  position: absolute;
+  position: fixed;
+  padding: 0%;
+  z-index: 0;
 
   img{
-    // border-bottom-left-radius: 30px;
-    // border-bottom-right-radius: 30px;
-
-    object-position: center;
-    object-fit: contain;
+    object-position: top right;
+    object-fit: cover;
     background: black;
-    height: 350px;
-    width: 90%;
+    height: 300px;
+    width: 100%;
   }
 }
 
@@ -118,8 +116,10 @@ ion-content{
 .loadingSpinner{
   text-align: center;
   width: 100%;
+  height: 100vh;
+  background: #fff;
   font-size: 21px;
-  margin-top: 50%;
+  padding-top: 70%;
 
   *{
     stroke: #F2E9E4 !important;
@@ -135,10 +135,13 @@ ion-content{
 
 .coreContent{
   width: 100%;
-
-  padding: 10%;
+  padding: 15%;
+  padding-top: 5%;
   background: #fff;
-  margin-top: 90%;
+  margin-top: 80%;
+  z-index: 9000;
+  position: relative;
+  box-shadow: 0px -20px 20px 20px #fffefe;
 
   h1{
     text-transform: capitalize;
@@ -261,7 +264,7 @@ ion-content{
     text-align: center;
     margin-left: 19%;
     display: block;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 900;
     box-shadow: 0px 0px 10px lightgrey;
   }
