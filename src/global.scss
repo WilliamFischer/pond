@@ -18,6 +18,14 @@
   overflow: scroll !important;
   overflow-x: hidden !important;
   overflow-y: scroll !important;
+
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.overflow-scroll::-webkit-scrollbar {
+  display: none !important;
 }
 
 // :root * {
@@ -67,6 +75,20 @@ body{
 ion-list-header:first-child ion-label{
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+}
+
+::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+}
+ion-content {
+  // overwrite inline styles
+  --offset-bottom: auto!important;
+  --overflow: hidden;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .broswerText{
@@ -247,7 +269,7 @@ ion-item{
 
 @media (min-height : 800px) {
   body{
-    margin-top: 10%;
+    margin-top: 13vh;
   }
 
   .broswerText{
@@ -281,7 +303,7 @@ ion-item{
   }
 
   ion-toolbar form{
-    margin-top: 5%;
+    margin-top: 10%;
   }
 
   // .autocompleteResults{

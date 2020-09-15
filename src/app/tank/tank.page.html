@@ -1,14 +1,14 @@
   <ion-app class="parallax-container">
 
-    <ion-spinner name="crescent" color="primary" *ngIf="loadingImageUpload" class="animated fadeIn loadingImgSpinner"></ion-spinner>
-
-    <div class="backgroundImg" *ngIf="tankDetailMode && activeTankData && !loadingImageUpload">
-      <img class="animated fadeIn tankImageBack" *ngIf="!activeTankData.photoURL" src="https://www.petbarn.com.au/petspot/app/uploads/2011/09/800x533_v1.jpg" />
-      <img class="animated fadeIn tankImageBack" *ngIf="activeTankData.photoURL" [src]="activeTankData.photoURL" />
-    </div>
-
     <div class="tankWrapper animated fadeIn" *ngIf="tankDetailMode && activeTankData" [ngStyle]="{'height' : accountScreenVal}">
       <ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)">
+
+        <ion-spinner name="crescent" color="primary" *ngIf="loadingImageUpload" class="animated fadeIn loadingImgSpinner"></ion-spinner>
+
+        <div class="backgroundImg" *ngIf="tankDetailMode && activeTankData && !loadingImageUpload">
+          <img class="animated fadeIn tankImageBack" *ngIf="!activeTankData.photoURL" src="https://www.petbarn.com.au/petspot/app/uploads/2011/09/800x533_v1.jpg" />
+          <img class="animated fadeIn tankImageBack" *ngIf="activeTankData.photoURL" [src]="activeTankData.photoURL" />
+        </div>
 
         <div class="listSpace" *ngIf="activeTankData">
 
@@ -252,9 +252,9 @@
             </ion-item>
           </ion-list>
         </div>
+<!-- 
+        <div class="forcedSpace"></div> -->
 
-        <div class="forcedSpace"></div>
-        
       </ion-content>
     </div>
 

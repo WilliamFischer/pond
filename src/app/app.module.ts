@@ -44,7 +44,10 @@ import { OrderModule } from 'ngx-order-pipe';
 // Providers
 import { AuthProvider } from './providers/auth/auth';
 import { ApiProvider } from './providers/api/api';
+
+// Directives
 import { ImagePreloadDirectiveDirective } from './image-preload-directive.directive';
+
 
 @NgModule({
   declarations: [

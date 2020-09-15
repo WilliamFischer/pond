@@ -417,7 +417,8 @@
 
     <button *ngIf="specimensOwend != 0" class="ownedTxt" (click)="addTankTrigger(species)">{{specimensOwend}} Owned</button>
     <button class="addToTankButton" (click)="addTankTrigger(species)" [ngClass]="{'smallerFooterBtn' : specimensOwend != 0}">
-      Add <label *ngIf="specimensOwend != 0">/ Update</label> Species
+      <label *ngIf="specimensOwend == 0">+ Add Species to your Tank</label>
+      <label *ngIf="specimensOwend != 0">+ Add / Update Species</label>
     </button>
 
     <!-- <label *ngIf="specimensOwend >= 1" class="specimenOwned" (click)="addTankTrigger(species)">
