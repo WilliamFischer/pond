@@ -151,7 +151,6 @@
       <p [innerHTML]="species.reefCommonName"></p>
     </span>
 
-
     <!-- Species Size -->
     <span class="cube" *ngIf="species.size || species.sharkSize || species.ausSize || species.ausRegSize || species.SFFishSize || species.scotsSize || species.reefAppSize || species.pondsUkSize">
       <h3>Species Size</h3>
@@ -163,6 +162,11 @@
       <p [innerHTML]="species.scotsSize"></p>
       <p [innerHTML]="species.reefAppSize"></p>
       <p [innerHTML]="species.pondsUkSize"></p>
+    </span>
+
+    <span class="cube" *ngIf="species.length">
+        <h3>Max Length</h3>
+        <p>{{species.length}} cm</p>
     </span>
 
     <!-- Recommended Tank Size -->
@@ -238,6 +242,24 @@
     <span *ngIf="species.enviroment">
       <h3>Enviroment</h3>
       <p [innerHTML]="species.enviroment"></p>
+    </span>
+
+    <!-- Climate -->
+    <span *ngIf="species.FBClimate">
+      <h3>Climate</h3>
+      <p [innerHTML]="species.FBClimate"></p>
+    </span>
+
+    <!-- Location -->
+    <span *ngIf="species.FBLocation">
+      <h3>Location</h3>
+      <p [innerHTML]="species.FBLocation"></p>
+    </span>
+
+    <!-- Ecosystem -->
+    <span *ngIf="species.FBEcosystem">
+      <h3>Ecosystem</h3>
+      <p [innerHTML]="species.FBEcosystem"></p>
     </span>
 
     <!-- Habitat -->

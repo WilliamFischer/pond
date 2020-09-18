@@ -503,6 +503,8 @@ closeTank() {
       placeholderValue = ''
     }
 
+    let staticVal = fish['quantity'];
+
     let quanInputType;
     if (window.location.host.includes('pondtheapp') || window.location.host.includes('8100')) {
       quanInputType = 'number'
@@ -533,14 +535,16 @@ closeTank() {
           text: 'Ok',
           handler: (data) => {
             fish['quantity'] = data.fishQuan;
+            this.tankFishQuantity = this.tankFishQuantity - staticVal;
 
             let commentAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase() + '/species/' + fish['spec_code']);
-
             commentAddress.set({
               quantity: data.fishQuan
             },{
               merge: true
             });
+
+            this.tankFishQuantity = +this.tankFishQuantity + +data.fishQuan;
 
             console.log("Fish quantity updated to " + data.fishQuan + "!");
           }
@@ -829,8 +833,6 @@ closeTank() {
           handler: (data) => {
             //this.presentLoading();
 
-            this.tankFishQuantity = 0;
-
             let fishAddress = this.fireStore.doc<any>('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData["name"].toLowerCase() + "/species/" + fish['spec_code']);
             let scope = this;
             //this.fish_in_tank = [];
@@ -850,7 +852,7 @@ closeTank() {
               }
 
               scope.fish_in_tank.sort((a, b) => (a.order > b.order) ? 1 : -1);
-              scope.tankFishQuantity = -scope.tankFishQuantity - -fish['quantity'];
+              scope.tankFishQuantity = scope.tankFishQuantity - fish['quantity'];
 
               //scope.dismissLoading();
 
@@ -1484,7 +1486,6 @@ closeTank() {
       'order': order,
       'comment': ''
     }
-
 
     let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase() + '/species/' + this.selectedSpecies['specCode']);
     let scope = this;
