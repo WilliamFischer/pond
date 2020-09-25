@@ -258,22 +258,22 @@ ion-item{
 
 //NO TITLE MODE
 @media (max-height: 750px) and (min-width : 500px) {
-  body{
-    margin-top: 3% !important;
+  ion-router-outlet{
+    margin-bottom: 3% !important;
   }
 
   .broswerText{
-    display: none;
+    visibility: hidden;
   }
 }
 
 @media (min-height : 800px) {
-  body{
-    margin-top: 13vh;
+  ion-router-outlet{
+    margin-bottom: 13vh;
   }
 
   .broswerText{
-    display: none;
+    visibility: hidden;
   }
 }
 

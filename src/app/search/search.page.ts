@@ -64,7 +64,7 @@ export class SearchPage {
 
   //Current Species Version
   runningVersion: string = '0.0.6';
-  hostDirectory: string = 'http://pondapi.rf.gd';
+  hostDirectory: string = 'http://motyar.info/test/api';
   updateSeriouslyFish: boolean = true;
 
   searchQuery: string = '';
@@ -544,6 +544,14 @@ export class SearchPage {
     console.log('### PACKAGED SPECIES ###')
     console.log(fish);
 
+    let properSpecCode;
+
+    if(!specCode){
+      properSpecCode = fish['SpecCode']
+    }else{
+      properSpecCode = fish['specCode']
+    }
+
     this.checkFishVersionCode(fish);
     this.addToHistory(fish);
     this.checkFavourites(null);
@@ -572,25 +580,17 @@ export class SearchPage {
 
         console.log('HIDE ALL LOADERS. HAPPY WITH VERSION')
 
+        console.log('LOAD SPECIES URL ');
+        this.router.navigateByUrl('/species/' + properSpecCode);
 
-        if(!fish['Modified']){
-          console.log(fish['versionCode'] + ' VS ' + this.runningVersion);
-        }
-
-        if((fish['Modified'] || fish['versionCode'] == this.runningVersion) && (!fish['temperature'] || this.updatingSpecies)){
-          console.log('LOAD SPECIES URL ');
-          this.router.navigateByUrl('/species/' + specCode);
-
-          this.species = '';
-          this.species = fish;
-        }else{
-          console.log('NOT ENOUGH INFORMATION TO LOAD SPECIES URL ');
-
-          this.packageAndShowFish(fish, specCode);
-        }
+        this.species = '';
+        this.species = fish;
+      }else{
+        console.log('NOT ENOUGH INFORMATION TO LOAD SPECIES URL ');
+        this.packageAndShowFish(fish, properSpecCode);
       }
 
-    }, 500);
+    }, 1000);
 
     this.increaseViewCount(fish, specCode);
   }
@@ -2527,7 +2527,7 @@ export class SearchPage {
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://www.seriouslyfish.com/species/'+searchParam+'/&xpath=p');
+    var scraperURL = this.hostDirectory + '/?url=https://www.seriouslyfish.com/species/'+searchParam+'/&xpath=p';
     if(this.debug){
       console.log('running on ' + scraperURL)
     }
@@ -2573,7 +2573,7 @@ export class SearchPage {
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://www.seriouslyfish.com/species/'+searchParam+'/&xpath=p');
+    var scraperURL = this.hostDirectory + '/?url=https://www.seriouslyfish.com/species/'+searchParam+'/&xpath=p';
     if(this.debug){
       console.log('running on ' + scraperURL)
     }
@@ -2679,7 +2679,7 @@ export class SearchPage {
           }
         }
 
-        if(sfTxt.includes('nigeria') || sfTxt.includes('guinea') || sfTxt.includes('brazil') || sfTxt.includes('river system') || sfTxt.includes('venezuela') || sfTxt.includes('specimens collected') || sfTxt.includes('wild fish') || sfTxt.includes('africa') || sfTxt.includes('thailand') || sfTxt.includes('locality')){
+        if(sfTxt.includes('nigeria') || sfTxt.includes('guinea') || sfTxt.includes('brazil') || sfTxt.includes('river system') || sfTxt.includes('venezuela') || sfTxt.includes('specimens collected') || sfTxt.includes('wild fish') || sfTxt.includes('africa') || sfTxt.includes('thailand') || sfTxt.includes('locality') || sfTxt.includes('Indonesia')){
           // console.log('--- Recommended Tank Size of species: ---');
           if(detailedFishInformation['locality']){
             detailedFishInformation['locality'] += '<br /><br />' + value['text'];
@@ -2688,7 +2688,7 @@ export class SearchPage {
           }
         }
 
-        if(sfTxt.includes('best kept with') || sfTxt.includes('group of') || sfTxt.includes('general community') || sfTxt.includes('aggressive towards') || sfTxt.includes('ideally stock') || sfTxt.includes('very peaceful') || sfTxt.includes('preferably more') || sfTxt.includes('ideal tankmates') || sfTxt.includes('kept in groups or pairs')){
+        if(sfTxt.includes('best kept with') || sfTxt.includes('group of') || sfTxt.includes('general community') || sfTxt.includes('aggressive towards') || sfTxt.includes('ideally stock') || sfTxt.includes('very peaceful') || sfTxt.includes('preferably more') || sfTxt.includes('ideal tankmates') || sfTxt.includes('kept in groups or pairs') || sfTxt.includes('species-specific') || sfTxt.includes('community fish')){
           // console.log('--- Behaviour/Compatibility of species: ---');
           if(detailedFishInformation['tankMates']){
             detailedFishInformation['tankMates'] += '<br /><br />' + value['text'];
@@ -2697,7 +2697,7 @@ export class SearchPage {
           }
         }
 
-        if(sfTxt.includes('has been bred in aquaria') || sfTxt.includes('spawning') || sfTxt.includes('spawn') ||  sfTxt.includes('eggs') ||  sfTxt.includes('the fry')  ||  sfTxt.includes('drying') || sfTxt.includes('breed') || sfTxt.includes('for the first few days') || sfTxt.includes('nester') ){
+        if(sfTxt.includes('has been bred in aquaria') || sfTxt.includes('spawning') || sfTxt.includes('spawn') ||  sfTxt.includes('eggs') ||  sfTxt.includes('the fry')  ||  sfTxt.includes('drying') || sfTxt.includes('breed') || sfTxt.includes('for the first few days') || sfTxt.includes('nester') || sfTxt.includes('gravid') ){
           // console.log('--- Reproduction of species: ---');
           if(detailedFishInformation['repoduction']){
             detailedFishInformation['repoduction'] += '<br /><br />' + value['text'];
@@ -2706,7 +2706,7 @@ export class SearchPage {
           }
         }
 
-        if(sfTxt.includes('other decor can include') || sfTxt.includes('well planted with') || sfTxt.includes('use a substrate') || sfTxt.includes('some cover') || sfTxt.includes('over the aquarium') || sfTxt.includes('lighting') || sfTxt.includes('provide areas of') || sfTxt.includes('leaf litter') || sfTxt.includes('driftwood') || sfTxt.includes('well-planted') ){
+        if(sfTxt.includes('other decor can include') || sfTxt.includes('well planted with') || sfTxt.includes('use a substrate') || sfTxt.includes('some cover') || sfTxt.includes('over the aquarium') || sfTxt.includes('lighting') || sfTxt.includes('provide areas of') || sfTxt.includes('leaf litter') || sfTxt.includes('driftwood') || sfTxt.includes('well-planted')){
           // console.log('--- Recommended Tank Size of species: ---');
           if(detailedFishInformation['enviroment']){
             detailedFishInformation['enviroment'] += '<br /><br />' + value['text'];
@@ -2738,7 +2738,7 @@ export class SearchPage {
           }
         }
 
-        if(sfTxt.includes('inhabits') || sfTxt.includes('exclusively found') || sfTxt.includes('rainforest') || sfTxt.includes('habitat') || sfTxt.includes('habitats') || sfTxt.includes('fish are also found') || sfTxt.includes('natural range') || sfTxt.includes('wild populations')){
+        if(sfTxt.includes('inhabits') || sfTxt.includes('exclusively found') || sfTxt.includes('rainforest') || sfTxt.includes('habitat') || sfTxt.includes('habitats') || sfTxt.includes('fish are also found') || sfTxt.includes('natural range') || sfTxt.includes('wild populations') || sfTxt.includes('tidal') ){
           // console.log('--- Habitat of species: ---');
           if(detailedFishInformation['habitat']){
             detailedFishInformation['habitat'] += '<br /><br />' + value['text'];
@@ -2747,7 +2747,7 @@ export class SearchPage {
           }
         }
 
-        if(sfTxt.includes('omnivorous') || sfTxt.includes('omnivores') || sfTxt.includes('dried foods') || sfTxt.includes('micropredator') || sfTxt.includes('bloodworm') ||  sfTxt.includes('prey on') ||  sfTxt.includes('obesity') ){
+        if(sfTxt.includes('omnivorous') || sfTxt.includes('omnivores') || sfTxt.includes('dried foods') || sfTxt.includes('micropredator') || sfTxt.includes('bloodworm') ||  sfTxt.includes('prey on') ||  sfTxt.includes('obesity') ||  sfTxt.includes('live foods') ){
           // console.log('--- Diet of species: ---');
           if(detailedFishInformation['diet']){
             detailedFishInformation['diet'] += '<br /><br />' + value['text'];
@@ -2974,7 +2974,7 @@ export class SearchPage {
       if(this.debug){
         console.log(error.error['text']);
       }
-      var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=' + error.error['text'] +'/&xpath=tr');
+      var scraperURL = this.hostDirectory + '/?url=' + error.error['text'] +'/&xpath=tr';
 
       if(this.debug){
         console.log('running on ' + scraperURL)
@@ -3306,9 +3306,9 @@ export class SearchPage {
     var userURL = this.hostDirectory + '/?url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[1]#vws';
     var userURL1 = this.hostDirectory + '/?url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[2]#vws';
     var userURL2 = this.hostDirectory + '/?url=?url=http://www.seawater.no/fauna/chordata/'+ searchQuery +'.html&xpath=//div[@id=article]/p[3]#vws';
-    var scraperURL = encodeURIComponent(userURL);
-    var scraperURL1 = encodeURIComponent(userURL1);
-    var scraperURL2 = encodeURIComponent(userURL2);
+    var scraperURL = userURL;
+    var scraperURL1 = userURL1;
+    var scraperURL2 = userURL2;
 
     if(this.debug){
       console.log(userURL)
@@ -3395,7 +3395,7 @@ export class SearchPage {
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
     var userURL = this.hostDirectory + '/?url=https://shark-references.com/species/view/'+ searchQuery +'&xpath=//div[@id=content]/div/div#vws';
-    var scraperURL = encodeURIComponent(userURL);
+    var scraperURL = userURL;
 
     if(this.debug){
       console.log(userURL)
@@ -3489,6 +3489,9 @@ export class SearchPage {
       if(this.debug){
         console.log(fish)
       }
+
+      this.packageAndShowFish(fish, fish.specCode);
+
       // this.selectSpecies(fish, true);
     });
 
@@ -3499,7 +3502,7 @@ export class SearchPage {
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
     var userUrl = 'https://api.bing.com/osjson.aspx?query=' + this.searchQuery;
-    var scraperURL = encodeURIComponent(userUrl);
+    var scraperURL = userUrl;
 
     //console.log(corsFix + scraperURL);
     //console.log(userUrl);
@@ -3976,7 +3979,7 @@ export class SearchPage {
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
     var userURL = this.hostDirectory + '/?url=http://fishesofaustralia.net.au/search?size=50%26q=' + theGenus + '&xpath=//div[@id=content]/div[3]/div/div/ul/a#vws';
-    var scraperURL = encodeURIComponent(userURL);
+    var scraperURL = userURL;
     var currentSpecies = '<i>' + theGenus + ' ' + theSpecies + '</i>';
     var currentAuthor = '<span>' + theAuthor.replace(/,/g, '').replace('&', '&amp;') + '</span>';
 
@@ -4041,7 +4044,7 @@ export class SearchPage {
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=http://fishesofaustralia.net.au' + href + '&xpath=//div[@id=content]/div[3]/div[1]/div/div#vws');
+    var scraperURL = this.hostDirectory + '/?url=http://fishesofaustralia.net.au' + href + '&xpath=//div[@id=content]/div[3]/div[1]/div/div#vws';
 
     if(this.debug){
       console.log('ON ADDRESS http://fishesofaustralia.net.au' + href)
@@ -4131,7 +4134,7 @@ export class SearchPage {
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=http://fishesofaustralia.net.au' + href +'&xpath=//div[@id=content]/div[2]/div/div/div/div/div[2]/table/tbody/tr#vws');
+    var scraperURL = this.hostDirectory + '/?url=http://fishesofaustralia.net.au' + href +'&xpath=//div[@id=content]/div[2]/div/div/div/div/div[2]/table/tbody/tr#vws';
 
     if(this.debug){
       console.log('ON ADDRESS http://fishesofaustralia.net.au' + href + '#moreinfo')
@@ -4293,7 +4296,7 @@ export class SearchPage {
       console.log("### GETTING REEF APP RESULTS ###")
 
       var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-      var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://reefapp.net/en/lex/details/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=wrap]/div[3]/div[2]/div/div/table/tbody/tr/td#vws');
+      var scraperURL = this.hostDirectory + '/?url=https://reefapp.net/en/lex/details/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=wrap]/div[3]/div[2]/div/div/table/tbody/tr/td#vws';
 
       if(this.debug){
         console.log('ON ADDRESS https://reefapp.net/en/lex/details/' + species['Genus'] + '-' + species['Species'])
@@ -4465,7 +4468,7 @@ export class SearchPage {
     console.log("### GETTING REEF LIFE SURVEY DESCRIPTION RESULTS ###")
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[2]/div[2]#vws');
+    var scraperURL = this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[2]/div[2]#vws';
 
     if(this.debug){
       console.log('ON ADDRESS https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'])
@@ -4522,7 +4525,7 @@ export class SearchPage {
   generateReefSurveyMaxSize(species){
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[1]#vws');
+    var scraperURL = this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[1]#vws';
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -4555,7 +4558,7 @@ export class SearchPage {
 
   generateReefSurveyHabitat(species){
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[3]#vws');
+    var scraperURL = this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[3]#vws';
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -4589,7 +4592,7 @@ export class SearchPage {
 
   generateReefSurveyDepth(species){
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[2]#vws');
+    var scraperURL = this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[3]/div[2]/ul/li[2]#vws';
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -4633,10 +4636,10 @@ export class SearchPage {
     }
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://www.scotcat.com/factsheets/' + scotResult + '.html&xpath=/html/body/table[3]/tbody/tr[1]/td[1]/div/table/tbody/tr/td/font');
-    var scraperURLTWO = encodeURIComponent(this.hostDirectory + '/?url=https://www.scotcat.com/factsheets/' + scotResult + '.htm&xpath=/html/body/table[3]/tbody/tr[1]/td[1]/div/table/tbody/tr/td/font');
-    var scraperURLTHREE = encodeURIComponent(this.hostDirectory + '/?url=https://www.scotcat.com/factsheets/' + scotResult + '.htm&xpath=/html/body/table[3]/tbody/tr[1]/td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/font');
-    var scraperURLFOUR = encodeURIComponent(this.hostDirectory + '/?url=https://www.scotcat.com/factsheets/' + scotResult + '.html&xpath=/html/body/table[3]/tbody/tr[1]/td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/font');
+    var scraperURL = this.hostDirectory + '/?url=https://www.scotcat.com/factsheets/' + scotResult + '.html&xpath=/html/body/table[3]/tbody/tr[1]/td[1]/div/table/tbody/tr/td/font';
+    var scraperURLTWO = this.hostDirectory + '/?url=https://www.scotcat.com/factsheets/' + scotResult + '.htm&xpath=/html/body/table[3]/tbody/tr[1]/td[1]/div/table/tbody/tr/td/font';
+    var scraperURLTHREE = this.hostDirectory + '/?url=https://www.scotcat.com/factsheets/' + scotResult + '.htm&xpath=/html/body/table[3]/tbody/tr[1]/td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/font';
+    var scraperURLFOUR = this.hostDirectory + '/?url=https://www.scotcat.com/factsheets/' + scotResult + '.html&xpath=/html/body/table[3]/tbody/tr[1]/td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/font';
 
     if(this.debug){
       console.log('running on ' + scraperURL)
@@ -4988,9 +4991,9 @@ export class SearchPage {
       }
 
       var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-      var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_right]/p[0#vws');
+      var scraperURL = this.hostDirectory + '/?url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_right]/p[0]#vws';
 
-      console.log('Running on http://pondtheapp.com/webscrapemaster/api/?url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_right]/p[0#vws')
+      console.log('Running on '+this.hostDirectory+'/webscrapemaster/api/?url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_right]/p[0]#vws')
       console.log('or http://www.fishtanksandponds.co.uk/profiles/'+name+'.html');
 
       this.http.get(corsFix + scraperURL).subscribe(
@@ -5134,9 +5137,9 @@ export class SearchPage {
   getMoreFromPondsUK(name, species){
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_left]/table/tbody/tr[4]/td[0#vws');
+    var scraperURL = this.hostDirectory + '/?url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_left]/table/tbody/tr[4]/td[0#vws';
 
-    console.log('Running on http://pondtheapp.com/webscrapemaster/api/?url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_left]/table/tbody/tr[4]/td[0#vws')
+    console.log('Running on ' + this.hostDirectory + '/webscrapemaster/api/?url=http://www.fishtanksandponds.co.uk/profiles/'+name+'.html&xpath=//div[@id=column_left]/table/tbody/tr[4]/td[0#vws')
     console.log('or http://www.fishtanksandponds.co.uk/profiles/'+name+'.html');
 
     this.http.get(corsFix + scraperURL).subscribe(
@@ -5332,6 +5335,7 @@ export class SearchPage {
             }
           });
         }else{
+
           if(array && array.length !== 0){
             array.forEach(eachSpecies => {
               values.forEach(eachWishlistSpecies => {
@@ -5348,13 +5352,9 @@ export class SearchPage {
             this.favouritesCollection.unsubscribe();
           }
 
-
         }
       });
     }
-
-
-
   }
 
   seeFullImage(img){
@@ -5401,7 +5401,7 @@ export class SearchPage {
     this.bettaVariations = [];
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://www.itsafishthing.com/types-of-betta-fish&xpath=//article[@id=post-2086]/div/div/h3#vws');
+    var scraperURL = this.hostDirectory + '/?url=https://www.itsafishthing.com/types-of-betta-fish&xpath=//article[@id=post-2086]/div/div/h3#vws';
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -5444,7 +5444,7 @@ export class SearchPage {
     console.log('Getting L Number Variation');
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
-    var scraperURL = encodeURIComponent(this.hostDirectory + '/?url=https://en.wikipedia.org/wiki/L-number&xpath=//div[@id=mw-content-text]/div/table/td#vws');
+    var scraperURL = this.hostDirectory + '/?url=https://en.wikipedia.org/wiki/L-number&xpath=//div[@id=mw-content-text]/div/table/td#vws';
 
     this.http.get(corsFix + scraperURL).subscribe(
       result => {
@@ -5531,8 +5531,8 @@ export class SearchPage {
         console.log('Species is v' + fish['versionCode'] + ' runnning version is v' + this.runningVersion);
       }
 
-      if(fish['versionCode'] !== this.runningVersion && fish['temperature'] || this.updateSeriouslyFish){
-        console.log('Seriosuly Fish update required.... updating to ' + this.runningVersion);
+      if(fish['versionCode'] !== this.runningVersion){
+        console.log('Full Fish update required.... updating to ' + this.runningVersion);
 
         this.presentUpdating();
 
@@ -5543,20 +5543,6 @@ export class SearchPage {
         //this.clearSpeciesCount(fish);
 
         this.theInternetIsMyBitchAndShesBeenABadGirl(fish);
-      }else if(fish['versionCode'] !== this.runningVersion){
-        console.log('Version update required...');
-
-        this.updatingSpecies = true;
-
-        this.updateSpeciesVCode(fish, this.runningVersion);
-
-        if(this.saltwater){
-          this.presentUpdating();
-          this.perhapsReefApp(fish);
-        }
-
-        this.howboutFishTanksAndPonds(fish);
-
       }else{
         console.log('Species up to date!');
         //this.presentLoading();
