@@ -306,6 +306,18 @@ ion-item{
     margin-top: 10%;
   }
 
+  ion-router-outlet{
+    margin-bottom: 0;
+  }
+
+  ion-header{
+    margin-top: -18px;
+  }
+
+  .koiLogo{
+    margin-top: 40% !important;
+  }
+
   // .autocompleteResults{
   //   margin-top: -340px !important;
   // }

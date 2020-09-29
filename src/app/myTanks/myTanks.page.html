@@ -21,7 +21,7 @@
         <h1 class="pondTitleVersion rightTitle">
           <label *ngIf="user.name && !showHead" (click)="triggerHead()">{{user.name}}</label>
           <label *ngIf="user.name && showHead" (click)="triggerHead()">Close</label>
-          <label *ngIf="!user.name" (click)="loadPopular()">Login</label>
+          <label *ngIf="!user.name" (click)="login()">Login</label>
         </h1>
 
         <!-- <label *ngIf="user.name && tanks && tanks.length >= 1">
@@ -34,47 +34,50 @@
     </ion-toolbar>
   </ion-header>
 
-  <div class="headSection" *ngIf="showHead">
-      <div *ngIf="defaultMode" class="fadedBack"></div>
-      <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
-      <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
 
-      <div class="paddingSpace">
-        <label class="topTitle1 animated fadeIn" *ngIf="defaultMode">Account</label>
-
-        <div class="infoSection" *ngIf="defaultMode">
-          <img class="profileImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
-          <div class="rightStuff animated bounceIn">
-            <label class="topTitle2" *ngIf="user.name">{{user.name}}</label>
-            <label class="topTitle2" *ngIf="!user.name">Unknown User</label>
-            <label class="topTitle3">
-              <b *ngIf="totalQuanityOfFish">{{totalQuanityOfFish}} Fish</b> <br />
-              <i>
-                <b>{{totalQuanityOfFollows}}</b> Follower<label *ngIf="totalQuanityOfFollows !== 1">s</label>
-                <br />
-                <b>{{totalQuanityOfFollowers}}</b> Following
-              </i>
-            </label>
-            <button class="viewProfBtn" *ngIf="user.name" (click)="presentActionSheet()">Settings</button>
-            <button class="viewProfBtn" *ngIf="!user.name" (click)="login()">Login</button>
-
-            <br />
-            <br />
-
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div class="bodySection" *ngIf="!addTankMode && !tankSizeImages">
-      <ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)">
-
-
+      <ion-content>
+        
         <!-- Section 1: ALL TANKS -->
         <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)"  *ngIf="tanks && tanks.length >= 1 && showTanks">
           <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="bubbles">
           </ion-refresher-content>
         </ion-refresher>
+
+
+        <div class="headSection" *ngIf="showHead">
+          <div *ngIf="defaultMode" class="fadedBack"></div>
+          <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+          <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+
+          <div class="paddingSpace">
+            <label class="topTitle1 animated fadeIn" *ngIf="defaultMode">Account</label>
+
+            <div class="infoSection" *ngIf="defaultMode">
+              <img class="profileImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+              <div class="rightStuff animated bounceIn">
+                <label class="topTitle2" *ngIf="user.name">{{user.name}}</label>
+                <label class="topTitle2" *ngIf="!user.name">Unknown User</label>
+                <label class="topTitle3">
+                  <b *ngIf="totalQuanityOfFish">{{totalQuanityOfFish}} Fish</b> <br />
+                  <i>
+                    <b>{{totalQuanityOfFollows}}</b> Follower<label *ngIf="totalQuanityOfFollows !== 1">s</label>
+                    <br />
+                    <b>{{totalQuanityOfFollowers}}</b> Following
+                  </i>
+                </label>
+                <button class="viewProfBtn" *ngIf="user.name" (click)="presentActionSheet()">Settings</button>
+                <button class="viewProfBtn" *ngIf="!user.name" (click)="login()">Login</button>
+
+                <br />
+                <br />
+
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <!-- <div class="splittingLine"></div> -->
 
