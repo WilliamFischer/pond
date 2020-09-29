@@ -38,12 +38,6 @@
 
     <div class="bodySection" *ngIf="!addTankMode && !tankSizeImages">
       <ion-content>
-        
-        <!-- Section 1: ALL TANKS -->
-        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)"  *ngIf="tanks && tanks.length >= 1 && showTanks">
-          <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="bubbles">
-          </ion-refresher-content>
-        </ion-refresher>
 
 
         <div class="headSection" *ngIf="showHead">
@@ -82,6 +76,12 @@
         <!-- <div class="splittingLine"></div> -->
 
         <div class="paddingSpace" *ngIf="defaultMode" [ngStyle]="{ 'fullMode' : !showHead }">
+
+          <!-- Section 1: ALL TANKS -->
+          <ion-refresher slot="fixed" color="primary"  (ionRefresh)="doRefresh($event)"  *ngIf="tanks && tanks.length >= 1 && showTanks">
+            <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="bubbles" color="primary" >
+            </ion-refresher-content>
+          </ion-refresher>
 
           <ion-spinner name="bubbles" color="primary" class="mySpinner" *ngIf="!doneLoadingTanks && user.name"></ion-spinner>
 

@@ -234,6 +234,7 @@ export class myTanksPage {
 
 
     doRefresh(event){
+      this.showHead = false;
       this.populateTanks();
       this.populateWishlist();
 
@@ -276,10 +277,18 @@ export class myTanksPage {
 
         localStorage.setItem('showWishlist', 'true');
       }
+
+      if(this.showWishlist){
+        this.populateWishlist();
+      }
     }
 
     hideTanks(){
       this.showTanks = !this.showTanks;
+
+      if(this.showTanks){
+        this.populateTanks();
+      }
     }
 
     populateWishlist(){
