@@ -85,10 +85,19 @@
 
           <ion-spinner name="bubbles" color="primary" class="mySpinner" *ngIf="!doneLoadingTanks && user.name"></ion-spinner>
 
-          <label class="leftTitle topTitle2" (click)="hideTanks()" *ngIf="user.name && tanks && tanks.length >= 1 && tankSearchController.length == 0">
+          <label class="leftTitle topTitle2" *ngIf="user.name && tanks && tanks.length >= 1 && tankSearchController.length == 0">
             Tanks
-            <ion-icon class="circIco" *ngIf="showTanks" name="remove-circle-outline"></ion-icon>
-            <ion-icon class="circIco" *ngIf="!showTanks" name="add-circle-outline"></ion-icon>
+            <div class="sideIcons">
+              <div (click)="hideTanks()">
+                <ion-icon *ngIf="showTanks" name="remove-circle-outline"></ion-icon>
+                <ion-icon *ngIf="!showTanks" name="add-circle-outline"></ion-icon>
+              </div>
+              <div>
+                <ion-icon name="git-compare-outline" (click)="groupTanks()" *ngIf="!groupingMode"></ion-icon>
+                <ion-icon name="checkmark-done-circle-outline" (click)="confirmCheckedTanks()" *ngIf="groupingMode"></ion-icon>
+              </div>
+            </div>
+
           </label>
 
           <!-- <label *ngIf="user.name && tanks && tanks.length >= 1">
@@ -109,17 +118,28 @@
           <div *ngIf="tanks">
 
             <ion-reorder-group (ionItemReorder)="reOrderTanks($event)" disabled="false" *ngIf="showTanks">
+
               <div *ngFor="let tank of tanks; let i = index">
+
+                <ion-list-header *ngIf="tank.group">{{tank.group}}</ion-list-header>
+
                 <div class="tankSpace animated bounceIn" [ngStyle]="{'background' : tank.fullColour}">
 
-                  <ion-reorder>
-                    <ion-icon name="list" class="selectPal"></ion-icon>
-                  </ion-reorder>
+                  <div *ngIf="!groupingMode">
+                    <ion-reorder>
+                      <ion-icon name="list" class="selectPal"></ion-icon>
+                    </ion-reorder>
 
-                  <ion-icon *ngIf="colourFound" class="selectPal" (click)="changeColour(tank, i)" name="color-palette"></ion-icon>
+                    <ion-icon *ngIf="colourFound" class="selectPal" (click)="changeColour(tank, i)" name="color-palette"></ion-icon>
+                  </div>
 
-                  <h3 *ngIf="!tank.nickname"  (click)="initTankDetail(tank.name)">{{tank.name}}</h3>
-                  <h3 *ngIf="tank.nickname"  (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
+                  <div *ngIf="groupingMode" (click)="checkTankToGroup(tank, i)">
+                    <ion-icon class="selectPal" name="checkbox-outline" *ngIf="!tank.checked"></ion-icon>
+                    <ion-icon class="selectPal" name="checkbox" *ngIf="tank.checked"></ion-icon>
+                  </div>
+
+                  <h3 *ngIf="!tank.nickname" (click)="initTankDetail(tank.name)">{{tank.name}}</h3>
+                  <h3 *ngIf="tank.nickname" (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
 
                   <h4 (click)="initTankDetail(tank.name)">
                     <label *ngIf="tank.temp">

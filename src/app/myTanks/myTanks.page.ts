@@ -45,10 +45,12 @@ export class myTanksPage {
   wishlistMode: boolean;
   dynamicUgh: boolean;
   showHead: boolean;
+  groupingMode: boolean;
 
   accountScreenVal: string;
   accountScreenValBack: string;
   accountScreenValMinHeightBack: string;
+  currentGroup: string;
   tankSearchController: string = '';
   reverseScroll: number = 445;
   reverseTop: number = 0;
@@ -78,6 +80,7 @@ export class myTanksPage {
   user: any = [];
   colours: any = [];
   species: any = [];
+  groupedTanks: any = [];
   speciesImgArray: any = [];
 
   tank = {
@@ -246,8 +249,6 @@ export class myTanksPage {
 
     }
 
-    ionViewDidLeave(){}
-
     populateUser(auth){
       // http://graph.facebook.com/{user_id}?fields=picture.height(961)
 
@@ -261,10 +262,8 @@ export class myTanksPage {
       this.user.email = auth.email
 
       this.populateTanks();
+      this.populateWishlist();
       //console.log(this.afAuth.auth.currentUser.uid)
-
-
-
     }
 
     hideWishlist(){
@@ -289,6 +288,70 @@ export class myTanksPage {
       if(this.showTanks){
         this.populateTanks();
       }
+    }
+
+    groupTanks(){
+      this.groupingMode = !this.groupingMode;
+    }
+
+    checkTankToGroup(tank, i){
+      tank['checked'] = !tank['checked'];
+      this.groupedTanks.push(tank)
+    }
+
+    async confirmCheckedTanks(){
+      const alert = await this.alertController.create({
+        header: 'Group Name',
+        inputs: [
+          {
+            name: 'groupName',
+            type: 'text',
+            placeholder: 'Outside Tanks',
+          }
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+          }, {
+            text: 'Ok',
+            handler: (data) => {
+              if(data){
+                this.currentGroup = data.groupName;
+                this.proccessCheckedTanks();
+              }
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+    }
+
+    proccessCheckedTanks(){
+      console.log(this.groupedTanks);
+
+      this.groupedTanks.forEach(tank => {
+        let trueName = tank['trueName'].toLowerCase();
+
+        this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + trueName)
+        .set({
+          group: this.currentGroup,
+        },{
+          merge: true
+        });
+      });
+
+      this.tanks.forEach(tank => {
+        if(tank['checked']){
+          tank['checked'] = false;
+        }
+      });
+      //
+      // this.groupingMode = false;
+      // this.currentGroup = '';
+      // this.populateTanks();
     }
 
     populateWishlist(){
@@ -413,6 +476,8 @@ export class myTanksPage {
           this.tanksHold = values;
           this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
 
+          this.organiseGroups();
+
 
           if(this.repeatArrayTank){
             this.repeatArrayTank.unsubscribe();
@@ -447,6 +512,7 @@ export class myTanksPage {
                   }
 
                   this.totalQuanityOfFish = this.totalQuanityOfFish + +Number(speciesSpecific['quantity']);
+
                 }
 
               });
@@ -475,15 +541,15 @@ export class myTanksPage {
               },{
                 merge: true
               }).then(() => {
-                this.populateWishlist();
-
                 this.userTankChanges.unsubscribe();
                 this.checkCollection.unsubscribe();
+
               });
             }
           }, 300);
 
         });
+
 
         // setTimeout(()=>{
         //   this.QuanityOfFish = +this.totalQuanityOfFish + +Number(speciesSpecific['quantity']);
@@ -500,6 +566,22 @@ export class myTanksPage {
         console.log('Gotta log in');
         // this.logout();
       }
+    }
+
+    organiseGroups(){
+      console.log('Organising Groups ...');
+      console.log(this.tanks);
+
+      let group = this.tanks.reduce((r, a) => {
+       r[a.group] = [...r[a.group] || [], a];
+       return r;
+      }, {});
+
+      this.tanks = [];
+      this.tanks = group;
+
+      console.log(this.tanks);
+
     }
 
     populateColours(tankResult){

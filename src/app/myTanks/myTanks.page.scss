@@ -96,12 +96,6 @@ ion-searchbar{
   margin-top: 15%;
 }
 
-.circIco{
-  margin-top: 2%;
-  margin-left: 3%;
-  position: absolute;
-}
-
 .wishlistPillScroller{
     width: 100%;
     height: 150px;
@@ -1194,4 +1188,24 @@ h1{
 .fullMode{
   margin-top: 20% !important;
   background: green !important;
+}
+
+
+.sideIcons{
+  padding-top: 6px;
+  padding-left: 3px;
+  position: absolute;
+
+  display: inline-flex;
+
+  div{
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+
+  ion-icon{
+    // margin-top: 2%;
+    // margin-left: 3%;
+    // position: absolute;
+  }
 }
