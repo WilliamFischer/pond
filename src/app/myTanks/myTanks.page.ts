@@ -475,9 +475,9 @@ export class myTanksPage {
           this.tanks = values;
           this.tanksHold = values;
           this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
+          this.tanks = this.organiseGroups();
 
-          this.organiseGroups();
-
+          console.log(this.tanks);
 
           if(this.repeatArrayTank){
             this.repeatArrayTank.unsubscribe();
@@ -570,18 +570,36 @@ export class myTanksPage {
 
     organiseGroups(){
       console.log('Organising Groups ...');
-      console.log(this.tanks);
+      let groupNames = [];
+      this.groupedTanks = [];
 
       let group = this.tanks.reduce((r, a) => {
        r[a.group] = [...r[a.group] || [], a];
+       r[a.group].sort((one, two) => (one.order > two.order) ? 1 : -1)
+
+       groupNames.push(a.group);
+
        return r;
       }, {});
 
-      this.tanks = [];
-      this.tanks = group;
+      var cleanGroupNames = this.removeDuplicatesBy(x => x, groupNames);
+      for(var i = 0; i < cleanGroupNames.length; i++){
+        this.groupedTanks.push(group[cleanGroupNames[i]])
+      }
 
-      console.log(this.tanks);
+      // this.groupedTanks = [].concat.apply([], this.groupedTanks);
 
+      // let singleGroups = []
+      // this.groupedTanks.forEach(tank => {
+      //   if(!singleGroups.includes(tank.group)){
+      //     singleGroups.push(tank.group)
+      //   }else{
+      //     tank.group = ''
+      //   }
+      // });
+
+
+      return this.groupedTanks;
     }
 
     populateColours(tankResult){
@@ -601,6 +619,15 @@ export class myTanksPage {
 
         this.colourFound = true;
         this.colourCollection.unsubscribe();
+      });
+    }
+
+    removeDuplicatesBy(keyFn, arr){
+      var mySet = new Set();
+      return arr.filter(function(x) {
+        var key = keyFn(x), isNew = !mySet.has(key);
+        if (isNew) mySet.add(key);
+        return isNew;
       });
     }
 
