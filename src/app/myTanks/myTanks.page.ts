@@ -246,6 +246,34 @@ export class myTanksPage {
 
       console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
 
+      this.tanks[ev.detail.from].order = ev.detail.to
+      this.tanks[ev.detail.to].order = ev.detail.from
+
+      let scope = this;
+
+      this.tanks[ev.detail.from].forEach(function(value, key) {
+
+        if(value['trueName']){
+          scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + value['trueName'].toLowerCase())
+          .set({
+            groupOrder: ev.detail.to
+          },{
+            merge: true
+          });
+        }
+      });
+
+      this.tanks[ev.detail.to].forEach(function(value, key) {
+        if(value['trueName']){
+          scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + value['trueName'].toLowerCase())
+          .set({
+            groupOrder: ev.detail.from
+          },{
+            merge: true
+          });
+        }
+      });
+
       ev.detail.complete();
       console.log('After complete tanks:', this.tanks);
     }
@@ -368,14 +396,15 @@ export class myTanksPage {
         });
       });
 
-      this.tanks.forEach(tank => {
+      this.tanks.forEach((tank, index) => {
         if(tank['checked']){
           tank['checked'] = false;
-          tank.group = this.currentGroup;
-          tank.groupOrder = 0;
+          this.tanks[index].group = this.currentGroup;
+          this.tanks[index].groupOrder = 0;
         }
       });
 
+      this.tanks = this.tanks;
       // this.currentGroup = '';
       // this.populateTanks();
     }
@@ -607,20 +636,16 @@ export class myTanksPage {
        r[a.group] = [...r[a.group] || [], a];
        r[a.group].sort((one, two) => (one.order > two.order) ? 1 : -1)
 
-       if(!a.groupOrder){
-         a.groupOrder = 0
-       }
-
-       // a.order = i
-
        tempGroupNames.push(a.group);
-       tempGroupOrders.push(a.groupOrder);
 
        return r;
       }, {});
 
+      console.log(tempGroupOrders);
+
       let groupNames = this.removeDuplicatesBy(x => x, tempGroupNames);
       let groupOrders = this.removeDuplicatesBy(x => x, tempGroupOrders);
+
       for(var i = 0; i < groupNames.length; i++){
        this.groupedTanks.push(group[groupNames[i]]);
 
@@ -629,12 +654,10 @@ export class myTanksPage {
        }else{
          this.groupedTanks[i].name = '';
        }
+      }
 
-       if(groupNames[i].order){
-        this.groupedTanks[i].order = groupOrders[i];
-       }else{
-         this.groupedTanks[i].order = 0;
-       }
+      for(var i = 0; i < this.groupedTanks.length; i++){
+        this.groupedTanks[i].order = this.groupedTanks[i][0].groupOrder;
       }
 
       return this.groupedTanks;
