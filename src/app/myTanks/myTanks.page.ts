@@ -201,25 +201,29 @@ export class myTanksPage {
       this.tanks = this.tanksHold;
     }
 
-    reOrderTanks(ev){
+    reOrderTanks(ev, group){
+      ev.stopPropagation();
+
       // console.log(ev);
       //
       // console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
       //
       // ev.detail.complete();
 
-      console.log('Before complete tanks:', this.tanks);
+      console.log('Before complete tanks:', group);
 
       let scope = this;
 
       //console.log(this.fish_in_tank[ev.detail['to']])
 
-      this.tanks = ev.detail.complete(this.tanks);
-      this.tanksHold = this.tanks
+      group = ev.detail.complete(group);
+      this.tanksHold = group;
 
       setTimeout(()=>{
 
-        this.tanks.forEach(function(value, key) {
+        group.forEach(function(value, key) {
+          console.log(key);
+
           if(value['trueName']){
             scope.fireStore.doc('Users/' + scope.afAuth.auth.currentUser.uid + '/tanks/' + value['trueName'].toLowerCase())
             .set({
@@ -230,11 +234,21 @@ export class myTanksPage {
           }
         });
 
-        console.log('After complete tanks:', this.tanks);
+        console.log('After complete tanks:', group);
 
       }, 1000);
     }
 
+    reOrderGroups(ev){
+      ev.stopPropagation();
+
+      console.log('Before complete tanks:', this.tanks);
+
+      console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
+
+      ev.detail.complete();
+      console.log('After complete tanks:', this.tanks);
+    }
 
     doRefresh(event){
       this.showHead = false;
@@ -284,6 +298,7 @@ export class myTanksPage {
 
     hideTanks(){
       this.showTanks = !this.showTanks;
+      this.groupingMode = false;
 
       if(this.showTanks){
         this.populateTanks();
@@ -292,6 +307,7 @@ export class myTanksPage {
 
     groupTanks(){
       this.groupingMode = !this.groupingMode;
+      this.groupedTanks = [];
     }
 
     checkTankToGroup(tank, i){
@@ -326,7 +342,15 @@ export class myTanksPage {
         ]
       });
 
-      await alert.present();
+      if(this.groupedTanks.length){
+        await alert.present();
+      }else{
+        this.groupingMode = false;
+      }
+    }
+
+    hideGroup(groupI){
+      this.tanks[groupI].isHidden = !this.tanks[groupI].isHidden;
     }
 
     proccessCheckedTanks(){
@@ -338,6 +362,7 @@ export class myTanksPage {
         this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + trueName)
         .set({
           group: this.currentGroup,
+          groupOrder: 0,
         },{
           merge: true
         });
@@ -346,10 +371,11 @@ export class myTanksPage {
       this.tanks.forEach(tank => {
         if(tank['checked']){
           tank['checked'] = false;
+          tank.group = this.currentGroup;
+          tank.groupOrder = 0;
         }
       });
-      //
-      // this.groupingMode = false;
+
       // this.currentGroup = '';
       // this.populateTanks();
     }
@@ -476,6 +502,7 @@ export class myTanksPage {
           this.tanksHold = values;
           this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
           this.tanks = this.organiseGroups();
+          this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
 
           console.log(this.tanks);
 
@@ -490,8 +517,6 @@ export class myTanksPage {
           // Find species count
           values.forEach(tankResult => {
             this.populateColours(tankResult)
-
-            //console.log(tankResult);
 
             this.repeatArrayTank = this.fireStore.collection('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tankResult['trueName'].toLowerCase() + '/species').valueChanges().subscribe(
             species =>{
@@ -570,36 +595,74 @@ export class myTanksPage {
 
     organiseGroups(){
       console.log('Organising Groups ...');
-      let groupNames = [];
+      let tempGroupNames = [];
+      let tempGroupOrders = [];
       this.groupedTanks = [];
 
       let group = this.tanks.reduce((r, a) => {
+       if(!a.group){
+         a.group = ''
+       }
+
        r[a.group] = [...r[a.group] || [], a];
        r[a.group].sort((one, two) => (one.order > two.order) ? 1 : -1)
 
-       groupNames.push(a.group);
+       if(!a.groupOrder){
+         a.groupOrder = 0
+       }
+
+       // a.order = i
+
+       tempGroupNames.push(a.group);
+       tempGroupOrders.push(a.groupOrder);
 
        return r;
       }, {});
 
-      var cleanGroupNames = this.removeDuplicatesBy(x => x, groupNames);
-      for(var i = 0; i < cleanGroupNames.length; i++){
-        this.groupedTanks.push(group[cleanGroupNames[i]])
+      let groupNames = this.removeDuplicatesBy(x => x, tempGroupNames);
+      let groupOrders = this.removeDuplicatesBy(x => x, tempGroupOrders);
+      for(var i = 0; i < groupNames.length; i++){
+       this.groupedTanks.push(group[groupNames[i]]);
+
+       if(groupNames[i]){
+         this.groupedTanks[i].name = groupNames[i];
+       }else{
+         this.groupedTanks[i].name = '';
+       }
+
+       if(groupNames[i].order){
+        this.groupedTanks[i].order = groupOrders[i];
+       }else{
+         this.groupedTanks[i].order = 0;
+       }
       }
 
-      // this.groupedTanks = [].concat.apply([], this.groupedTanks);
-
-      // let singleGroups = []
-      // this.groupedTanks.forEach(tank => {
-      //   if(!singleGroups.includes(tank.group)){
-      //     singleGroups.push(tank.group)
-      //   }else{
-      //     tank.group = ''
-      //   }
-      // });
-
-
       return this.groupedTanks;
+    }
+
+    deleteGroup(groupI){
+
+      this.tanks[groupI].name = '';
+      this.tanks[groupI].order = '';
+
+      this.tanks[groupI].forEach(tank => {
+        tank.group = '';
+
+        let trueName = tank['trueName'].toLowerCase();
+        this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + trueName)
+        .set({
+          group: '',
+          groupOrder: '',
+        },{
+          merge: true
+        });
+
+        tank.group = '';
+        tank.groupOrder = '';
+      });
+
+      console.log(this.tanks)
+
     }
 
     populateColours(tankResult){

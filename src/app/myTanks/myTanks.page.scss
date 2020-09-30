@@ -1190,6 +1190,39 @@ h1{
   background: green !important;
 }
 
+.rightSideIcons{
+  display: inline-flex;
+  margin-left: auto;
+
+  ion-icon{
+    margin-right: 5px;
+    margin-left: 5px;
+    display: block;
+  }
+}
+
+.group{
+  border: 1px solid #d8d8d8;
+  margin-bottom: 25px;
+  padding: 3%;
+  padding-bottom: 6%;
+  border-radius: 12px;
+}
+
+.group:first-child{
+  margin-top: 25px;
+}
+
+.groupHeader{
+  display: inline-flex;
+
+  ion-icon{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: -2px;
+    display: block;
+  }
+}
 
 .sideIcons{
   padding-top: 6px;

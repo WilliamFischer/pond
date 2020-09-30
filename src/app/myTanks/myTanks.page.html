@@ -93,7 +93,7 @@
                 <ion-icon *ngIf="!showTanks" name="add-circle-outline"></ion-icon>
               </div>
               <div>
-                <ion-icon name="git-compare-outline" (click)="groupTanks()" *ngIf="!groupingMode"></ion-icon>
+                <ion-icon name="git-compare-outline" (click)="groupTanks()" *ngIf="!groupingMode && showTanks"></ion-icon>
                 <ion-icon name="checkmark-done-circle-outline" (click)="confirmCheckedTanks()" *ngIf="groupingMode"></ion-icon>
               </div>
             </div>
@@ -115,73 +115,84 @@
             <!-- <a (click)="addTank()">Start your first tank</a> to begin -->
           </h4>
 
-          <div *ngIf="tanks">
-            <div *ngFor="let group of tanks; let i = index">
-              <ion-reorder-group (ionItemReorder)="reOrderTanks($event)" disabled="false" *ngIf="showTanks">
-                  <ion-list-header *ngIf="tank.group">
-                  {{group}}
+          <div *ngIf="tanks && showTanks">
+              <ion-reorder-group (ionItemReorder)="reOrderGroups($event)" disabled="false">
+                <div *ngFor="let group of tanks; let groupI = index" class="group">
 
-                  <ion-reorder>
-                    <ion-icon name="list" class="selectPal"></ion-icon>
-                  </ion-reorder>
+                  <ion-list-header>
+                    <div class="groupHeader">
+                      <label *ngIf="group.name">{{group.name}}</label>
+                      <label *ngIf="!group.name">All</label>
 
-                </ion-list-header>
-              </ion-reorder-group>
-              <ion-reorder-group (ionItemReorder)="reOrderTanks($event)" disabled="false" *ngIf="showTanks">
-              <div *ngFor="let tank of group; let i = index">
+                      <ion-icon *ngIf="group.isHidden" (click)="hideGroup(groupI)" name="add-circle-outline"></ion-icon>
+                      <ion-icon *ngIf="!group.isHidden" (click)="hideGroup(groupI)" name="remove-circle-outline"></ion-icon>
+                    </div>
 
-
-                  <div class="tankSpace animated bounceIn" [ngStyle]="{'background' : tank.fullColour}">
-
-                    <div *ngIf="!groupingMode">
+                    <div class="rightSideIcons" *ngIf="groupingMode">
                       <ion-reorder>
-                        <ion-icon name="list" class="selectPal"></ion-icon>
+                        <ion-icon name="list"></ion-icon>
                       </ion-reorder>
 
-                      <ion-icon *ngIf="colourFound" class="selectPal" (click)="changeColour(tank, i)" name="color-palette"></ion-icon>
+                      <ion-icon name="close-outline" *ngIf="group.name" (click)="deleteGroup(groupI)"></ion-icon>
                     </div>
 
-                    <div *ngIf="groupingMode" (click)="checkTankToGroup(tank, i)">
-                      <ion-icon class="selectPal" name="checkbox-outline" *ngIf="!tank.checked"></ion-icon>
-                      <ion-icon class="selectPal" name="checkbox" *ngIf="tank.checked"></ion-icon>
+                  </ion-list-header>
+
+                  <ion-reorder-group (ionItemReorder)="reOrderTanks($event, group)" disabled="false"  *ngIf="!group.isHidden">
+                    <div *ngFor="let tank of group; let i = index">
+                      <div class="tankSpace animated bounceIn" [ngStyle]="{'background' : tank.fullColour}">
+
+                        <div *ngIf="!groupingMode">
+                          <ion-reorder>
+                            <ion-icon name="list" class="selectPal"></ion-icon>
+                          </ion-reorder>
+
+                          <ion-icon *ngIf="colourFound" class="selectPal" (click)="changeColour(tank, i)" name="color-palette"></ion-icon>
+                        </div>
+
+                        <div *ngIf="groupingMode" (click)="checkTankToGroup(tank, i)">
+                          <ion-icon class="selectPal" name="checkbox-outline" *ngIf="!tank.checked"></ion-icon>
+                          <ion-icon class="selectPal" name="checkbox" *ngIf="tank.checked"></ion-icon>
+                        </div>
+
+                        <h3 *ngIf="!tank.nickname" (click)="initTankDetail(tank.name)">{{tank.name}}</h3>
+                        <h3 *ngIf="tank.nickname" (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
+
+                        <h4 (click)="initTankDetail(tank.name)">
+                          <label *ngIf="tank.temp">
+
+                            <label *ngIf="tank.individualCount">{{tank.individualCount}}</label>
+                            <label *ngIf="!tank.individualCount || tank.individualCount == 0">0</label> fish,
+
+                            <label *ngIf="tank.speciesCount">{{tank.speciesCount}}</label>
+                            <label *ngIf="!tank.speciesCount || tank.speciesCount == 0">0</label> species,
+
+                            <label *ngIf="tank.temp"> &bull; {{tank.temp}}deg</label>
+                          </label>
+                        </h4>
+
+                        <h5 *ngIf="tank.substrate && tank.substrate !== 'Other'" (click)="initTankDetail(tank.name)">
+                          <label *ngIf="tank.size"> A <b>{{tank.size}}</b>L
+
+                          <label *ngIf="tank.isSaltwater"> saltwater </label>
+                          <label *ngIf="tank.isBrackish"> brackish </label>
+                          <label *ngIf="!tank.isBrackish && !tank.isSaltwater"> freshwater </label>
+
+                           environment with a </label><br />
+                          <label *ngIf="!tank.size"> With a </label>
+                          <b>{{tank.substrate}}</b> Substrate.
+                          <label *ngIf="tank.ph"> ph:<b>{{tank.ph}}</b>.</label>
+                        </h5>
+
+                        <h5 *ngIf="tank.substrate && tank.substrate == 'Other'" (click)="initTankDetail(tank.name)">
+                          <label *ngIf="tank.size"> A {{tank.size}}L environment with an </label><br />
+                          <label *ngIf="!tank.size"> With an </label>
+                          <b>Alternative</b> Substrate
+                        </h5>
+
+                      </div>
                     </div>
-
-                    <h3 *ngIf="!tank.nickname" (click)="initTankDetail(tank.name)">{{tank.name}}</h3>
-                    <h3 *ngIf="tank.nickname" (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
-
-                    <h4 (click)="initTankDetail(tank.name)">
-                      <label *ngIf="tank.temp">
-
-                        <label *ngIf="tank.individualCount">{{tank.individualCount}}</label>
-                        <label *ngIf="!tank.individualCount || tank.individualCount == 0">0</label> fish,
-
-                        <label *ngIf="tank.speciesCount">{{tank.speciesCount}}</label>
-                        <label *ngIf="!tank.speciesCount || tank.speciesCount == 0">0</label> species,
-
-                        <label *ngIf="tank.temp"> &bull; {{tank.temp}}deg</label>
-                      </label>
-                    </h4>
-
-                    <h5 *ngIf="tank.substrate && tank.substrate !== 'Other'" (click)="initTankDetail(tank.name)">
-                      <label *ngIf="tank.size"> A <b>{{tank.size}}</b>L
-
-                      <label *ngIf="tank.isSaltwater"> saltwater </label>
-                      <label *ngIf="tank.isBrackish"> brackish </label>
-                      <label *ngIf="!tank.isBrackish && !tank.isSaltwater"> freshwater </label>
-
-                       environment with a </label><br />
-                      <label *ngIf="!tank.size"> With a </label>
-                      <b>{{tank.substrate}}</b> Substrate.
-                      <label *ngIf="tank.ph"> ph:<b>{{tank.ph}}</b>.</label>
-                    </h5>
-
-                    <h5 *ngIf="tank.substrate && tank.substrate == 'Other'" (click)="initTankDetail(tank.name)">
-                      <label *ngIf="tank.size"> A {{tank.size}}L environment with an </label><br />
-                      <label *ngIf="!tank.size"> With an </label>
-                      <b>Alternative</b> Substrate
-                    </h5>
-
-                  </div>
+                  </ion-reorder-group>
                 </div>
               </ion-reorder-group>
             </div>
@@ -212,7 +223,6 @@
 
           <div class="forcedSpace"></div>
 
-        </div>
       </ion-content>
     </div>
 
