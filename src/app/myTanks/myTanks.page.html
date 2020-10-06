@@ -1,6 +1,6 @@
 <ion-app class="whiteBackground flexBack">
 
-  <ion-header *ngIf="!addTankMode && !tankSizeImages">
+  <ion-header>
     <ion-toolbar>
 
       <form action="." (ngSubmit)="checkAPI($event, false)">
@@ -15,7 +15,8 @@
     <ion-toolbar class="saltSwitch">
       <ion-item>
         <h1 class="pondTitleVersion">
-          <label (click)="addTank()">+ New Tank</label>
+          <label (click)="addTank()" *ngIf="!addTankMode">+ New Tank</label>
+          <label (click)="closeTank()" *ngIf="addTankMode">Back</label>
         </h1>
 
         <h1 class="pondTitleVersion rightTitle">
@@ -229,7 +230,7 @@
 
   <!-- Section 2: ADD TANK -->
   <div class="addTank" *ngIf="addTankMode && !tankSizeImages">
-    <ion-icon name="close-outline" (click)="closeTank()" class="backArrowBlack"></ion-icon>
+    <!-- <ion-icon name="close-outline" (click)="closeTank()" class="backArrowBlack"></ion-icon> -->
 
     <div class="ughAbsouleNoTop">
       <div class="ion-page">
