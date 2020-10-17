@@ -55,7 +55,7 @@
                 <label class="topTitle2" *ngIf="user.name">{{user.name}}</label>
                 <label class="topTitle2" *ngIf="!user.name">Unknown User</label>
                 <label class="topTitle3">
-                  <b *ngIf="totalQuanityOfFish">{{totalQuanityOfFish}} Fish</b> <br />
+                  <b *ngIf="totalQuanityOfFish">{{totalQuanityOfFish}} Fish</b> <br /><br />
                   <i>
                     <b>{{totalQuanityOfFollows}}</b> Follower<label *ngIf="totalQuanityOfFollows !== 1">s</label>
                     <br />
@@ -76,7 +76,7 @@
 
         <!-- <div class="splittingLine"></div> -->
 
-        <div class="paddingSpace" *ngIf="defaultMode" [ngStyle]="{ 'fullMode' : !showHead }">
+        <div class="paddingSpace"  *ngIf="defaultMode" [ngClass]="{ 'tankContainer' : showHead }">
 
           <!-- Section 1: ALL TANKS -->
           <ion-refresher slot="fixed" color="primary"  (ionRefresh)="doRefresh($event)"  *ngIf="tanks && tanks.length >= 1 && showTanks">

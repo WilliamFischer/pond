@@ -6,7 +6,7 @@
       </ion-item>
 
       <form action="." (ngSubmit)="checkAPI($event, false)">
-        <ion-searchbar [ngClass]="{'littleSearcher' : littleSearchbar, 'littleRightSearcher' : speciesSelected, 'tinySearcher' : littleSearchbar && speciesSelected }" (ionChange)='triggerAutoComplete($event.target.value)' placeholder="Search for a {{typeofTrigger}} fish or user..." value="{{searchQuery}}" type="search" (ionClear)="clearSearch()" [(ngModel)]="searchQueryController" [ngModelOptions]="{standalone: true}" (click)="retriggerAutoComplete()" showSearchButton></ion-searchbar>
+        <ion-searchbar [ngClass]="{'littleSearcher' : littleSearchbar, 'littleRightSearcher' : speciesSelected, 'tinySearcher' : littleSearchbar && speciesSelected }" (ionChange)='triggerAutoComplete($event.target.value)' placeholder="Search for a {{typeofTrigger}} fish or user..." value="{{searchQuery}}" type="search" (ionClear)="clearSearch()" (click)="retriggerAutoComplete()" (input)="changeSearchValue($event.target.value)" showSearchButton></ion-searchbar>
       </form>
 
       <ion-item class="toggle littleSwitch animated fadeIn" *ngIf="littleSearchbar">
@@ -39,12 +39,16 @@
     </ion-toolbar>
 
     <ion-toolbar class="alphabetHeader" *ngIf="searchQuery.length > 2 && !speciesSelected">
-      <ion-item *ngIf="!doneLoading">
+      <ion-item *ngIf="!doneLoading && !spellCheck">
         <!-- <h2 class="alphabetSpeciesLoading">Loading All Species...</h2> -->
         <img class="tempLoader animated fadeIn" src="../assets/dnaLoader.gif" />
       </ion-item>
 
-      <ion-item *ngIf="doneLoading">
+      <ion-item *ngIf="spellCheck">
+        <label class="spellCheckTxt">Did you mean <a (click)="checkAPI(false, spellCheck)"> {{spellCheck}} </a> ?</label>
+      </ion-item>
+
+      <ion-item *ngIf="doneLoading && !spellCheck">
         <ul class="alphabet animated fadeIn">
           <li class="letter" (click)="clearSwitcher()" *ngIf="selectedLetter">all</li>
           <li class="letter" (click)="newLetterSwitcher('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
