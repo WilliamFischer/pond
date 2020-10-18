@@ -68,6 +68,7 @@ export class SearchPage {
   updateSeriouslyFish: boolean = true;
 
   searchQuery: string = '';
+  spellCheck: string = '';
   searchQueryController: string = '';
   selectedLetter: string = '';
   amountOfSpecies: string = '';
@@ -297,14 +298,11 @@ export class SearchPage {
   checkAPI($event, autoQuery){
       var searchQuery;
 
-      console.log(searchQuery)
-
       if(autoQuery.length >= 1){
         searchQuery = autoQuery;
       }else{
-        searchQuery = this.searchQueryController
+        searchQuery = this.searchQuery
       }
-
 
       if(searchQuery.length > 2){
 
@@ -315,13 +313,15 @@ export class SearchPage {
         //CLEAR EVERYTHING
         this.clearSearch();
 
+        this.searchQuery = searchQuery;
+        console.log(searchQuery)
+
+        this.checkForSpelling();
+
         this.littleSearchbar = true;
 
         this.keyboard.hide();
         this.unsubscriber();
-
-        this.searchQuery = searchQuery;
-        this.searchQueryController = searchQuery;
 
         //SHOW LOCAL SPECIES, IF YOU CAN
         this.displayFirebase(searchQuery);
@@ -343,6 +343,17 @@ export class SearchPage {
         console.log('Query length is too short.')
         this.clearSearch();
       }
+  }
+
+  checkForSpelling(){
+    console.log('CHECK SPELLING ON ' + this.searchQuery);
+    this.http.get('https://www.googleapis.com/customsearch/v1?q='+ this.searchQuery + '&key=AIzaSyAPvDEdOoGeldbbmVWShXguFmWFaX79DI8&cx=013483737079049266941:mzydshy4xwi').subscribe(
+    result => {
+      let correctQuery = result['spelling'].correctedQuery;
+      if(correctQuery){
+        this.spellCheck = correctQuery;
+      }
+    });
   }
 
   clearSearch(){
@@ -378,6 +389,7 @@ export class SearchPage {
     this.selectedLetter = '';
     this.genusDescription = '';
     this.allLocalFish = '';
+    this.spellCheck = '';
 
     this.router.navigate([], {
       relativeTo: this.route,
@@ -923,6 +935,10 @@ export class SearchPage {
   //   console.log(this.ourFish);
   // }
 
+  changeSearchValue(query){
+    this.searchQuery = query;
+  }
+
   triggerAutoComplete(query){
     let canRun = true;
     this.allLocalFish = [];
@@ -1049,7 +1065,6 @@ export class SearchPage {
               }
             }
 
-
             if(object['genus']){
               genusVal = object['genus'].toLowerCase();
 
@@ -1066,7 +1081,6 @@ export class SearchPage {
               }
             }
 
-
             if(object['distribution']){
               destVal = object['distribution'].toLowerCase();
 
@@ -1082,7 +1096,6 @@ export class SearchPage {
                 }
               }
             }
-
 
             if(object['habitat']){
               habitVal = object['habitat'].toLowerCase();

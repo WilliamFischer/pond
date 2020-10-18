@@ -25,8 +25,13 @@ export class LoginPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.presentLoading();
+
     this.afAuth.authState.subscribe(auth=>{
+      this.dismissLoader();
+
       if(auth){
+        this.dismissLoader();
         this.router.navigateByUrl('/tabs/tanks');
       }
     });
@@ -40,7 +45,7 @@ export class LoginPage implements OnInit {
   }
 
   async dismissLoader() {
-    // return await this.loadingController.dismiss().then(() => console.log('dismissed'));
+    return await this.loadingController.dismiss().then(() => console.log('dismissed'));
   }
 
   facebookLogin(){
