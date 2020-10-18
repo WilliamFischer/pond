@@ -45,8 +45,9 @@
       </ion-item>
 
       <ion-item *ngIf="doneLoading">
+        <div class="stickyLetter" (click)="clearSwitcher()" *ngIf="selectedLetter">all</div>
+
         <ul class="alphabet animated fadeIn">
-          <li class="letter" (click)="clearSwitcher()" *ngIf="selectedLetter">all</li>
           <li class="letter" (click)="newLetterSwitcher('a')" [ngClass]="{'litLetter' : selectedLetter == 'a'}">a</li>
           <li class="letter" (click)="newLetterSwitcher('b')" [ngClass]="{'litLetter' : selectedLetter == 'b'}">b</li>
           <li class="letter" (click)="newLetterSwitcher('c')" [ngClass]="{'litLetter' : selectedLetter == 'c'}">c</li>
