@@ -1,5 +1,6 @@
-<ion-content>
-  <div class="centerStuff">
+
+<div class="centerStuff">
+  <ion-content>
     <!-- <div class="darkOverlay"></div> -->
 
     <ion-icon class="backIco" name="arrow-back-outline" (click)="goToSpecies()"></ion-icon>
@@ -9,9 +10,17 @@
 
     <img class="pondLogo" src="assets/whiteKoiClear.png" />
 
-    <div class="socialBtn facebookBtn" (click)="facebookLogin()">
+    <!-- <div class="socialBtn facebookBtn" (click)="facebookLogin()">
       Continue with Faceboook
+    </div> -->
+
+    <div class="socialBtn registerBtn" (click)="passwordRegister()">
+      Register
     </div>
+    <div class="socialBtn loginBtn" (click)="passwordLogin()">
+      Login
+    </div>
+    <br />
 
     <div class="socialBtn googleBtn" (click)="googleLogin()">
       Continue with Google
@@ -22,5 +31,5 @@
     </div> -->
 
     <label class="legalTxt">By logging in you agree to our <a (click)="tac()">Terms & Conditions</a></label>
-  </div>
-</ion-content>
+  </ion-content>
+</div>

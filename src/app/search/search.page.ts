@@ -481,10 +481,6 @@ export class SearchPage {
     }
   }
 
-  ionViewDidEnter(){
-    console.log('Are you looking for genus?')
-  }
-
   // Access detail page and save selected species
   selectSpecies(fish, inDB){
     //console.log(fish);

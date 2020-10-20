@@ -41,10 +41,7 @@ h1 b{
   display: block;
 
   margin-top: 20%;
-  margin-bottom: 27%;
-}
-
-.rippleCanvas{
+  margin-bottom: 10%;
 }
 
 .centerStuff{
@@ -123,4 +120,15 @@ canvas{
   z-index: 90000;
   color: #8ca6d2;
   pointer-events: auto;
+}
+
+
+.registerBtn{
+  background: #7c9bff;;
+  margin-top: 5%;
+}
+
+.loginBtn{
+  background: #b2b2b2;
+  margin-top: 5%;
 }

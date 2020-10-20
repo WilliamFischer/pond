@@ -292,20 +292,12 @@ export class myTanksPage {
     }
 
     populateUser(auth){
-      // http://graph.facebook.com/{user_id}?fields=picture.height(961)
+      this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid).valueChanges().subscribe(values => {
+        this.user = values;
 
-      this.user.name = auth.displayName;
-      if(auth.providerData[0].providerId == 'google.com'){
-        this.user.photoURL = auth.photoURL
-      }else{
-        this.user.photoURL = "https://graph.facebook.com/" + auth.providerData[0].uid + "/picture?height=500"
-      }
-
-      this.user.email = auth.email
-
-      this.populateTanks();
-      this.populateWishlist();
-      //console.log(this.afAuth.auth.currentUser.uid)
+        this.populateTanks();
+        this.populateWishlist();
+      });
     }
 
     hideWishlist(){
@@ -718,8 +710,15 @@ export class myTanksPage {
     }
 
     addUserToFirebase(auth){
+      let name;
 
-      let name = auth.displayName;
+      if(auth.displayName){
+        name = auth.displayName;
+      }else{
+        name = localStorage.getItem('userName');
+        localStorage.removeItem('userName')
+      }
+
       let email = auth.email;
 
       let pic;

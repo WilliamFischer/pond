@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController, Platform } from '@ionic/angular';
+import { LoadingController, AlertController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -18,6 +18,7 @@ export class LoginPage implements OnInit {
   constructor(
     private router: Router,
     public loadingController: LoadingController,
+    public alertController: AlertController,
     private authService: AuthProvider,
     public plt: Platform,
     private location: Location,
@@ -25,13 +26,8 @@ export class LoginPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.presentLoading();
-
     this.afAuth.authState.subscribe(auth=>{
-      this.dismissLoader();
-
       if(auth){
-        this.dismissLoader();
         this.router.navigateByUrl('/tabs/tanks');
       }
     });
@@ -108,4 +104,85 @@ export class LoginPage implements OnInit {
 
   }
 
+
+  async passwordRegister() {
+    const alert = await this.alertController.create({
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Display Name'
+        },
+        {
+          name: 'email',
+          type: 'text',
+          placeholder: 'Email'
+        },
+        {
+          name: 'pass',
+          type: 'password',
+          placeholder: 'Password'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Back',
+          role: 'cancel'
+        }, {
+          text: 'Ok',
+          handler: (data) => {
+            this.afAuth.auth.createUserWithEmailAndPassword(data.email, data.pass).then( response => {
+              localStorage.setItem('userName', data.name)
+              this.router.navigateByUrl('/tabs/tanks');
+            }).catch((err) => {
+              this.showError(err.message)
+            })
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+
+  async passwordLogin() {
+    const alert = await this.alertController.create({
+      inputs: [
+        {
+          name: 'email',
+          type: 'text',
+          placeholder: 'Email'
+        },
+        {
+          name: 'pass',
+          type: 'password',
+          placeholder: 'Password'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Back',
+          role: 'cancel'
+        }, {
+          text: 'Ok',
+          handler: (data) => {
+            this.afAuth.auth.signInWithEmailAndPassword(data.email, data.pass).then( response => {
+              this.router.navigateByUrl('/tabs/tanks');
+            }).catch((err) => {
+              this.showError(err.message)
+            })
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  showError(err){
+    alert(err);
+  }
 }

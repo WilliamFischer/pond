@@ -111,7 +111,7 @@
           <!-- <h3 class="addTankTxt" *ngIf="tanks && tanks.length >= 1 && showTanks" (click)="addTank()">+ Begin New Tank</h3> -->
           <!-- <h3 class="wishlistTxt" *ngIf="wishlist && wishlist.length >= 1" (click)="triggerWishlist()">Wishlist</h3> -->
 
-          <h4 class="noFishYetTxt" *ngIf="tanks && tanks.length < 1 && showTanks">
+          <h4 class="noFishYetTxt" *ngIf="tanks && tanks.length < 1 && showTanks && user">
             You haven't added any tanks yet...
             <!-- <a (click)="addTank()">Start your first tank</a> to begin -->
           </h4>
