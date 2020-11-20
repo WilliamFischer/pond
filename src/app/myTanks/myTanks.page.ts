@@ -519,10 +519,9 @@ export class myTanksPage {
           }
 
           this.totalQuanityOfFish = 0;
-          this.tanks = values;
-          this.tanksHold = values;
-          this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
-          this.tanks = this.organiseGroups();
+          this.tanks = [];
+
+          this.tanks = this.organiseGroups(values);
           this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
 
           console.log(this.tanks);
@@ -614,13 +613,13 @@ export class myTanksPage {
       }
     }
 
-    organiseGroups(){
+    organiseGroups(tanks){
       console.log('Organising Groups ...');
       let tempGroupNames = [];
       let tempGroupOrders = [];
       this.groupedTanks = [];
 
-      let group = this.tanks.reduce((r, a) => {
+      let group = tanks.reduce((r, a) => {
        if(!a.group){
          a.group = ''
        }
@@ -689,6 +688,8 @@ export class myTanksPage {
 
         let currentColour = values[currentNum];
 
+        console.log(tankResult);
+        
         if(currentColour['third']){
           tankResult.fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ', ' + currentColour['third'] + ')';
         }else{
@@ -898,9 +899,8 @@ export class myTanksPage {
     }).then(() => {
       this.addTankMode = false;
       this.defaultMode = true;
-      console.log(this.tank);
 
-      this.tanks.push(this.tank);
+      this.populateTanks();
       this.content.scrollToTop(400);
     });
 
@@ -952,6 +952,7 @@ export class myTanksPage {
 
 
   changeColour(tank, index){
+    
     this.canLoadTank = true;
     this.colourFound = false;
     this.userTankChanges.unsubscribe();
@@ -961,7 +962,6 @@ export class myTanksPage {
     if(tank["name"] && this.canLoadTank){
       this.colourDoc = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank["name"].toLowerCase()).valueChanges().subscribe(
       tank =>{
-        //console.log(tank['colourNumber'])
 
         let counterNumber;
 
@@ -976,12 +976,15 @@ export class myTanksPage {
         }
 
         let currentColour = this.colours[counterNumber];
-
-        if(currentColour['third']){
-          this.tanks[index].fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ', ' + currentColour['third'] + ')';
-        }else{
-          this.tanks[index].fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ')';
-        }
+        this.tanks[index].forEach((value, key) => {
+          if(value.trueName == tank['trueName']){
+            if(currentColour['third']){
+              this.tanks[index][key].fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ', ' + currentColour['third'] + ')';
+            }else{
+              this.tanks[index][key].fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ')';
+            }
+          }
+        });
 
         if(tank["name"]){
           this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + tank["name"].toLowerCase())

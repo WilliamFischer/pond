@@ -156,7 +156,7 @@
                           <ion-icon class="selectPal" name="checkbox" *ngIf="tank.checked"></ion-icon>
                         </div>
 
-                        <h3 *ngIf="!tank.nickname" (click)="initTankDetail(tank.name)">{{tank.name}}</h3>
+                        <h3 *ngIf="!tank.nickname" (click)="initTankDetail(tank.name)">{{tank.name}} - {{tank.fullColour}}</h3>
                         <h3 *ngIf="tank.nickname" (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
 
                         <h4 (click)="initTankDetail(tank.name)">
