@@ -54,14 +54,20 @@ export class LoginPage implements OnInit {
         this.router.navigateByUrl('/tabs/tanks');
       }).catch(err=>{
         alert(err);
-        if(this.loading){ this.dismissLoader() }
+
+        setTimeout(() => {
+          this.dismissLoader()
+        }, 1500);
       })
     }else{
       this.authService.loginWithFacebook().then(res=>{
         this.router.navigateByUrl('/tabs/tanks');
       }).catch(err=>{
         alert(err);
-        if(this.loading){ this.dismissLoader() }
+
+        setTimeout(() => {
+          this.dismissLoader()
+        }, 1500);
       })
     }
   }

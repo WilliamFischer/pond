@@ -12,7 +12,7 @@
 
         <div class="listSpace" *ngIf="activeTankData">
 
-          <ion-icon name="close-outline" (click)="closeTank()" class="backArrow"></ion-icon>
+          <ion-icon name="close-outline" (click)="closeTank()" class="backArrow" *ngIf="!loadingImageUpload"></ion-icon>
 
           <h1 class="coreName">
             <label *ngIf="!activeTankData.nickname">{{activeTankData.name}}</label>
@@ -43,7 +43,7 @@
 
                 <label *ngIf="fish_in_tank.length >= 1 && tankFishQuantity">{{ tankFishQuantity }} Specimens</label>
 
-                <br /><br />
+                <br />
 
                 <label *ngIf="!trashMode && !commenting && fish_in_tank.length >= 1">
                   <!-- <a (click)="triggerReorder()" *ngIf="fish_in_tank.length > 1">REORDER &bull; </a> -->
@@ -154,7 +154,7 @@
             <ion-item lines="none" class="whiteSpaceWraper" *ngIf="!hideQuickAdd">
 
               <ion-note slot="start" class="longNote">
-                <input placeholder="0" size="2" maxLength="2" type="tel" class="quickAddNum" [(ngModel)]="quickAddNumber" [ngModelOptions]="{standalone: true}"/><div class="quantityIndictor">x</div>
+                <input placeholder="0" size="2" maxLength="4" type="tel" class="quickAddNum" [(ngModel)]="quickAddNumber" [ngModelOptions]="{standalone: true}"/><div class="quantityIndictor">x</div>
               </ion-note>
 
               <b>

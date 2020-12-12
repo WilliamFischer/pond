@@ -4,7 +4,7 @@
   z-index: 9000;
   display: block;
 
-  margin-top: 10%;
+  margin-top: 30px;
 }
 
 .topTitle2{
@@ -99,8 +99,10 @@ ion-searchbar{
 }
 
 .leftTitle{
-  text-align: left;
   margin-top: 15%;
+  text-align: left;
+  padding-left: 8px;
+  line-height: 25.5px;
 }
 
 .wishlistPillScroller{
@@ -259,7 +261,9 @@ ion-searchbar{
 
 
 .paddingSpace{
-  padding: 10% !important;
+  padding: 30px !important;
+  padding-bottom: 0px;
+  padding-top: 0px;
   background: transparent;
   font-family: 'Crimson Text', serif !important;
 }
@@ -278,7 +282,7 @@ ion-searchbar{
 .infoSection{
   width: 100%;
   display: inline-flex;
-  margin-bottom: 30%;
+  margin-bottom: 30px;
   transition: all 500ms ease-in-out;
 }
 
@@ -589,7 +593,6 @@ ion-searchbar{
 }
 
 .headSection{
-  height: 230px;
   width: 100%;
   display: block;
   background: #fff;
@@ -705,7 +708,7 @@ ion-content{
 }
 
 .forcedSpace{
-  height: 500px;
+  height: 100px;
   width: 100%;
   display: block;
 }
@@ -807,15 +810,15 @@ h1{
 }
 
 .paddingSpace{
-  padding: 10% !important;
-  padding-top: 0% !important;
-  font-family: 'Crims,,,,,,,,,,,,,,,on Text', serif !important;
+  // padding: 10% !important;
+  // padding-top: 0% !important;
+  font-family: 'Crimson Text', serif !important;
   transition: all 500ms ease-in-out;
-  height: 260px;
+  // height: 260px;
 }
 
 .tankContainer{
-  margin-top: 80%;
+  margin-top: 100%;
 }
 
 .tankSpace{
@@ -1257,5 +1260,14 @@ h1{
     // margin-top: 2%;
     // margin-left: 3%;
     // position: absolute;
+  }
+
+  .sideTxt{
+    font-size: 17px;
+    margin-top: 0px;
+    display: block;
+    color: #7acce5;
+    margin-left: -2px;
+    font-weight: bold;
   }
 }

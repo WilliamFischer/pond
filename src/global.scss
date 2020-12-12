@@ -72,6 +72,11 @@ body{
   background: black;
 }
 
+*{
+  outline-width: 0 !important;
+}
+
+
 ion-list-header:first-child ion-label{
   margin-top: 0 !important;
   margin-bottom: 0 !important;

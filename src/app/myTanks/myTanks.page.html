@@ -95,7 +95,8 @@
               </div>
               <div>
                 <ion-icon name="git-compare-outline" (click)="groupTanks()" *ngIf="!groupingMode && showTanks"></ion-icon>
-                <ion-icon name="checkmark-done-circle-outline" (click)="confirmCheckedTanks()" *ngIf="groupingMode"></ion-icon>
+                <label (click)="confirmCheckedTanks()" *ngIf="groupingMode" class="sideTxt">Done</label>
+                <!-- <ion-icon name="checkmark-done-circle-outline" (click)="confirmCheckedTanks()" *ngIf="groupingMode"></ion-icon> -->
               </div>
             </div>
 
@@ -156,7 +157,7 @@
                           <ion-icon class="selectPal" name="checkbox" *ngIf="tank.checked"></ion-icon>
                         </div>
 
-                        <h3 *ngIf="!tank.nickname" (click)="initTankDetail(tank.name)">{{tank.name}} - {{tank.fullColour}}</h3>
+                        <h3 *ngIf="!tank.nickname" (click)="initTankDetail(tank.name)">{{tank.name}}</h3>
                         <h3 *ngIf="tank.nickname" (click)="initTankDetail(tank.name)">{{tank.nickname}}</h3>
 
                         <h4 (click)="initTankDetail(tank.name)">

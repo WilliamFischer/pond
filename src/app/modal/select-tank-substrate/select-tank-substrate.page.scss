@@ -1,0 +1,19 @@
+ion-list{
+    padding-top: 100px;
+    width: 100%;
+    padding-left: 30px;
+}
+
+ion-item{
+    padding: 10px;
+    color: #737373;
+    border: none;
+    width: 90%;
+    border-radius: 3px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    background: #e2e2e2;
+    --background: #e2e2e2;
+    --border-color: #e2e2e2 !important;
+}

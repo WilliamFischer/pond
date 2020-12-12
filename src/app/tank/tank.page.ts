@@ -1174,6 +1174,7 @@ closeTank() {
   }
 
   triggerAutoComplete(query){
+
     console.log(query);
 
     //console.log(this.scrollAmount);
@@ -1225,98 +1226,203 @@ closeTank() {
             let habitVal;
             let descVal;
 
-            if(object['name']){
-              nameVal = object['name'].toLowerCase();
+            if(query.isSaltwater){
+              if(object['fresh'] == 0){
 
-              if(nameVal.includes(keyword)){
-                nameCollection.push(object);
-              }
-            }
-
-            if(object['wikiName']){
-              nameVal = object['wikiName'].toLowerCase();
-
-              if(nameVal.includes(keyword)){
-                nameCollection.push(object);
-              }
-            }
-
-            if(object['scotsOtherName']){
-              nameVal = object['scotsOtherName'].toLowerCase();
-
-              if(nameVal.includes(keyword)){
-                nameCollection.push(object);
-              }
-            }
-
-            if(object['altNames']){
-              for(let i in object['altNames']){
-                nameVal = object['altNames'][i].name.toLowerCase();
-
-                if(nameVal.includes(keyword)){
-                  nameCollection.push(object);
+                if(object['name']){
+                  nameVal = object['name'].toLowerCase();
+    
+                  if(nameVal.includes(keyword)){
+                    nameCollection.push(object);
+                  }
+                }
+    
+                if(object['wikiName']){
+                  nameVal = object['wikiName'].toLowerCase();
+    
+                  if(nameVal.includes(keyword)){
+                    nameCollection.push(object);
+                  }
+                }
+    
+                if(object['scotsOtherName']){
+                  nameVal = object['scotsOtherName'].toLowerCase();
+    
+                  if(nameVal.includes(keyword)){
+                    nameCollection.push(object);
+                  }
+                }
+    
+                if(object['altNames']){
+                  for(let i in object['altNames']){
+                    nameVal = object['altNames'][i].name.toLowerCase();
+    
+                    if(nameVal.includes(keyword)){
+                      nameCollection.push(object);
+                    }
+                  }
+                }
+    
+                if(object['commonName']){
+                  nameVal = object['commonName'].toLowerCase();
+    
+                  if(nameVal.includes(keyword)){
+                    nameCollection.push(object);
+                  }
+                }
+    
+                if(object['species']){
+                  speciesVal = object['species'].toLowerCase();
+    
+                  if(speciesVal.includes(keyword)){
+                    speciesCollection.push(object);
+                  }
+                }
+    
+    
+                if(object['genus']){
+                  genusVal = object['genus'].toLowerCase();
+    
+                  if(genusVal.includes(keyword)){
+                    genusCollection.push(object);
+                  }
+                }
+    
+    
+                if(object['distribution']){
+                  destVal = object['distribution'].toLowerCase();
+    
+                  if(destVal.includes(keyword)){
+                    distributionCollection.push(object);
+                  }
+                }
+    
+    
+                if(object['habitat']){
+                  habitVal = object['habitat'].toLowerCase();
+    
+                  if(habitVal.includes(keyword)){
+                    habitatCollection.push(object);
+                  }
+                }
+    
+                if(object['wikiDesc']){
+                  descVal = object['wikiDesc'].toLowerCase();
+    
+                  if(descVal.includes(keyword)){
+                    descCollection.push(object);
+                  }
+                }
+    
+                if(object['scotsSummary']){
+                  descVal = object['scotsSummary'].toLowerCase();
+    
+                  if(descVal.includes(keyword)){
+                    descCollection.push(object);
+                  }
                 }
               }
-            }
+  
+            }else{
+              if(object['fresh'] == -1){
 
-            if(object['commonName']){
-              nameVal = object['commonName'].toLowerCase();
-
-              if(nameVal.includes(keyword)){
-                nameCollection.push(object);
+                if(object['name']){
+                  nameVal = object['name'].toLowerCase();
+    
+                  if(nameVal.includes(keyword)){
+                    nameCollection.push(object);
+                  }
+                }
+    
+                if(object['wikiName']){
+                  nameVal = object['wikiName'].toLowerCase();
+    
+                  if(nameVal.includes(keyword)){
+                    nameCollection.push(object);
+                  }
+                }
+    
+                if(object['scotsOtherName']){
+                  nameVal = object['scotsOtherName'].toLowerCase();
+    
+                  if(nameVal.includes(keyword)){
+                    nameCollection.push(object);
+                  }
+                }
+    
+                if(object['altNames']){
+                  for(let i in object['altNames']){
+                    nameVal = object['altNames'][i].name.toLowerCase();
+    
+                    if(nameVal.includes(keyword)){
+                      nameCollection.push(object);
+                    }
+                  }
+                }
+    
+                if(object['commonName']){
+                  nameVal = object['commonName'].toLowerCase();
+    
+                  if(nameVal.includes(keyword)){
+                    nameCollection.push(object);
+                  }
+                }
+    
+                if(object['species']){
+                  speciesVal = object['species'].toLowerCase();
+    
+                  if(speciesVal.includes(keyword)){
+                    speciesCollection.push(object);
+                  }
+                }
+    
+    
+                if(object['genus']){
+                  genusVal = object['genus'].toLowerCase();
+    
+                  if(genusVal.includes(keyword)){
+                    genusCollection.push(object);
+                  }
+                }
+    
+    
+                if(object['distribution']){
+                  destVal = object['distribution'].toLowerCase();
+    
+                  if(destVal.includes(keyword)){
+                    distributionCollection.push(object);
+                  }
+                }
+    
+    
+                if(object['habitat']){
+                  habitVal = object['habitat'].toLowerCase();
+    
+                  if(habitVal.includes(keyword)){
+                    habitatCollection.push(object);
+                  }
+                }
+    
+                if(object['wikiDesc']){
+                  descVal = object['wikiDesc'].toLowerCase();
+    
+                  if(descVal.includes(keyword)){
+                    descCollection.push(object);
+                  }
+                }
+    
+                if(object['scotsSummary']){
+                  descVal = object['scotsSummary'].toLowerCase();
+    
+                  if(descVal.includes(keyword)){
+                    descCollection.push(object);
+                  }
+                }
               }
+  
             }
-
-            if(object['species']){
-              speciesVal = object['species'].toLowerCase();
-
-              if(speciesVal.includes(keyword)){
-                speciesCollection.push(object);
-              }
-            }
-
-
-            if(object['genus']){
-              genusVal = object['genus'].toLowerCase();
-
-              if(genusVal.includes(keyword)){
-                genusCollection.push(object);
-              }
-            }
-
-
-            if(object['distribution']){
-              destVal = object['distribution'].toLowerCase();
-
-              if(destVal.includes(keyword)){
-                distributionCollection.push(object);
-              }
-            }
-
-
-            if(object['habitat']){
-              habitVal = object['habitat'].toLowerCase();
-
-              if(habitVal.includes(keyword)){
-                habitatCollection.push(object);
-              }
-            }
-
-            if(object['wikiDesc']){
-              descVal = object['wikiDesc'].toLowerCase();
-
-              if(descVal.includes(keyword)){
-                descCollection.push(object);
-              }
-            }
-
-            if(object['scotsSummary']){
-              descVal = object['scotsSummary'].toLowerCase();
-
-              if(descVal.includes(keyword)){
-                descCollection.push(object);
-              }
-            }
+            
+            
 
           });
         });
@@ -1371,7 +1477,10 @@ closeTank() {
       console.log('Cant run');
     }
 
+
   }
+
+
 
   masterController(){
     if(this.allLocalFish.length >= 1){
@@ -1463,7 +1572,7 @@ closeTank() {
     this.confirmedAdd = true;
     let order = this.fish_in_tank.length + +1;
 
-    console.log('ADD ' + this.quickAddNumber + ' OF ' + this.selectedSpecies.name + ' AT ' + order + ' TO ' + this.activeTankData['name']);
+    console.log('ADD ' + Number(this.quickAddNumber) + ' OF ' + this.selectedSpecies.name + ' AT ' + order + ' TO ' + this.activeTankData['name']);
 
     let setList = {
       dateSet: new Date(),
@@ -1472,7 +1581,7 @@ closeTank() {
       genus: this.selectedSpecies['genus'],
       species: this.selectedSpecies['species'],
       order: order,
-      quantity: this.quickAddNumber
+      quantity: Number(this.quickAddNumber)
     };
 
 
@@ -1480,7 +1589,7 @@ closeTank() {
       'comm_name': this.selectedSpecies['name'],
       'genus': this.selectedSpecies['genus'],
       'spec_code': this.selectedSpecies['specCode'],
-      'quantity': this.quickAddNumber,
+      'quantity': Number(this.quickAddNumber),
       'nickname': '',
       'type': 'fish',
       'order': order,
@@ -1488,21 +1597,19 @@ closeTank() {
     }
 
     let tankAddress = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid + '/tanks/' + this.activeTankData['name'].toLowerCase() + '/species/' + this.selectedSpecies['specCode']);
-    let scope = this;
-
+    
     if (setList) {
-      tankAddress.set(setList ,{ merge: true }).then(function(ref) {
+      tankAddress.set(setList ,{ merge: true }).then((ref) => {
         console.log('Confirming Add, adjusting subchildren...');
 
         setTimeout(()=>{
-          scope.confirmedAdd = false;
-          scope.fish_in_tank.push(fishObj);
-          scope.tankFishQuantity = +scope.tankFishQuantity + +scope.quickAddNumber;
-          scope.selectedSpecies = '';
-          scope.quickAddNumber = 0;
+          this.confirmedAdd = false;
+          this.fish_in_tank.push(fishObj);
+          this.tankFishQuantity = +this.tankFishQuantity + +this.quickAddNumber;
+          this.selectedSpecies = '';
+          this.quickAddNumber = 0;
 
-
-          console.log(scope.fish_in_tank);
+          console.log(this.fish_in_tank);
         });
 
       }).catch(function(error) {
