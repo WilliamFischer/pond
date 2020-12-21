@@ -551,6 +551,7 @@ export class SearchPage {
 
     console.log('### PACKAGED SPECIES ###')
     console.log(fish);
+    this.setAddingState('Packaging Species');
 
     let properSpecCode;
 
@@ -606,6 +607,7 @@ export class SearchPage {
 
   isItReallyNewTho(fish){
     console.log('### VERIFYING FISH IS REALLY NEW ###');
+    this.setAddingState('Confirming Fish is new...');
 
     if(this.debug){
       console.log(fish['SpecCode'])
@@ -1443,6 +1445,7 @@ export class SearchPage {
 
   checkFishbaseEcosystem(species, searchQuery){
     console.log("### CHECKING FISHBASE/ECOSYSTEM ###");
+    this.setAddingState('Checking Fishbase Ecosystem information...')
 
     let speciesAddress = this.fireStore.doc<any>('Species/' + species.SpecCode);
 
@@ -1905,6 +1908,8 @@ export class SearchPage {
     this.searchingGenus = false;
 
     console.log("### CHECKING GENERAL FISHBASE ###")
+    this.setAddingState('Checking basic fishbase information...');
+
     this.http.get('https://fishbase.ropensci.org/species?Genus=' + searchQuery + '&limit=500').subscribe(
       result => {
         // Found Genus
@@ -1961,6 +1966,7 @@ export class SearchPage {
   // ADD SPECIES TO FIREBASE DATABASE
   addToDatabase(fish){
     console.log("### ADDING SPECIES TO DATABASE ###")
+    this.setAddingState('Adding Species to Database');
     console.log(fish);
 
     let speciesAddress = this.fireStore.doc<any>('Species/' + fish.SpecCode);
@@ -2025,9 +2031,11 @@ export class SearchPage {
 
     var specCode = fish['SpecCode']
 
+
     //console.log('BASIC FISH INFO SAVED TO DB')
     this.presentNewSpeciesLoading(fish);
 
+    this.setAddingState('Saving Images to Database...');
     this.getMoreGoogleImages(fish, specCode);
 
     var populateImgesInt = setInterval(()=>{
@@ -2526,6 +2534,7 @@ export class SearchPage {
 
   theInternetIsMyBitchAndShesBeenABadGirl(species){
     console.log('### RUNNING SERIOUSLY FISH WEB SCRAPER ###');
+    this.setAddingState('Checking Seriously Fish information...');
     this.sfSpecies = species;
 
     // Check double species url type
@@ -2960,6 +2969,7 @@ export class SearchPage {
 
   maybePlanetCatfish(species){
     console.log('### RUNNING PLANT CATFISH WEB SCRAPER ###');
+    this.setAddingState('Checking Planet Catfish information...');
 
     if(this.debug){
       console.log(species)
@@ -3250,6 +3260,7 @@ export class SearchPage {
     }
 
     console.log('### CHECKING AUSTRALIAN FISH LAWS... ###')
+    this.setAddingState('Getting Australian Regulations & Laws');
     if(this.debug){
       console.log(species)
     }
@@ -3299,6 +3310,7 @@ export class SearchPage {
   fuckItCheckNorway(species){
 
     console.log("### GETTING NORWEGIAN SEA WATER RESULTS ###")
+    this.setAddingState('Checking Norwegian Sea Water information...');
 
     let speciesAddress;
     let searchQuery;
@@ -3393,6 +3405,7 @@ export class SearchPage {
 
     var searchQuery = species['Genus']+"-"+species['Species'];
     console.log("### CHECKING SHARK REFERNCES RESULTS ###")
+    this.setAddingState('Checking Sharkbase information...');
 
     let speciesAddress;
 
@@ -3482,6 +3495,7 @@ export class SearchPage {
 
   newSpeciesDonePopulating(fish){
     console.log("DONE - WRAPPING UP & SHOWING NEW SPECIES...");
+    this.setAddingState('Done! Wrapping up species');
 
     this.unsubscriber();
 
@@ -3714,7 +3728,7 @@ export class SearchPage {
     let species = fish['Species'].charAt(0).toUpperCase() + fish['Species'].slice(1);
 
     return await this.loadingController.create({
-      message: genus + ' ' + species + ' is new to Pond! Adding to system, this may take a while...'
+      message: genus + ' ' + species + ' is new to Pond! Adding to system, this may take a while... ' + `<br /></br><div id="addingState"></div>`
     }).then(a => {
       a.present().then(() => {
         //console.log('presented');
@@ -3771,6 +3785,7 @@ export class SearchPage {
 
   searchWikipedia(fish){
     console.log('### GETTING WIKIPEDIA DESCRIPTION ###')
+    this.setAddingState('Checking Wikipedia information...');
 
     let speciesAddress;
 
@@ -3843,6 +3858,11 @@ export class SearchPage {
     this.fullWikiText = false;
   }
 
+  setAddingState(text:string) {
+    const elem = document.getElementById("addingState");
+    if(elem) elem.innerHTML = text;
+  }
+  
   generateGenusDescription(){
     console.log('### GENERATING GENUS DESCRIPTION ####')
 
@@ -3963,6 +3983,7 @@ export class SearchPage {
     let allResults;
 
     console.log("### GETTING FISHES OF AUSTRALIA RESULTS ###")
+    this.setAddingState('Checking Fishes of Australia information...');
 
     let theGenus;
     let theSpecies;
@@ -4303,6 +4324,7 @@ export class SearchPage {
       let speciesAddress;
 
       console.log("### GETTING REEF APP RESULTS ###")
+      this.setAddingState('Checking ReefApp information...');
 
       var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
       var scraperURL = this.hostDirectory + '/?url=https://reefapp.net/en/lex/details/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=wrap]/div[3]/div[2]/div/div/table/tbody/tr/td#vws';
@@ -4475,6 +4497,7 @@ export class SearchPage {
 
   howAboutReefLifeSurvey(species){
     console.log("### GETTING REEF LIFE SURVEY DESCRIPTION RESULTS ###")
+    this.setAddingState('Checking Reef Life information...');
 
     var corsFix = 'https://api.codetabs.com/v1/proxy?quest=';
     var scraperURL = this.hostDirectory + '/?url=https://www.reeflifesurvey.com/species/' + species['Genus'] + '-' + species['Species'] + '&xpath=//div[@id=main-content]/div[2]/div[1]/div[2]/div[2]/div[2]#vws';
@@ -4634,6 +4657,7 @@ export class SearchPage {
 
   ScotMateILoveIt(species){
     console.log('### GENERATE SCOTCAT RESULTS ###')
+    this.setAddingState('Checking Scots Cats information...');
 
     console.log(species);
     let scotResult;

@@ -43,14 +43,14 @@
 
         <div class="headSection" *ngIf="showHead">
           <div *ngIf="defaultMode" class="fadedBack"></div>
-          <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
-          <img *ngIf="defaultMode" class="fadedImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+          <img *ngIf="defaultMode" class="fadedImg" [src]="user.pic" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+          <img *ngIf="defaultMode" class="fadedImg" [src]="user.pic" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
 
           <div class="paddingSpace">
             <label class="topTitle1 animated fadeIn" *ngIf="defaultMode">Account</label>
 
             <div class="infoSection" *ngIf="defaultMode">
-              <img class="profileImg" [src]="user.photoURL" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
+              <img class="profileImg" [src]="user.pic" src="../assets/noImg.png" onerror="this.src='../assets/noImg.png'" default="../assets/noImg.png"/>
               <div class="rightStuff animated bounceIn">
                 <label class="topTitle2" *ngIf="user.name">{{user.name}}</label>
                 <label class="topTitle2" *ngIf="!user.name">Unknown User</label>
@@ -94,7 +94,7 @@
                 <ion-icon *ngIf="!showTanks" name="add-circle-outline"></ion-icon>
               </div>
               <div>
-                <ion-icon name="git-compare-outline" (click)="groupTanks()" *ngIf="!groupingMode && showTanks"></ion-icon>
+                <label (click)="groupTanks()" *ngIf="!groupingMode && showTanks" class="sideTxt">Group</label>
                 <label (click)="confirmCheckedTanks()" *ngIf="groupingMode" class="sideTxt">Done</label>
                 <!-- <ion-icon name="checkmark-done-circle-outline" (click)="confirmCheckedTanks()" *ngIf="groupingMode"></ion-icon> -->
               </div>
@@ -337,5 +337,8 @@
 
     <img src="../assets/sizes.png" />
   </div>
+
+
+  <input id="file-input" type="file" name="name" style="display: none;" (change)="changeProfilePhoto($event)" />
 
 </ion-app>
