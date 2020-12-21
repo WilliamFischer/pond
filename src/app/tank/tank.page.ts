@@ -1037,7 +1037,7 @@ closeTank() {
 
         })
      )
-    .subscribe()
+    .subscribe();
   }
 
   async confirmTankDelete() {

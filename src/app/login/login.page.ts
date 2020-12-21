@@ -29,6 +29,10 @@ export class LoginPage implements OnInit {
     this.afAuth.authState.subscribe(auth=>{
       if(auth){
         this.router.navigateByUrl('/tabs/tanks');
+
+        setTimeout(() => {
+          this.dismissLoader()
+        }, 1500);
       }
     });
   }

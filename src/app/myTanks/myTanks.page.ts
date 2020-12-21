@@ -1,12 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonContent, ModalController, Platform, AlertController, IonReorderGroup, NavParams } from '@ionic/angular';
+import { IonContent, ModalController, Platform, AlertController, IonReorderGroup, LoadingController, ActionSheetController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
 
-import { LoadingController, ActionSheetController } from '@ionic/angular';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'myTanks',
@@ -37,7 +37,7 @@ export class myTanksPage {
   colourMode: boolean;
   canLoadTank: boolean;
   tankSizeImages: boolean;
-  speciesSelected: boolean;
+  speciesSelected: boolean;manu
   speciesLoaded: boolean;
   fullWikiText: boolean;
   colourFound: boolean;
@@ -937,6 +937,12 @@ export class myTanksPage {
         handler: () => {
           this.triggerAdmin();
         }
+      }, {
+        text: 'Change Profile Photo',
+        icon: 'plus-outline',
+        handler: () => {
+          document.getElementById('file-input').click();
+        }
       },{
         text: 'Logout',
         role: 'destructive',
@@ -1082,5 +1088,38 @@ export class myTanksPage {
 
   triggerBrackish(){
     this.tank.isSaltwater = false
+  }
+
+  changeProfilePhoto(event) {
+    console.log('UPLOAD A PROFILE IMAGE');
+    this.presentLoading();
+
+    const file = event.target.files[0];
+    let randomID = Math.floor(Math.random() * 1000);
+    const filePath = this.afAuth.auth.currentUser.uid + '/Profile Images/' + randomID;
+    const fileRef = this.storage.ref(filePath)
+    const task = this.storage.upload(filePath, file);
+
+    task.snapshotChanges().pipe( finalize(() => {
+          const downloadURL = fileRef.getDownloadURL();
+
+          downloadURL.subscribe(url=>{
+             if(url){
+               this.dismissLoading();
+               console.log(url);
+               this.user['photoURL'] = url;
+
+                this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid)
+                .set({
+                  pic: url
+                },{
+                  merge: true
+                });
+             }
+          })
+
+        })
+     )
+    .subscribe();
   }
 }
