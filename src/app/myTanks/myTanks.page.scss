@@ -12,9 +12,12 @@
   font-size: 24px !important;
   white-space: nowrap;
   text-align: center;
-  width: 100%;
-  display: block;
 
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  display: block;
   margin-top: 10%;
   margin-bottom: 10%;
 }
@@ -1239,7 +1242,6 @@ h1{
   ion-icon{
     margin-left: 10px;
     margin-right: 10px;
-    margin-top: 6px;
     display: block;
   }
 }
@@ -1262,12 +1264,12 @@ h1{
     // position: absolute;
   }
 
-  .sideTxt{
-    font-size: 16px;
-    margin-top: 0px;
+  .sideTxt{        
+    font-size: 14px;
+    margin-top: 6px;
     display: block;
     color: #86bee0;
-    margin-left: -2px;
+    margin-left: -10px;
     font-weight: bold;
     text-decoration: underline;
   }

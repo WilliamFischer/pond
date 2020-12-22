@@ -18,7 +18,7 @@ export class myTanksPage {
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
-  debug: boolean = true;
+  debug: boolean = false;
 
   defaultMode: boolean = true;
   fullAccountMode: boolean = true;
@@ -133,7 +133,10 @@ export class myTanksPage {
 
       //Populate user
       this.afAuth.authState.subscribe(auth=>{
-        console.log(auth);
+        
+        if(this.debug){
+          console.log(auth); 
+        }
 
         if(auth){
           this.userTankChanges = this.fireStore.doc('Users/' + this.afAuth.auth.currentUser.uid).valueChanges().subscribe(values =>{
@@ -435,7 +438,11 @@ export class myTanksPage {
           });
 
           this.wishlistItems = wishlistArray
-          console.log(this.wishlistItems);
+
+          if(this.debug){
+            console.log(this.wishlistItems);
+          }
+
           //this.content.scrollToTop(400);
 
 
@@ -524,7 +531,9 @@ export class myTanksPage {
           this.tanks = this.organiseGroups(values);
           this.tanks.sort((a, b) => (a.order > b.order) ? 1 : -1)
 
-          console.log(this.tanks);
+          if(this.debug){
+            console.log(this.tanks);
+          }
 
           if(this.repeatArrayTank){
             this.repeatArrayTank.unsubscribe();
@@ -614,7 +623,10 @@ export class myTanksPage {
     }
 
     organiseGroups(tanks){
-      console.log('Organising Groups ...');
+      if(this.debug){
+        console.log('Organising Groups ...');
+      }
+
       let tempGroupNames = [];
       let tempGroupOrders = [];
       this.groupedTanks = [];
@@ -632,7 +644,10 @@ export class myTanksPage {
        return r;
       }, {});
 
-      console.log(tempGroupOrders);
+      
+      if(this.debug){
+        console.log(tempGroupOrders);
+      }
 
       let groupNames = this.removeDuplicatesBy(x => x, tempGroupNames);
       let groupOrders = this.removeDuplicatesBy(x => x, tempGroupOrders);
@@ -687,8 +702,6 @@ export class myTanksPage {
         this.colours = values;
 
         let currentColour = values[currentNum];
-
-        console.log(tankResult);
         
         if(currentColour['third']){
           tankResult.fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ', ' + currentColour['third'] + ')';
@@ -717,7 +730,13 @@ export class myTanksPage {
         name = auth.displayName;
       }else{
         name = localStorage.getItem('userName');
-        localStorage.removeItem('userName')
+
+        if(name){
+          localStorage.removeItem('userName')
+        }else{
+          name = auth.email;
+        }
+        
       }
 
       let email = auth.email;
@@ -982,14 +1001,17 @@ export class myTanksPage {
         }
 
         let currentColour = this.colours[counterNumber];
-        this.tanks[index].forEach((value, key) => {
-          if(value.trueName == tank['trueName']){
-            if(currentColour['third']){
-              this.tanks[index][key].fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ', ' + currentColour['third'] + ')';
-            }else{
-              this.tanks[index][key].fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ')';
+       
+        this.tanks.forEach((i, masterKey) => {
+          i.forEach((value, key) => {
+            if(value.trueName == tank['trueName']){
+              if(currentColour['third']){
+                this.tanks[masterKey][key].fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ', ' + currentColour['third'] + ')';
+              }else{
+                this.tanks[masterKey][key].fullColour = 'linear-gradient(to right, ' + currentColour['first'] + ', ' + currentColour['second'] + ')';
+              }
             }
-          }
+          });
         });
 
         if(tank["name"]){

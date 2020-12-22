@@ -2056,6 +2056,8 @@ export class SearchPage {
 
       }else{
         console.log('trying to populate species... ' + this.googleImageArray.length)
+        
+        this.unsubscriber();
       }
     }, 500);
   }
@@ -3728,7 +3730,7 @@ export class SearchPage {
     let species = fish['Species'].charAt(0).toUpperCase() + fish['Species'].slice(1);
 
     return await this.loadingController.create({
-      message: genus + ' ' + species + ' is new to Pond! Adding to system, this may take a while... ' + `<br /></br><div id="addingState"></div>`
+      message: genus + ' ' + species + ' is new to Pond! Adding to system, this may take a while... ' + `<br /><br /><div id="addingState"></div>`
     }).then(a => {
       a.present().then(() => {
         //console.log('presented');
@@ -3761,7 +3763,7 @@ export class SearchPage {
     this.isLoadingNewSpecies = true;
 
     return await this.loadingController.create({
-      message: 'Updating...'
+      message: 'Updating Species... ' + `<br /><br /><div id="addingState"></div>`
     }).then(a => {
       a.present().then(() => {
         //console.log('loading presented');
